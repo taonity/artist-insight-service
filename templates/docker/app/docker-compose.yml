@@ -1,0 +1,20 @@
+version: '2.4'
+
+services:
+  app:
+    image: generaltao725/artist-insight-service:latest
+    environment:
+      JDK_JAVA_OPTIONS: --add-opens java.base/java.lang=ALL-UNNAMED
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    env_file:
+      - ../.env
+    volumes:
+      - ./config:/config
+    ports:
+      - 127.0.0.1:9016:9016
+      - 127.0.0.1:5006:5005
+    healthcheck:
+      test: curl localhost:9016/actuator/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 100

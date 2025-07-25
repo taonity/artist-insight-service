@@ -1,0 +1,9 @@
+package org.taonity.artistinsightservice.persistence.genre
+
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface ArtistGenreRepository : CrudRepository<ArtistGenre, ArtistGenreId> {
+    fun findAllByArtistName(artistName: String): List<ArtistGenre>
+}
