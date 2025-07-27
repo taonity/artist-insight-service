@@ -11,9 +11,13 @@ class SpotifyUserService(private val spotifyUserRepository: SpotifyUserRepositor
         private val LOGGER = KotlinLogging.logger {}
     }
 
+    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity {
+        return spotifyUserRepository.findBySpotifyId(spotifyId)
+            ?: throw RuntimeException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB")
+    }
+
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
-        val savedSpotifyUserEntity: SpotifyUserEntity? =
-            spotifyUserRepository.findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
+        val savedSpotifyUserEntity: SpotifyUserEntity = findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
 
         val spotifyUserEntityToSave = if (isNull(savedSpotifyUserEntity)) {
             LOGGER.info { "New user created" }
@@ -25,7 +29,7 @@ class SpotifyUserService(private val spotifyUserRepository: SpotifyUserRepositor
             )
         } else {
             LOGGER.info { "Existing user updated" }
-            savedSpotifyUserEntity!!.updateDetails(spotifyUserPrincipal.getDisplayName(), tokenValue)
+            savedSpotifyUserEntity.updateDetails(spotifyUserPrincipal.getDisplayName(), tokenValue)
         }
 
         spotifyUserRepository.save(spotifyUserEntityToSave)

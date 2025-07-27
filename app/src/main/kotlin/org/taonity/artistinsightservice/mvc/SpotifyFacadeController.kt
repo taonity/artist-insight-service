@@ -7,18 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.taonity.artistinsightservice.FollowingsService
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
-import java.util.*
 
 @RestController
 class SpotifyFacadeController(private val followingsService: FollowingsService) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
-    }
-
-    @GetMapping("/user")
-    fun user(@AuthenticationPrincipal principal: SpotifyUserPrincipal): Map<String, Any> {
-        LOGGER.info { "Handling /user endpoint" }
-        return Collections.singletonMap("name", principal.getDisplayName())
     }
 
     @GetMapping("/followings/raw")

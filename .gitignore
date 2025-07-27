@@ -31,12 +31,16 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
-
 ### Mac OS ###
 .DS_Store
 
 .env
 .git-versioned-pom.xml
 .idea
+
+### Frontend ###
+frontend/.vscode/*
+!frontend/.vscode/launch.json
+package-lock.json
+.next/
+node_modules/
