@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.client.web.client.RequestAttributePri
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+import org.taonity.artistinsightservice.mvc.EnrichableArtistObject
 import org.taonity.artistinsightservice.mvc.FollowingsResponse
 import org.taonity.artistinsightservice.mvc.SpotifyResponse
 import org.taonity.artistinsightservice.openai.OpenAIService
@@ -27,7 +28,9 @@ class FollowingsService(
     }
 
     fun fetchRawFollowings(): FollowingsResponse {
-        return FollowingsResponse(fetchFollowings(), false)
+        val notEnrichedFollowings = fetchFollowings()
+            .map { EnrichableArtistObject(it, false) }
+        return FollowingsResponse(notEnrichedFollowings, false)
     }
 
     fun fetchGenreEnrichedFollowings(spotifyId: String): FollowingsResponse {
@@ -36,31 +39,34 @@ class FollowingsService(
         val hasGptUsage = spotifyUserService.decrementGptUsagesIfLeft(spotifyId)
         if (!hasGptUsage) {
             LOGGER.warn { "Spotify user with id $spotifyId have no GPT usages left" }
-            return FollowingsResponse(fetchFollowings(), false)
+            val notEnrichedFollowings = fetchFollowings()
+                .map { EnrichableArtistObject(it, false) }
+            return FollowingsResponse(notEnrichedFollowings, false)
         }
 
-        followings.forEach(this::enrichWithGenresIfPossible)
+        val enrichedFollowings = followings.map(this::enrichWithGenresIfPossible)
 
-        return FollowingsResponse(fetchFollowings(), true)
+        return FollowingsResponse(enrichedFollowings, true)
     }
 
-    private fun enrichWithGenresIfPossible(artist: ArtistObject) {
+    private fun enrichWithGenresIfPossible(artist: ArtistObject): EnrichableArtistObject {
         if (artist.genres!!.isEmpty()) {
             val artistName = artist.name
             if (artistName.isNullOrBlank()) {
                 LOGGER.warn { "Artist have no name $artistName" }
-                return
+                return EnrichableArtistObject(artist, false)
             }
             val cachedGenres = artistGenreService.getGenres(artistName)
             if (cachedGenres.isEmpty()) {
                 artist.genres = provideGenresWithOpenAIAndCache(artistName)
                 LOGGER.info { "Artis $artistName was provided with genres ${artist.genres} by OpenAI call" }
-                return
+                return EnrichableArtistObject(artist, true)
             }
             artist.genres = cachedGenres
             LOGGER.info { "Artis $artistName was provided with genres ${artist.genres} by DB call" }
-
+            return EnrichableArtistObject(artist, true)
         }
+        return EnrichableArtistObject(artist, false)
     }
 
     private fun provideGenresWithOpenAIAndCache(artistName: String): List<String> {
