@@ -1,0 +1,6 @@
+package org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists
+
+import org.springframework.data.repository.CrudRepository
+
+interface SpotifyUserEnrichedArtistsRepository: CrudRepository<SpotifyUserEnrichedArtistsEntity, SpotifyUserEnrichedArtistsId> {
+}

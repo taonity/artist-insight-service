@@ -17,19 +17,19 @@ class SpotifyUserService(private val spotifyUserRepository: SpotifyUserRepositor
     }
 
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
-        val savedSpotifyUserEntity: SpotifyUserEntity = findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
-
-        val spotifyUserEntityToSave = if (isNull(savedSpotifyUserEntity)) {
+        val spotifyUserEntityToSave: SpotifyUserEntity = try {
+            LOGGER.info { "Existing user updated" }
+            findBySpotifyId(spotifyUserPrincipal.getSpotifyId()).apply {
+                updateDetails(spotifyUserPrincipal.getDisplayName(), tokenValue)
+            }
+        } catch (e: RuntimeException) {
             LOGGER.info { "New user created" }
             SpotifyUserEntity(
                 spotifyUserPrincipal.getSpotifyId(),
                 spotifyUserPrincipal.getDisplayName(),
                 tokenValue,
-                2
+                200
             )
-        } else {
-            LOGGER.info { "Existing user updated" }
-            savedSpotifyUserEntity.updateDetails(spotifyUserPrincipal.getDisplayName(), tokenValue)
         }
 
         spotifyUserRepository.save(spotifyUserEntityToSave)

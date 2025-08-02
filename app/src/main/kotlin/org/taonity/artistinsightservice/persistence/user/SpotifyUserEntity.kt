@@ -1,16 +1,18 @@
 package org.taonity.artistinsightservice.persistence.user
 
 import jakarta.persistence.*
+import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsEntity
 
 @Entity
-@SequenceGenerator(name = "default_generator", sequenceName = "spotify_user_seq", allocationSize = 1)
 @Table(name = "spotify_user")
 data class SpotifyUserEntity(
     @Id
     var spotifyId: String,
     var displayName: String,
     var tokenValue: String,
-    var gptUsagesLeft: Int
+    var gptUsagesLeft: Int,
+//    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+//    val enrichedArtists: Set<SpotifyUserEnrichedArtistsEntity> = emptySet()
 ) {
     override fun toString(): String {
         return "SpotifyUser(spotifyId='$spotifyId', displayName='$displayName', tokenValue='$tokenValue', gptUsagesLeft=$gptUsagesLeft)"
