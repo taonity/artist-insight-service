@@ -2,12 +2,13 @@ package org.taonity.artistinsightservice.mvc.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
+import org.taonity.artistinsightservice.SafePrivateUserObject
 import org.taonity.spotify.model.PrivateUserObject
 
 class SpotifyUserPrincipal(
     private val authorities: Collection<GrantedAuthority>,
     private val attributes: Map<String, Any>,
-    val privateUserObject: PrivateUserObject,
+    val privateUserObject: SafePrivateUserObject,
     private val nameAttributeKey: String
 ) : OAuth2User {
     override fun getName(): String {
@@ -23,20 +24,20 @@ class SpotifyUserPrincipal(
     }
 
     fun getSpotifyId(): String {
-        return privateUserObject.id!!
+        return privateUserObject.id
     }
 
     fun getDisplayName(): String {
-        return privateUserObject.displayName!!
+        return privateUserObject.displayName
     }
 
     companion object {
-        fun of(privateUserObject: PrivateUserObject, oAuth2User: OAuth2User): SpotifyUserPrincipal {
+        fun of(privateUserObject: SafePrivateUserObject, oAuth2User: OAuth2User): SpotifyUserPrincipal {
             return SpotifyUserPrincipal(
                 oAuth2User.authorities,
                 oAuth2User.attributes,
                 privateUserObject,
-                privateUserObject.displayName!!
+                privateUserObject.displayName
             )
         }
     }

@@ -23,6 +23,7 @@ class OpenAIService(
             Return only the JSON array. No explanation.
         """.trimIndent()
 
+        // TODO: handle prompt injection
         val userPrompt = "Provide the main genres of the artist \"$artistName\"."
 
         val request = chatCompletionCreateParams(systemPrompt, userPrompt)

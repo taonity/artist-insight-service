@@ -2,6 +2,7 @@ package org.taonity.artistinsightservice.persistence.spotify_user_enriched_artis
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.taonity.artistinsightservice.SafeArtistObject
 import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
 import org.taonity.artistinsightservice.persistence.artist.ArtistRepository
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreEntity
@@ -20,15 +21,15 @@ class SpotifyUserEnrichedArtistsService(
     @Transactional
     fun saveEnrichedArtistsForUser(
         spotifyId: String,
-        artistInputs: List<Pair<ArtistObject, List<String>>> // artist name + list of genres
+        artistInputs: List<Pair<SafeArtistObject, List<String>>> // artist name + list of genres
     ) {
         val user = spotifyUserRepository.findBySpotifyId(spotifyId)
             ?: throw IllegalArgumentException("User with id $spotifyId not found")
 
         artistInputs.forEach { (artistObject, genres) ->
             // Create or fetch the artist
-            val artistEntity = artistRepository.findById(artistObject.id!!).orElseGet {
-                val newArtistEntity = ArtistEntity(artistObject.id!!, artistObject.name!!)
+            val artistEntity = artistRepository.findById(artistObject.id).orElseGet {
+                val newArtistEntity = ArtistEntity(artistObject.id, artistObject.name)
                 artistRepository.save(newArtistEntity)
             }
 

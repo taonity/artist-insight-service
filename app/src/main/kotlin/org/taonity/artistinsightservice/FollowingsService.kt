@@ -33,61 +33,54 @@ class FollowingsService(
     }
 
     fun fetchRawFollowings(): FollowingsResponse {
-        val notEnrichedFollowings = fetchFollowings()
+        val notEnrichedFollowings = safeFetchFollowing()
             .map { EnrichableArtistObject(it, false) }
         return FollowingsResponse(notEnrichedFollowings)
     }
 
     fun fetchGenreEnrichedFollowings(spotifyId: String): FollowingsResponse {
-        val followings: List<ArtistObject> = fetchFollowings()
+        val safeFollowings: List<SafeArtistObject> = safeFetchFollowing()
 
         val spotifyUser = spotifyUserService.findBySpotifyId(spotifyId)
         val gptUsagesLeft = spotifyUser.gptUsagesLeft
         if (gptUsagesLeft == 0) {
             LOGGER.info { "Spotify user with id $spotifyId have no GPT usages left" }
-            val notEnrichedFollowings = fetchFollowings()
+            val notEnrichedFollowings = safeFollowings
                 .map { EnrichableArtistObject(it, false) }
             return FollowingsResponse(notEnrichedFollowings)
         }
 
-        val enrichedFollowings = followings.map { enrichWithGenresIfPossible(it, spotifyUser)}
+        val enrichedFollowings = safeFollowings.map { enrichWithGenresIfPossible(it, spotifyUser)}
 
         return FollowingsResponse(enrichedFollowings)
     }
 
-    private fun enrichWithGenresIfPossible(artistObject: ArtistObject, spotifyUser: SpotifyUserEntity): EnrichableArtistObject {
-        if (artistObject.genres!!.isEmpty()) {
-            val artistId = artistObject.id
-            if (artistId.isNullOrBlank()) {
-                LOGGER.warn { "Artist have no id $artistId" }
-                return EnrichableArtistObject(artistObject, false)
-            }
-            val artistName = artistObject.name
-            if (artistName.isNullOrBlank()) {
-                LOGGER.warn { "Artist have no name $artistName" }
-                return EnrichableArtistObject(artistObject, false)
-            }
-            val artistGenresAndUserLinkDto = artistGenreService.getGenresAndUserStatus(artistId, spotifyUser.spotifyId)
-            if (artistGenresAndUserLinkDto.genres.isEmpty()) {
-                artistObject.genres = provideGenresWithOpenAIAndCache(artistObject, spotifyUser.spotifyId)
-                LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by OpenAI call" }
-                spotifyUser.gptUsagesLeft--
-                return EnrichableArtistObject(artistObject, true)
-            }
-            artistObject.genres = artistGenresAndUserLinkDto.genres
-            if (artistGenresAndUserLinkDto.userHasArtist.booleanValue()) {
-                LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by DB call, GPT usages not changed - ${spotifyUser.gptUsagesLeft}" }
-            } else {
-                spotifyUser.gptUsagesLeft--
-                LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by DB call, GPT usages decremented - ${spotifyUser.gptUsagesLeft}" }
-            }
+    private fun enrichWithGenresIfPossible(artistObject: SafeArtistObject, spotifyUser: SpotifyUserEntity): EnrichableArtistObject {
+        if (artistObject.genres.isNotEmpty()) {
+            return EnrichableArtistObject(artistObject, false)
+        }
+        val artistId = artistObject.id
+        val artistName = artistObject.name
+        val artistGenresAndUserLinkDto = artistGenreService.getGenresAndUserStatus(artistId, spotifyUser.spotifyId)
+
+        if (artistGenresAndUserLinkDto.genres.isEmpty()) {
+            artistObject.genres = provideGenresWithOpenAIAndCache(artistObject, spotifyUser.spotifyId)
+            LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by OpenAI call" }
+            spotifyUser.gptUsagesLeft--
             return EnrichableArtistObject(artistObject, true)
         }
-        return EnrichableArtistObject(artistObject, false)
+        artistObject.genres = artistGenresAndUserLinkDto.genres
+        if (artistGenresAndUserLinkDto.userHasArtist.booleanValue()) {
+            LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by DB call, GPT usages not changed - ${spotifyUser.gptUsagesLeft}" }
+        } else {
+            spotifyUser.gptUsagesLeft--
+            LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${artistObject.genres} by DB call, GPT usages decremented - ${spotifyUser.gptUsagesLeft}" }
+        }
+        return EnrichableArtistObject(artistObject, true)
     }
 
-    private fun provideGenresWithOpenAIAndCache(artistObject: ArtistObject, spotifyId: String): List<String> {
-        val openAIProvidedGenres = openAIService.provideGenres(artistObject.name!!)
+    private fun provideGenresWithOpenAIAndCache(artistObject: SafeArtistObject, spotifyId: String): List<String> {
+        val openAIProvidedGenres = openAIService.provideGenres(artistObject.name)
         spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(artistObject, openAIProvidedGenres)))
         return openAIProvidedGenres
     }
@@ -101,6 +94,19 @@ class FollowingsService(
             .body<SpotifyResponse<PagingArtistObject>>()!!
             .artists
     }
+
+    private fun safeFetchFollowing() = fetchFollowings()
+        .map(ValidatedArtistObject::of)
+        .filter { validatedArtistObject ->
+            val violations = validator.validate(validatedArtistObject)
+            if (violations.isEmpty()) {
+                return@filter true
+            }
+            val errorMessage = violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
+            LOGGER.warn { "Validation failed for artist $validatedArtistObject with error: $errorMessage" }
+            return@filter false
+        }
+        .map(ValidatedArtistObject::toSafe)
 
     private fun fetchAllPages(fetchPage: (String) -> PagingArtistObject): List<ArtistObject> {
         val allItems: MutableList<ArtistObject> = ArrayList()

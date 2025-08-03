@@ -8,19 +8,22 @@ import org.taonity.spotify.model.ImageObject
 data class SafeArtistObject(
     val id: String,
     val name: String,
-    val genres: List<String>,
+    var genres: List<String>,
     val href: String,
     val images: MutableList<ImageObject>
 )
 
 data class ValidatedArtistObject(
     @field:NotBlank
+    @field:NotNull
     val id: String?,
     @field:NotBlank
+    @field:NotNull
     val name: String?,
     @field:NotNull
     val genres: List<String>?,
     @field:NotBlank
+    @field:NotNull
     val href: String?,
     @field:NotNull
     val images: MutableList<ImageObject>?
