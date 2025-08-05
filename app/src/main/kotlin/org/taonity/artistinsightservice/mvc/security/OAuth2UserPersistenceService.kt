@@ -3,8 +3,10 @@ package org.taonity.artistinsightservice.mvc.security
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.validation.Validator
+import mu.KotlinLogging
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.SafePrivateUserObject
@@ -20,10 +22,17 @@ class OAuth2UserPersistenceService(
 
     companion object {
         private val objectMapper = jacksonObjectMapper()
+        private val LOGGER = KotlinLogging.logger {}
     }
 
     override fun loadUser(userRequest: OAuth2UserRequest?): OAuth2User {
-        val oAuth2User: OAuth2User = super.loadUser(userRequest)
+
+        val oAuth2User: OAuth2User = try {
+            super.loadUser(userRequest)
+        } catch (e: OAuth2AuthenticationException) {
+            LOGGER.error { e.message }
+            throw e
+        }
 
         val privateUserObject: PrivateUserObject = try {
             objectMapper.convertValue<PrivateUserObject>(oAuth2User.attributes)

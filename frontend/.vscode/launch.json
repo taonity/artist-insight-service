@@ -10,11 +10,13 @@
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
-            "userDataDir": "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir",
+            "userDataDir": "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir1",
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/",
                 "!/node_modules/**"
             ],
+            // to fix the "not secure" error in Chrome
+            "port": 9876
         }
     ]
 }

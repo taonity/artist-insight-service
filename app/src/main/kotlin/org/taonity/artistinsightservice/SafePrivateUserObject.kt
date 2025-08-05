@@ -3,11 +3,13 @@ package org.taonity.artistinsightservice
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.taonity.spotify.model.ArtistObject
+import org.taonity.spotify.model.ImageObject
 import org.taonity.spotify.model.PrivateUserObject
 
 data class SafePrivateUserObject(
     val id: String,
-    val displayName: String
+    val displayName: String,
+    val images: MutableList<ImageObject>
 )
 
 data class ValidatedPrivateUserObject(
@@ -16,13 +18,17 @@ data class ValidatedPrivateUserObject(
     val id: String?,
     @field:NotBlank
     @field:NotNull
-    val displayName: String?
+    val displayName: String?,
+    @field:NotNull
+    val images: MutableList<ImageObject>?
+
 ) {
     companion object {
         fun of(privateUserObject: PrivateUserObject) : ValidatedPrivateUserObject {
             return ValidatedPrivateUserObject(
                 privateUserObject.id,
                 privateUserObject.displayName,
+                privateUserObject.images
             )
         }
     }
@@ -30,6 +36,7 @@ data class ValidatedPrivateUserObject(
         return SafePrivateUserObject(
             id!!,
             displayName!!,
+            images!!,
         )
     }
 }

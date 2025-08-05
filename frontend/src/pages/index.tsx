@@ -3,6 +3,7 @@ import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
 import User from '../models/User'
 import keysToCamel from '../utils/utils'
 import Image from 'next/image'
+import { CSVLink, CSVDownload } from "react-csv";
 
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
@@ -62,6 +63,20 @@ export default function Home() {
 
   if (!user) return null
 
+  const csvData = [
+    ["name", "genre", "enriched"]
+  ];
+
+  enrichableArtistObjects.forEach((enrichableArtistObject) => {
+    const artist = enrichableArtistObject.artistObject;
+    const enriched = enrichableArtistObject.genreEnriched ? "yes" : "no";
+    if (artist.genres) {
+      csvData.push([artist.name, artist.genres.join(", "), enriched]);
+    } else {
+      csvData.push([artist.name, "", enriched],);
+    }   
+  });
+
   return (
     <div>
       <div className="header">
@@ -88,6 +103,14 @@ export default function Home() {
         <span style={{ marginLeft: '16px' }}>
           GPT Usages Left: {user.gptUsagesLeft}
         </span>
+        {enrichableArtistObjects.length > 0 && (
+          <div style={{ marginTop: '16px' }}>
+            <CSVLink data={csvData} filename={"exported-artists.csv"} className="btn btn-primary">
+              Download CSV
+            </CSVLink>
+          </div>  
+        )}
+    
         <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
       </div>
     </div>
