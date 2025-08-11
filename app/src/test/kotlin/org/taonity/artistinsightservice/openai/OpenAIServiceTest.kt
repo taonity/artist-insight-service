@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.openai
 
 import com.openai.springboot.OpenAIClientAutoConfiguration
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
     OpenAIService::class,
     OpenAIClientAutoConfiguration::class
 ],)
+@Disabled("Manual only")
 class OpenAIServiceTest (
    @Autowired val openAIService: OpenAIService
 ) {

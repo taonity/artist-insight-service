@@ -3,11 +3,9 @@ package org.taonity.artistinsightservice
 import jakarta.validation.Validation
 import mu.KotlinLogging
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import org.taonity.spotify.model.ArtistObject
-import java.util.Arrays.asList
 
+//TODO: improve test
 class FollowingsServiceTest {
 
     companion object {

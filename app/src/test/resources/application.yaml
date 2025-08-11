@@ -1,0 +1,39 @@
+server:
+  port: 9016
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:h2:mem:db
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+
+  flyway:
+    locations:
+      - filesystem:../templates/docker/flyway/sql/tables
+
+  security:
+    oauth2:
+      client:
+        registration:
+          spotify-artist-insight-service:
+            provider: spotify
+            client-id: 123
+            client-secret: 123
+            authorization-grant-type: authorization_code
+            scope: user-follow-read, user-read-private
+        provider:
+          spotify:
+            issuer-uri: http://localhost:8100
+            user-info-uri: http://localhost:8100/v1/me
+            userNameAttribute: display_name
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+
+logging:
+  level:
+    net.ttddyy.dsproxy.listener: DEBUG
