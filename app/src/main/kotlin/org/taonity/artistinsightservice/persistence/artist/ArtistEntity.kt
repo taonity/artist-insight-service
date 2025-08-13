@@ -14,7 +14,4 @@ data class ArtistEntity(
 
     @OneToMany(mappedBy = "artist", cascade = [CascadeType.ALL], orphanRemoval = true)
     val genres: Set<ArtistGenreEntity> = emptySet(),
-
-//    @OneToMany(mappedBy = "artist", cascade = [CascadeType.ALL], orphanRemoval = true)
-//    val enrichedUsers: Set<SpotifyUserEnrichedArtistsEntity> = emptySet()
 )

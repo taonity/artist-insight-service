@@ -1,8 +1,10 @@
 package org.taonity.artistinsightservice.mvc.security
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.util.ContentCachingRequestWrapper
 import java.nio.charset.Charset
@@ -11,7 +13,9 @@ import java.util.AbstractMap
 import java.util.Objects.isNull
 
 @Service
-class HttpServletLoggingService {
+class HttpServletLoggingService(
+    @Value ("\${app.minimised-http-servlet-logging}") private val minimisedHttpServletLogging: Boolean
+) {
     companion object {
         private val objectMapper = jacksonObjectMapper()
         private val LOGGER = KotlinLogging.logger {}
@@ -41,10 +45,15 @@ class HttpServletLoggingService {
 
     fun logRequestWithWrapping(request: HttpServletRequest): ContentCachingRequestWrapper {
         val wrappedRequest = ContentCachingRequestWrapper(request)
-        val requestBody = String(wrappedRequest.contentAsByteArray, Charset.forName(request.characterEncoding))
+        val requestBody = if (isNull(request.characterEncoding)) {
+            LOGGER.warn { "Request character encoding is null, using default UTF-8 for logging." }
+            String(wrappedRequest.contentAsByteArray, Charset.defaultCharset())
+        } else {
+            String(wrappedRequest.contentAsByteArray, Charset.forName(request.characterEncoding))
+        }
 
-        val headersJson = filterInterestedHeaders(request)
-        val cookiesJson = filterInterestedCookies(request)
+        val headersJson = getInterestedHeaders(request)
+        val cookiesJson = getInterestedCookies(request)
 
         LOGGER.info(
             "[{}] {} with interested headers {}, cookies {}, body [{}]",
@@ -57,12 +66,12 @@ class HttpServletLoggingService {
         return wrappedRequest
     }
 
-    private fun filterInterestedCookies(request: HttpServletRequest): String? {
+    private fun getInterestedCookies(request: HttpServletRequest): String? {
         val requestCookies = if (isNull(request.cookies)) {
             emptyList()
         } else {
             Arrays.stream(request.cookies)
-                .filter { cookie -> !cookiesLoggingBackList.contains(cookie.name) }
+                .filter { cookie -> filterCookieIfEnabled(cookie) }
                 .map { cookie -> AbstractMap.SimpleEntry(cookie.name, cookie.value) }
                 .toList()
         }
@@ -70,12 +79,18 @@ class HttpServletLoggingService {
         return cookiesJson
     }
 
-    private fun filterInterestedHeaders(request: HttpServletRequest): String? {
+    private fun filterCookieIfEnabled(cookie: Cookie) =
+        !cookiesLoggingBackList.contains(cookie.name) || !minimisedHttpServletLogging
+
+    private fun getInterestedHeaders(request: HttpServletRequest): String? {
         val requestHeaders = Collections.list(request.headerNames).stream()
-            .filter { headerName -> !headerLoggingBackList.contains(headerName) }
+            .filter { headerName -> filterHeaderIfEnabled(headerName) }
             .map { headerName -> AbstractMap.SimpleEntry(headerName, request.getHeader(headerName)) }
             .toList()
         val headersJson = objectMapper.writeValueAsString(requestHeaders)
         return headersJson
     }
+
+    private fun filterHeaderIfEnabled(headerName: String) =
+        !headerLoggingBackList.contains(headerName) || !minimisedHttpServletLogging
 }

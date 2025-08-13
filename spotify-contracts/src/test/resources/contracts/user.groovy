@@ -2,7 +2,6 @@ package contracts
 
 import org.springframework.cloud.contract.spec.Contract
 
-// NOT USED
 Contract.make {
     description "should return user"
 
@@ -17,11 +16,13 @@ Contract.make {
             contentType applicationJson()
         }
         body (
-            id: "12345",
-            displayName: "John Doe",
+            id: "3126nx54y24ryqyza3qxcchi4wry",
+            display_name: "TestUser",
             images: [
                 [
-                    url: "https://example.com/image.jpg"
+                    url: "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
+                    height: "300",
+                    width: "300"
                 ]
             ]
         )

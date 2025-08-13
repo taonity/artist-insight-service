@@ -34,6 +34,17 @@ spring:
 openai:
   api-key: ${OPENAI_API_KEY}
 
+app:
+  default-success-url: /
+  cors-allowed-origins: http://localhost:8100
+  minimised-http-servlet-logging: false
+  initial-gpt-usages: 10
+
 logging:
   level:
+#    root: DEBUG
     net.ttddyy.dsproxy.listener: DEBUG
+
+#logging:
+#  level:
+#    root: DEBUG

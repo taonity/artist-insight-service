@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.mvc.security
 
 import jakarta.servlet.DispatcherType
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -27,7 +28,9 @@ import java.util.*
 class SecurityConfig(
     private val oAuth2UserPersistenceService: OAuth2UserPersistenceService,
     private val loggingFilter: LoggingFilter,
-    private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler
+    private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
+    @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
+    @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String
 ) {
 
     @Bean
@@ -54,7 +57,7 @@ class SecurityConfig(
                 o.userInfoEndpoint { u ->
                     u.userService(oAuth2UserPersistenceService)
                 }
-                    .defaultSuccessUrl("http://localhost:3000", true)
+                    .defaultSuccessUrl(defaultSuccessUrl, true)
             }
             .oauth2Client(Customizer.withDefaults())
             .cors { }
@@ -66,7 +69,7 @@ class SecurityConfig(
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowCredentials = true
-        configuration.allowedOrigins = listOf("http://localhost:3000")
+        configuration.allowedOrigins = listOf(corsAllowedOrigins)
         configuration.allowedMethods = listOf("*")
         configuration.allowedHeaders = listOf("*")
         val source = UrlBasedCorsConfigurationSource()

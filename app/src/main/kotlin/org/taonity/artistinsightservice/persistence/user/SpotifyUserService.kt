@@ -1,12 +1,16 @@
 package org.taonity.artistinsightservice.persistence.user
 
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
 import java.util.Objects.isNull
 
 @Service
-class SpotifyUserService(private val spotifyUserRepository: SpotifyUserRepository) {
+class SpotifyUserService(
+    private val spotifyUserRepository: SpotifyUserRepository,
+    @Value("\${app.initial-gpt-usages}") private val initialGptUsages: Int
+) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
     }
@@ -28,7 +32,7 @@ class SpotifyUserService(private val spotifyUserRepository: SpotifyUserRepositor
                 spotifyUserPrincipal.getSpotifyId(),
                 spotifyUserPrincipal.getDisplayName(),
                 tokenValue,
-                200
+                initialGptUsages
             )
         }
 
