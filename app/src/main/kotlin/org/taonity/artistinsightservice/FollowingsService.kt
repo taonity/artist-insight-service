@@ -2,6 +2,7 @@ package org.taonity.artistinsightservice
 
 import jakarta.validation.Validator
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver.clientRegistrationId
 import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.stereotype.Service
@@ -11,10 +12,10 @@ import org.taonity.artistinsightservice.mvc.EnrichableArtistObject
 import org.taonity.artistinsightservice.mvc.FollowingsResponse
 import org.taonity.artistinsightservice.mvc.SpotifyResponse
 import org.taonity.artistinsightservice.openai.OpenAIService
-import org.taonity.artistinsightservice.persistence.user.SpotifyUserService
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreService
 import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsService
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserEntity
+import org.taonity.artistinsightservice.persistence.user.SpotifyUserService
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.PagingArtistObject
 import java.util.ArrayList
@@ -26,7 +27,9 @@ class FollowingsService(
     private val spotifyRestClient: RestClient,
     private val openAIService: OpenAIService,
     private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
-    private val validator: Validator
+    private val validator: Validator,
+    @Value("\${spotify.api-base-url}")
+    private val spotifyApiBaseUrl: String,
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -110,7 +113,7 @@ class FollowingsService(
 
     private fun fetchAllPages(fetchPage: (String) -> PagingArtistObject): List<ArtistObject> {
         val allItems: MutableList<ArtistObject> = ArrayList()
-        var url: String? = "https://api.spotify.com/v1/me/following?type=artist"
+        var url: String? = "$spotifyApiBaseUrl/v1/me/following?type=artist"
 
         while (url != null) {
             val page: PagingArtistObject = fetchPage(url)

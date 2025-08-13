@@ -41,6 +41,9 @@ app:
   minimised-http-servlet-logging: false
   initial-gpt-usages: 10
 
+spotify:
+  api-base-url: http://localhost:8100
+
 logging:
   level:
 #    root: DEBUG
