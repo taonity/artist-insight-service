@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/artist_insight_service
+    username: d
+    password: d
+  flyway:
+    enabled: false

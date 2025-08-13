@@ -3,7 +3,7 @@ package contracts
 import org.springframework.cloud.contract.spec.Contract
 
 Contract.make {
-    description "should return token"
+    description "should exchange authorization code for access token"
 
     request {
         url "/api/token"

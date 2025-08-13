@@ -3,7 +3,7 @@ package contracts
 import org.springframework.cloud.contract.spec.Contract
 
 Contract.make {
-    description "should return user"
+    description "should return configuration information about OpenID Connect Identity Provider (IdP)"
 
     request {
         url "/.well-known/openid-configuration"
@@ -15,19 +15,16 @@ Contract.make {
         headers {
             contentType applicationJson()
         }
+
+        // see https://accounts.spotify.com/.well-known/openid-configuration
         body (
             issuer                               : "http://localhost:8100",
-            authorization_endpoint               : "http://localhost:8100/authorize",
+            authorization_endpoint               : "http://localhost:8100/oauth2/v2/auth",
             token_endpoint                       : "http://localhost:8100/api/token",
             userinfo_endpoint                    : "http://localhost:8100/v1/me",
-            jwks_uri                             : "http://localhost:8100/.well-known/jwks.json",
-            response_types_supported             : ["code"],
-            subject_types_supported              : ["public"],
-            id_token_signing_alg_values_supported: ["RS256"],
-            scopes_supported                     : [
-                    "user-read-private",
-                    "user-read-email"
-            ]
+            response_types_supported             : ["code", "none"],
+            subject_types_supported              : ["pairwise"],
+            jwks_uri                             : "https://accounts.spotify.com/oidc/certs/v1",
         )
     }
 }

@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets
     ],
     stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
-@Sql("classpath:sql/test-data.sql")
+//@Sql("classpath:sql/test-data.sql")
 class FollowingsControllerTest {
 
     @Autowired
