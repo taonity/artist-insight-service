@@ -9,8 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spotify-contracts</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>openai-contracts</artifactId>
 
     <properties>
     </properties>

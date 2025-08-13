@@ -19,6 +19,7 @@
         <module>spotify-client</module>
         <module>app</module>
         <module>spotify-contracts</module>
+        <module>openai-contracts</module>
     </modules>
 
     <properties>
@@ -28,6 +29,7 @@
 
         <kotlin.version>2.0.0</kotlin.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-cloud-contract.version>5.0.0-M1</spring-cloud-contract.version>
     </properties>
 
     <repositories>

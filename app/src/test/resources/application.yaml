@@ -32,7 +32,8 @@ spring:
             userNameAttribute: display_name
 
 openai:
-  api-key: ${OPENAI_API_KEY}
+  api-key: "mock-api-key"
+  base-url: http://localhost:8101
 
 app:
   default-success-url: /
