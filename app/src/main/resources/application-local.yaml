@@ -2,18 +2,6 @@ server:
   port: 9016
 
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
-  datasource:
-    url: jdbc:h2:mem:db
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
-  flyway:
-    locations:
-      - filesystem:../templates/docker/flyway/sql/tables
-
   security:
     oauth2:
       client:
@@ -32,22 +20,19 @@ spring:
 
 openai:
   api-key: "mock-api-key"
-  base-url: http://localhost:8101
+  base-url: http://localhost:8101/v1
 
 app:
-  default-success-url: /
-  cors-allowed-origins: http://localhost:8100
+  default-success-url: http://localhost:3000
+  cors-allowed-origins: http://localhost:3000
   minimised-http-servlet-logging: false
   initial-gpt-usages: 10
 
 spotify:
   api-base-url: http://localhost:8100
 
-logging:
-  level:
-#    root: DEBUG
-    net.ttddyy.dsproxy.listener: DEBUG
-
-#logging:
-#  level:
-#    root: DEBUG
+stubrunner:
+  stubs-mode: LOCAL
+  ids:
+    - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100
+    - org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101

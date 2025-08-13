@@ -113,7 +113,7 @@ class FollowingsService(
 
     private fun fetchAllPages(fetchPage: (String) -> PagingArtistObject): List<ArtistObject> {
         val allItems: MutableList<ArtistObject> = ArrayList()
-        var url: String? = "$spotifyApiBaseUrl/v1/me/following?type=artist"
+        var url: String? = "$spotifyApiBaseUrl/me/following?type=artist"
 
         while (url != null) {
             val page: PagingArtistObject = fetchPage(url)
