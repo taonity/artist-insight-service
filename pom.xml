@@ -12,12 +12,12 @@
     </parent>
 
     <groupId>org.taonity</groupId>
-    <artifactId>artist-insight-service</artifactId>
+    <artifactId>artist-insight</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>spotify-client</module>
-        <module>app</module>
+        <module>artist-insight-service</module>
         <module>spotify-contracts</module>
         <module>openai-contracts</module>
     </modules>

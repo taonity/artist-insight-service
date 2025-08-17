@@ -37,7 +37,7 @@ app:
   initial-gpt-usages: 10
 
 spotify:
-  api-base-url: https://api.spotify.com
+  api-base-url: https://api.spotify.com/v1
 
 
 #logging:
