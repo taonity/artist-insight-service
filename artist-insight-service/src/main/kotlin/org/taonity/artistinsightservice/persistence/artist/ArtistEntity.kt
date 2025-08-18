@@ -6,12 +6,13 @@ import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artist
 
 @Entity
 @Table(name = "artist")
-data class ArtistEntity(
+class ArtistEntity(
     @Id
     val artistId: String,
 
     val artistName: String,
 
-    @OneToMany(mappedBy = "artist", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val genres: Set<ArtistGenreEntity> = emptySet(),
+    // TODO: something is wrong here
+    @OneToMany(mappedBy = "artist")
+    val genres: List<ArtistGenreEntity> = emptyList()
 )

@@ -25,15 +25,17 @@ const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
         const artist = enrichableArtistObject.artistObject;
         return (
           <li key={artist.id} className="artist-item">
-            {artist.images && artist.images.length > 0 && (
-              <Image
-                src={artist.images[0].url}
+            <Image
+                src={
+                  artist.images && artist.images.length > 0
+                    ? artist.images[0].url
+                    : "/default-artist-pfp.jpeg"
+                }
                 alt={artist.name}
                 width={48}
                 height={48}
                 className="artist-image"
               />
-            )}
             <div className="artist-details">
               <strong>{artist.name}</strong>
               {artist.genres && artist.genres.length > 0 && (

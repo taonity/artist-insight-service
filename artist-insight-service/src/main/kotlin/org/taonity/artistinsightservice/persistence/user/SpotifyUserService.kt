@@ -9,7 +9,7 @@ import java.util.Objects.isNull
 @Service
 class SpotifyUserService(
     private val spotifyUserRepository: SpotifyUserRepository,
-    @Value("\${app.initial-gpt-usages}") private val initialGptUsages: Int
+    @Value("\${app.initial-user-gpt-usages}") private val initialUserGptUsages: Int
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -33,7 +33,7 @@ class SpotifyUserService(
                 spotifyUserPrincipal.getSpotifyId(),
                 spotifyUserPrincipal.getDisplayName(),
                 maskedTokenValue,
-                initialGptUsages
+                initialUserGptUsages
             )
         } else {
             LOGGER.info { "Existing user updated" }
@@ -52,18 +52,5 @@ class SpotifyUserService(
             sb.setCharAt(i, '*')
         }
         return sb.toString()
-    }
-
-    fun decrementGptUsagesIfLeft(spotifyId: String): Boolean {
-        val spotifyUser = spotifyUserRepository.findBySpotifyId(spotifyId)
-        if (isNull(spotifyUser)) {
-            throw RuntimeException("Failed to manage GPT usages, user with spotifyId [$spotifyId] not found in DB")
-        }
-        if (spotifyUser!!.gptUsagesLeft > 0) {
-            spotifyUser.gptUsagesLeft--
-            spotifyUserRepository.save(spotifyUser)
-            return true
-        }
-        return false
     }
 }

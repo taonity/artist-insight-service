@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
+import AdvisoryCards, { Advisory } from '../components/Advisary'
 import User from '../models/User'
 import keysToCamel from '../utils/utils'
 import Image from 'next/image'
@@ -11,6 +12,7 @@ const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
+  const [advisories, setAdvisories] = useState<Advisory[]>([])
 
     const fetchUser = async () => {
       const res = await fetch(`${API_BASE}/user`, { credentials: 'include' })
@@ -33,6 +35,13 @@ export default function Home() {
   }, [])
 
 
+  useEffect(() => {
+    if (user) {
+      loadFollowings(false)
+    }
+  }, [user])
+
+
   // Helper to get cookie value
   function getCookie(name: string) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
@@ -52,12 +61,13 @@ export default function Home() {
   const loadFollowings = async (enriched: boolean) => {
     const endpoint = enriched
       ? `${API_BASE}/followings/enriched`
-      : `${API_BASE}/followings/raw`
+      : `${API_BASE}/followings`
     const res = await fetch(endpoint, { credentials: 'include' })
     if (res.ok) {
-      const data = await res.json()
-      setArtists(data.artists)
-      fetchUser()
+      const jsonResponse = await res.json()
+      setArtists(jsonResponse.artists)
+      setAdvisories(jsonResponse.advisories)
+      // fetchUser() removed to prevent infinite loop
     }
   }
 
@@ -81,36 +91,37 @@ export default function Home() {
     <div>
       <div className="header">
         <div className="user-info">
-          {user.privateUserObject.images && user.privateUserObject.images.length > 0 && (
-            <Image
-                src={user.privateUserObject.images[0].url}
-                alt={user.privateUserObject.displayName}
-                width={48}
-                height={48}
-                className="artist-image"
-              />
-          )}
+          <Image
+            src={
+              user.privateUserObject.images && user.privateUserObject.images.length > 0
+                ? user.privateUserObject.images[0].url
+                : "/default-user-pfp.png"
+            }
+            alt={user.privateUserObject.displayName}
+            width={48}
+            height={48}
+            className="artist-image"
+          />
           <div>Logged in as {user.privateUserObject.displayName}</div>
         </div>
         
         <button onClick={logout}>Logout</button>
       </div>
       <div style={{ padding: '16px' }}>
-        <button onClick={() => loadFollowings(false)}>Load Followings</button>
-        <button onClick={() => loadFollowings(true)}>
-          Load Followings with Genre Enrichement
-        </button>
         <span style={{ marginLeft: '16px' }}>
           GPT Usages Left: {user.gptUsagesLeft}
         </span>
         {enrichableArtistObjects.length > 0 && (
           <div style={{ marginTop: '16px' }}>
+            <button onClick={() => loadFollowings(true)}>
+              Enrich followings
+            </button>
             <CSVLink data={csvData} filename={"exported-artists.csv"} className="btn btn-primary">
               Download CSV
             </CSVLink>
           </div>  
         )}
-    
+        <AdvisoryCards advisories={advisories} />
         <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
       </div>
     </div>

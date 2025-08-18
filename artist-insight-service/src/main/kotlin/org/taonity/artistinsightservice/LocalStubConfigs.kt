@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 @EnableStubRunnerServer
-@Profile("local")
+@Profile("stub-openai | stub-spotify")
 class LocalStubConfigs 

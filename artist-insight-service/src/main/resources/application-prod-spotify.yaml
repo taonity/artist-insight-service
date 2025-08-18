@@ -1,15 +1,4 @@
-server:
-  port: 9016
-
-postgres-url: jdbc:postgresql://${POSTGRES_ADDRESS:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:artist_insight_service}
-
 spring:
-  datasource:
-    url: ${postgres-url}
-    username: ${POSTGRES_APP_USER:d}
-    password: ${POSTGRES_APP_PASSWORD:d}
-  flyway:
-    enabled: false
   security:
     oauth2:
       client:
@@ -26,20 +15,9 @@ spring:
             user-info-uri: https://api.spotify.com/v1/me
             userNameAttribute: display_name
 
-openai:
-  api-key: ${OPENAI_API_KEY}
-  base-url: https://api.openai.com/v1
-
 app:
   default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
   cors-allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
-  minimised-http-servlet-logging: true
-  initial-gpt-usages: 10
 
 spotify:
   api-base-url: https://api.spotify.com/v1
-
-
-#logging:
-#  level:
-#    root: TRACE

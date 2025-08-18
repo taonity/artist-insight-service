@@ -9,7 +9,6 @@ import org.taonity.artistinsightservice.persistence.genre.ArtistGenreEntity
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreId
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreRepository
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserRepository
-import org.taonity.spotify.model.ArtistObject
 
 @Service
 class SpotifyUserEnrichedArtistsService(
@@ -48,4 +47,5 @@ class SpotifyUserEnrichedArtistsService(
             }
         }
     }
+
 }

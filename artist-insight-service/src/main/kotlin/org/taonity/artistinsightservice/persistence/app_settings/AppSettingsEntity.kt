@@ -9,5 +9,5 @@ import jakarta.persistence.Table
 data class AppSettingsEntity(
     @Id
     val id: Int = 0,
-    val globalGptUsagesLeft: Int
+    var globalGptUsagesLeft: Int
 )

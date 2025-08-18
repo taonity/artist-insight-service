@@ -6,7 +6,7 @@ Contract.make {
     description "should return chat completions"
 
     request {
-        url "/chat/completions"
+        url "/v1/chat/completions"
         method POST()
     }
 
