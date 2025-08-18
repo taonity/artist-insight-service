@@ -44,7 +44,7 @@ class FollowingsService(
     fun fetchGenreEnrichedFollowings(spotifyId: String): FollowingsResponse {
         val safeFollowings: List<SafeArtistObject> = safeFetchFollowing()
 
-        val spotifyUser = spotifyUserService.findBySpotifyId(spotifyId)
+        val spotifyUser = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
         val gptUsagesLeft = spotifyUser.gptUsagesLeft
         if (gptUsagesLeft == 0) {
             LOGGER.info { "Spotify user with id $spotifyId have no GPT usages left" }

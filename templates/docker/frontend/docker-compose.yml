@@ -1,0 +1,14 @@
+version: '2.4'
+
+services:
+  frontend:
+    image: generaltao725/artist-insight-frontend:latest
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: app:9016
+    ports:
+      - 127.0.0.1:3000:3000
+#    healthcheck:
+#      test: curl localhost:9016/actuator/health || exit 1
+#      interval: 10s
+#      timeout: 10s
+#      retries: 100

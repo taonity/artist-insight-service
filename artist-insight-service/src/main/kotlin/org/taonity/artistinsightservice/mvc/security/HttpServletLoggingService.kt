@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.mvc.security
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import jakarta.annotation.PostConstruct
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
@@ -41,10 +42,29 @@ class HttpServletLoggingService(
             "origin"
         )
         private val cookiesLoggingBackList = emptyList<String>()
+        private val endpointBlacklist = listOf(
+            "/actuator/health"
+        )
+    }
+
+    @PostConstruct
+    private fun logMinimisedLoggingModeIfEnabled() {
+        if (minimisedHttpServletLogging) {
+            LOGGER.info { "Minimised logging mode enabled - app.minimised-http-servlet-logging=true" }
+            LOGGER.info { "Following endpoints will be ignored: $endpointBlacklist" }
+            LOGGER.info { "Following headers will be ignored: $headerLoggingBackList" }
+            LOGGER.info { "Following cookies will be ignored: $cookiesLoggingBackList" }
+        }
     }
 
     fun logRequestWithWrapping(request: HttpServletRequest): ContentCachingRequestWrapper {
+
         val wrappedRequest = ContentCachingRequestWrapper(request)
+
+        if (filterEndpointIfEnabled(request)) {
+            return wrappedRequest
+        }
+
         val requestBody = if (isNull(request.characterEncoding)) {
             LOGGER.warn { "Request character encoding is null, using default UTF-8 for logging." }
             String(wrappedRequest.contentAsByteArray, Charset.defaultCharset())
@@ -56,7 +76,7 @@ class HttpServletLoggingService(
         val cookiesJson = getInterestedCookies(request)
 
         LOGGER.info(
-            "[{}] {} with interested headers {}, cookies {}, body [{}]",
+            "[{}] {} with headers {}, cookies {}, body [{}]",
             request.method,
             request.requestURI,
             headersJson,
@@ -65,6 +85,9 @@ class HttpServletLoggingService(
         )
         return wrappedRequest
     }
+
+    private fun filterEndpointIfEnabled(request: HttpServletRequest) =
+        endpointBlacklist.contains(request.requestURI) || !minimisedHttpServletLogging
 
     private fun getInterestedCookies(request: HttpServletRequest): String? {
         val requestCookies = if (isNull(request.cookies)) {

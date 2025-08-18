@@ -1,7 +1,6 @@
 version: '2.4'
 
 services:
-  # APP
   db:
     extends:
       file: db/docker-compose.yml
@@ -24,6 +23,14 @@ services:
     depends_on:
       flyway:
         condition: service_completed_successfully
+
+  frontend:
+    extends:
+      file: frontend/docker-compose.yml
+      service: frontend
+    depends_on:
+      app:
+        condition: service_healthy
 
 volumes:
   artist-insight-service-volume-db:

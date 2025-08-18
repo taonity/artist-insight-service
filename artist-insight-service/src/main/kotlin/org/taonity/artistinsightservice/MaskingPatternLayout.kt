@@ -28,11 +28,29 @@ class MaskingPatternLayout : PatternLayout() {
         val matcher: Matcher = multilinePattern!!.matcher(sb)
         while (matcher.find()) {
             IntStream.rangeClosed(1, matcher.groupCount()).forEach { group ->
-                if (matcher.group(group) != null) {
-                    IntStream.range(matcher.start(group), matcher.end(group)).forEach { i -> sb.setCharAt(i, '*') }
+                val matched = matcher.group(group)
+                if (matched != null) {
+                    val start = matcher.start(group)
+                    val end = matcher.end(group)
+                    maskSecretAtPosition(end, start, sb)
                 }
             }
         }
         return sb.toString()
+    }
+
+    private fun maskSecretAtPosition(end: Int, start: Int, sb: StringBuilder) {
+        val length = end - start
+        if (length > 8) {
+            // Mask all except first and last two characters
+            for (i in start + 2 until end - 2) {
+                sb.setCharAt(i, '*')
+            }
+        } else {
+            // Mask all characters
+            for (i in start until end) {
+                sb.setCharAt(i, '*')
+            }
+        }
     }
 }

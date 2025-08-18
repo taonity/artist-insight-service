@@ -10,9 +10,7 @@ data class SpotifyUserEntity(
     var spotifyId: String,
     var displayName: String,
     var tokenValue: String,
-    var gptUsagesLeft: Int,
-//    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-//    val enrichedArtists: Set<SpotifyUserEnrichedArtistsEntity> = emptySet()
+    var gptUsagesLeft: Int
 ) {
     override fun toString(): String {
         return "SpotifyUser(spotifyId='$spotifyId', displayName='$displayName', tokenValue='$tokenValue', gptUsagesLeft=$gptUsagesLeft)"

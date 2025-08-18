@@ -331,6 +331,9 @@
                             <container>
                                 <creationTime>${maven.build.timestamp}</creationTime>
                                 <workingDirectory>/${project.artifactId}</workingDirectory>
+                                <args>
+                                    <arg>--spring.profiles.active=prod</arg>
+                                </args>
                             </container>
                             <extraDirectories>
                                 <paths>

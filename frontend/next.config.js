@@ -12,6 +12,7 @@ const nextConfig = {
         hostname: 'i.scdn.co'
       }
     ]
-  }
+  },
+  output: 'standalone'
 }
 module.exports = nextConfig

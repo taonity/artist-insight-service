@@ -20,7 +20,7 @@ class UserController(
     @GetMapping("/user")
     fun user(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<SpotifyUserDto> {
         LOGGER.info { "Handling /user endpoint" }
-        val spotifyUserEntity: SpotifyUserEntity = spotifyUserService.findBySpotifyId(principal.getSpotifyId())
+        val spotifyUserEntity: SpotifyUserEntity = spotifyUserService.findBySpotifyIdOrThrow(principal.getSpotifyId())
         return ResponseEntity.ok(SpotifyUserDto(principal.privateUserObject, spotifyUserEntity.gptUsagesLeft))
     }
 }
