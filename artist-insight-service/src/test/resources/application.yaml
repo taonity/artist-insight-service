@@ -38,7 +38,8 @@ app:
   default-success-url: /
   cors-allowed-origins: http://localhost:8100
   minimised-http-servlet-logging: false
-  initial-gpt-usages: 10
+  initial-user-gpt-usages: 10
+  initial-global-gpt-usages: 50
 
 spotify:
   api-base-url: http://localhost:8100/v1
