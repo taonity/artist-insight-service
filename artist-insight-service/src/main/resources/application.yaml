@@ -1,0 +1,11 @@
+server:
+  port: 9016
+
+app:
+  minimised-http-servlet-logging: true
+  initial-user-gpt-usages: 10
+  initial-global-gpt-usages: 50
+
+#logging:
+#  level:
+#    root: TRACE

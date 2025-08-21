@@ -1,6 +1,3 @@
-server:
-  port: 9016
-
 spring:
   security:
     oauth2:
@@ -18,21 +15,18 @@ spring:
             user-info-uri: http://localhost:8100/v1/me
             userNameAttribute: display_name
 
-openai:
-  api-key: "mock-api-key"
-  base-url: http://localhost:8101/v1
-
 app:
   default-success-url: http://localhost:3000
   cors-allowed-origins: http://localhost:3000
-  minimised-http-servlet-logging: false
-  initial-gpt-usages: 10
 
 spotify:
   api-base-url: http://localhost:8100/v1
 
 stubrunner:
   stubs-mode: LOCAL
-  ids:
-    - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100
-    - org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101
+
+
+stub-spotify-mergeable:
+  stubrunner:
+    ids:
+      - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100
