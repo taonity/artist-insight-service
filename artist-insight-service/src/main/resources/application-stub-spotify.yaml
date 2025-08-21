@@ -24,5 +24,9 @@ spotify:
 
 stubrunner:
   stubs-mode: LOCAL
-  ids:
-    - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100
+
+
+stub-spotify-mergeable:
+  stubrunner:
+    ids:
+      - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100

@@ -4,5 +4,8 @@ openai:
 
 stubrunner:
   stubs-mode: LOCAL
-  ids:
-    - org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101
+      
+stub-openai-mergeable:
+  stubrunner:
+    ids:
+      - org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101
