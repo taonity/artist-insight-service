@@ -81,15 +81,17 @@ export default function Home() {
     <div>
       <div className="header">
         <div className="user-info">
-          {user.privateUserObject.images && user.privateUserObject.images.length > 0 && (
-            <Image
-                src={user.privateUserObject.images[0].url}
-                alt={user.privateUserObject.displayName}
-                width={48}
-                height={48}
-                className="artist-image"
-              />
-          )}
+          <Image
+            src={
+              user.privateUserObject.images && user.privateUserObject.images.length > 0
+                ? user.privateUserObject.images[0].url
+                : "/default-user-pfp.png"
+            }
+            alt={user.privateUserObject.displayName}
+            width={48}
+            height={48}
+            className="artist-image"
+          />
           <div>Logged in as {user.privateUserObject.displayName}</div>
         </div>
         
