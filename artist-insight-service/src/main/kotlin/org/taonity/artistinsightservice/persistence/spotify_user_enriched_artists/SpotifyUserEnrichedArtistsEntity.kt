@@ -8,7 +8,7 @@ import java.io.Serializable
 @Entity
 @Table(name = "spotify_user_enriched_artists")
 @IdClass(SpotifyUserEnrichedArtistsId::class)
-data class SpotifyUserEnrichedArtistsEntity(
+class SpotifyUserEnrichedArtistsEntity(
     @Id
     @ManyToOne
     @JoinColumn(name = "spotify_id", nullable = false)

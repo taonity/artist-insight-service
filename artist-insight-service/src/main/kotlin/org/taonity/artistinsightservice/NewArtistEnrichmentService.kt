@@ -8,22 +8,22 @@ import org.taonity.artistinsightservice.persistence.genre.ArtistGenreService
 import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsService
 
 @Service
-class ArtistEnrichmentService(
+class NewArtistEnrichmentService(
     private val artistGenreService: ArtistGenreService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
 ) {
-    fun enrichArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
+    fun enrichNewArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
         return rawArtists.map {
-            ArtistEnricher(artistGenreService, gptUsageService, openAIService, spotifyUserEnrichedArtistsService,
+            NewArtistEnricher(artistGenreService, gptUsageService, openAIService, spotifyUserEnrichedArtistsService,
                 spotifyId, it
             ).enrichWithGenresIfPossible()
         }
     }
 }
 
-class ArtistEnricher(
+class NewArtistEnricher(
     private val artistGenreService: ArtistGenreService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
@@ -39,7 +39,7 @@ class ArtistEnricher(
 
     fun enrichWithGenresIfPossible(): EnrichableArtists {
         if (rawArtist.genres.isNotEmpty()) {
-            return EnrichableArtists(rawArtist, false)
+            return EnrichableArtists(rawArtist.copy(), false)
         }
         
         val artistGenresAndUserLinkDto = artistGenreService.getGenresAndUserStatus(artistId, spotifyId)
@@ -64,6 +64,7 @@ class ArtistEnricher(
 
     private fun enrichUsingNewGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
         val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
+        spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
         LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
         return EnrichableArtists(enrichedArtist, true)
     }
@@ -91,14 +92,10 @@ class ArtistEnricher(
                 notEnoughGlobalGptUsages = globalUsageConsumed
             )
         }
-        rawArtist.genres = provideGenresWithOpenAIAndSaveInDb(rawArtist, spotifyId)
-        LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${rawArtist.genres} by OpenAI call" }
-        return EnrichableArtists(rawArtist)
-    }
-
-    private fun provideGenresWithOpenAIAndSaveInDb(artistObject: SafeArtistObject, spotifyId: String): List<String> {
-        val openAIProvidedGenres = openAIService.provideGenres(artistObject.name)
-        spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(artistObject, openAIProvidedGenres)))
-        return openAIProvidedGenres
+        val openAIProvidedGenres = openAIService.provideGenres(rawArtist.name)
+        val enrichedArtist = rawArtist.copy(genres = openAIProvidedGenres)
+        spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, openAIProvidedGenres)))
+        LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by OpenAI call" }
+        return EnrichableArtists(enrichedArtist)
     }
 }

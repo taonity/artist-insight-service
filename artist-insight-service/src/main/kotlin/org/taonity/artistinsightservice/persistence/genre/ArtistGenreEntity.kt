@@ -7,7 +7,7 @@ import java.io.Serializable
 @Entity
 @Table(name = "artist_genres")
 @IdClass(ArtistGenreId::class)
-data class ArtistGenreEntity(
+class ArtistGenreEntity(
     @Id
     @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)

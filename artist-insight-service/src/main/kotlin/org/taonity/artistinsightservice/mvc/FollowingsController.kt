@@ -9,15 +9,15 @@ import org.taonity.artistinsightservice.FollowingsService
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
 
 @RestController
-class SpotifyFacadeController(private val followingsService: FollowingsService) {
+class FollowingsController(private val followingsService: FollowingsService) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
     }
 
     @GetMapping("/followings/raw")
-    fun followings(): ResponseEntity<FollowingsResponse> {
+    fun followings(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<FollowingsResponse> {
         LOGGER.info { "Handling /followings/raw endpoint" }
-        val followingsResponse: FollowingsResponse = followingsService.fetchRawFollowings()
+        val followingsResponse: FollowingsResponse = followingsService.fetchRawFollowings(principal.getSpotifyId())
         return ResponseEntity.ok(followingsResponse)
     }
 

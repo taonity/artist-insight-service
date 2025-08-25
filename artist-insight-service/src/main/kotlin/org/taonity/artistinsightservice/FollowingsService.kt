@@ -19,7 +19,8 @@ import java.util.ArrayList
 class FollowingsService(
     private val spotifyRestClient: RestClient,
     private val validator: Validator,
-    private val artistEnrichmentService: ArtistEnrichmentService,
+    private val newArtistEnrichmentService: NewArtistEnrichmentService,
+    private val userArtistEnrichmentService: UserArtistEnrichmentService,
     @Value("\${spotify.api-base-url}")
     private val spotifyApiBaseUrl: String,
 ) {
@@ -27,17 +28,15 @@ class FollowingsService(
         private val LOGGER = KotlinLogging.logger {}
     }
 
-    fun fetchRawFollowings(): FollowingsResponse {
-        val notEnrichedFollowings = safeFetchFollowing()
-            .map { EnrichableArtists(it, false) }
-        return FollowingsResponse(artists = notEnrichedFollowings)
+    fun fetchRawFollowings(spotifyId: String): FollowingsResponse {
+        val safeFollowings = safeFetchFollowing()
+        val userFollowings = userArtistEnrichmentService.enrichUserArtists(spotifyId, safeFollowings)
+        return FollowingsResponse(artists = userFollowings)
     }
 
     fun fetchGenreEnrichedFollowings(spotifyId: String): FollowingsResponse {
         val safeFollowings: List<SafeArtistObject> = safeFetchFollowing()
-
-        val enrichedFollowings = artistEnrichmentService.enrichArtists(spotifyId, safeFollowings)
-
+        val enrichedFollowings = newArtistEnrichmentService.enrichNewArtists(spotifyId, safeFollowings)
         return FollowingsResponse(enrichedFollowings)
     }
 
