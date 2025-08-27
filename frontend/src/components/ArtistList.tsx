@@ -22,20 +22,20 @@ const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
   return (
     <ul className="artist-list">
       {enrichableArtistObjects.map((enrichableArtistObject) => {
-        const artist = enrichableArtistObject.artistObject;
+        const artist = enrichableArtistObject.artistObject
         return (
           <li key={artist.id} className="artist-item">
             <Image
-                src={
-                  artist.images && artist.images.length > 0
-                    ? artist.images[0].url
-                    : "/default-artist-pfp.jpeg"
-                }
-                alt={artist.name}
-                width={48}
-                height={48}
-                className="artist-image"
-              />
+              src={
+                artist.images && artist.images.length > 0
+                  ? artist.images[0].url
+                  : '/default-artist-pfp.jpeg'
+              }
+              alt={artist.name}
+              width={48}
+              height={48}
+              className="artist-image"
+            />
             <div className="artist-details">
               <strong>{artist.name}</strong>
               {artist.genres && artist.genres.length > 0 && (
@@ -43,7 +43,7 @@ const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
               )}
             </div>
           </li>
-        );
+        )
       })}
     </ul>
   )

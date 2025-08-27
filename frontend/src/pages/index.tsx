@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
-import AdvisoryCards, { Advisory } from '../components/Advisary'
+import AdvisoryCards, { Advisory } from '../components/AdvisoryCards'
 import User from '../models/User'
 import keysToCamel from '../utils/utils'
 import Image from 'next/image'
-import { CSVLink, CSVDownload } from "react-csv";
-
+import { CSVLink } from 'react-csv'
+import GptUsageBlock from '../components/GptUsageBlock'
+import Loading from '../components/Loading'
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
@@ -13,27 +14,26 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
   const [advisories, setAdvisories] = useState<Advisory[]>([])
+  const [loading, setLoading] = useState(false)
 
-    const fetchUser = async () => {
-      const res = await fetch(`${API_BASE}/user`, { credentials: 'include' })
-      if (res.status === 401) {
-        window.location.href = '/login'
-        return
-      }
-      if (res.ok) {
-        const snakeCasedData = await res.json()
-        const camelCasedData = keysToCamel(snakeCasedData)
-        setUser(camelCasedData)
-      } else {
-        window.location.href = '/login'
-      }
+  const fetchUser = async () => {
+    const res = await fetch(`${API_BASE}/user`, { credentials: 'include' })
+    if (res.status === 401) {
+      window.location.href = '/login'
+      return
     }
+    if (res.ok) {
+      const snakeCasedData = await res.json()
+      const camelCasedData = keysToCamel(snakeCasedData)
+      setUser(camelCasedData)
+    } else {
+      window.location.href = '/login'
+    }
+  }
 
-  // runs two times in development mode, but only once in production
   useEffect(() => {
     fetchUser()
   }, [])
-
 
   useEffect(() => {
     if (user) {
@@ -41,8 +41,6 @@ export default function Home() {
     }
   }, [user])
 
-
-  // Helper to get cookie value
   function getCookie(name: string) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
     return match ? decodeURIComponent(match[2]) : null
@@ -53,12 +51,13 @@ export default function Home() {
     await fetch(`${API_BASE}/logout`, {
       method: 'POST',
       credentials: 'include',
-      headers: xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}
+      headers: xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {},
     })
     window.location.href = '/login'
   }
 
   const loadFollowings = async (enriched: boolean) => {
+    setLoading(true)
     const endpoint = enriched
       ? `${API_BASE}/followings/enriched`
       : `${API_BASE}/followings`
@@ -67,25 +66,22 @@ export default function Home() {
       const jsonResponse = await res.json()
       setArtists(jsonResponse.artists)
       setAdvisories(jsonResponse.advisories)
-      // fetchUser() removed to prevent infinite loop
     }
+    setLoading(false)
   }
 
-  if (!user) return null
+  if (!user) return <Loading />
 
-  const csvData = [
-    ["name", "genre", "enriched"]
-  ];
-
+  const csvData = [['name', 'genre', 'enriched']]
   enrichableArtistObjects.forEach((enrichableArtistObject) => {
-    const artist = enrichableArtistObject.artistObject;
-    const enriched = enrichableArtistObject.genreEnriched ? "yes" : "no";
+    const artist = enrichableArtistObject.artistObject
+    const enriched = enrichableArtistObject.genreEnriched ? 'yes' : 'no'
     if (artist.genres) {
-      csvData.push([artist.name, artist.genres.join(", "), enriched]);
+      csvData.push([artist.name, artist.genres.join(', '), enriched])
     } else {
-      csvData.push([artist.name, "", enriched],);
-    }   
-  });
+      csvData.push([artist.name, '', enriched])
+    }
+  })
 
   return (
     <div>
@@ -95,7 +91,7 @@ export default function Home() {
             src={
               user.privateUserObject.images && user.privateUserObject.images.length > 0
                 ? user.privateUserObject.images[0].url
-                : "/default-user-pfp.png"
+                : '/default-user-pfp.png'
             }
             alt={user.privateUserObject.displayName}
             width={48}
@@ -104,25 +100,31 @@ export default function Home() {
           />
           <div>Logged in as {user.privateUserObject.displayName}</div>
         </div>
-        
+
         <button onClick={logout}>Logout</button>
       </div>
       <div style={{ padding: '16px' }}>
-        <span style={{ marginLeft: '16px' }}>
-          GPT Usages Left: {user.gptUsagesLeft}
-        </span>
+        <GptUsageBlock count={user.gptUsagesLeft} />
         {enrichableArtistObjects.length > 0 && (
-          <div style={{ marginTop: '16px' }}>
-            <button onClick={() => loadFollowings(true)}>
-              Enrich followings
+          <div className="actions">
+            <button onClick={() => loadFollowings(true)} disabled={loading}>
+              {loading ? 'Enriching…' : 'Enrich followings'}
             </button>
-            <CSVLink data={csvData} filename={"exported-artists.csv"} className="btn btn-primary">
+            <CSVLink
+              data={csvData}
+              filename={"exported-artists.csv"}
+              className="button"
+            >
               Download CSV
             </CSVLink>
-          </div>  
+          </div>
         )}
         <AdvisoryCards advisories={advisories} />
-        <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
+        {loading ? (
+          <Loading />
+        ) : (
+          <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
+        )}
       </div>
     </div>
   )

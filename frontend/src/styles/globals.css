@@ -7,8 +7,8 @@ body {
   min-height: 100vh;
 }
 
-button {
-  /* background-color: linear-gradient(90deg, #1db954 0%, #1ed760 100%); */
+button,
+a.button {
   background-color: #1db954;
   color: #191414;
   padding: 10px 20px;
@@ -20,11 +20,12 @@ button {
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s ease-in-out;
   box-shadow: 0 2px 8px rgba(30, 185, 84, 0.15);
+  text-decoration: none;
 }
 
-button:hover {
+button:hover,
+a.button:hover {
   background-color: #1ed760;
-  /* background-color: #083919; */
   color: #191414;
 }
 
@@ -98,4 +99,86 @@ button:hover {
   font-size: 1rem;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(164, 69, 255, 0.25);
+}
+
+.gpt-usage {
+  background: rgba(40, 40, 40, 0.8);
+  border-left: 4px solid #1db954;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.gpt-usage span {
+  color: #1db954;
+  font-weight: 700;
+}
+
+.actions {
+  margin-top: 16px;
+}
+
+.advisories {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.advisory-card {
+  position: relative;
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.advisory-card.info {
+  background: rgba(30, 185, 84, 0.15);
+  border-left: 4px solid #1db954;
+}
+
+.advisory-card.warning {
+  background: rgba(255, 221, 0, 0.15);
+  border-left: 4px solid #ffcc00;
+}
+
+.advisory-card.error {
+  background: rgba(255, 0, 0, 0.15);
+  border-left: 4px solid #ff5555;
+}
+
+.advisory-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 32px 0;
+  gap: 12px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #1db954;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
