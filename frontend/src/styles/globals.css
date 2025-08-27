@@ -160,25 +160,40 @@ a.button:hover {
   cursor: pointer;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 32px 0;
-  gap: 12px;
+.skeleton-circle,
+.skeleton-line {
+  background: #333;
+  animation: pulse 1.6s ease-in-out infinite;
 }
 
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid #1db954;
-  border-top-color: transparent;
+.skeleton-circle {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  margin-right: 18px;
+  border: none;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  margin-top: 6px;
+  width: 180px;
+}
+
+.skeleton-line.short {
+  width: 120px;
+  margin-top: 0;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
   }
 }

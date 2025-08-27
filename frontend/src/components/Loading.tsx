@@ -1,11 +1,22 @@
 import React from 'react'
 
-const Loading: React.FC = () => {
+interface Props {
+  items?: number
+}
+
+const Loading: React.FC<Props> = ({ items = 10 }) => {
   return (
-    <div className="loading">
-      <div className="spinner" />
-      <span>Loading...</span>
-    </div>
+    <ul className="artist-list">
+      {Array.from({ length: items }).map((_, idx) => (
+        <li key={idx} className="artist-item">
+          <div className="artist-image skeleton-circle" />
+          <div className="artist-details">
+            <div className="skeleton-line short" />
+            <div className="skeleton-line" />
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 

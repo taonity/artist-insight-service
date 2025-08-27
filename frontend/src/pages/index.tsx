@@ -121,7 +121,7 @@ export default function Home() {
         )}
         <AdvisoryCards advisories={advisories} />
         {loading ? (
-          <Loading />
+          <Loading items={enrichableArtistObjects.length || 10} />
         ) : (
           <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
         )}
