@@ -124,14 +124,26 @@ a.button:hover {
 .advisories {
   list-style: none;
   padding: 0;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 .advisory-card {
   position: relative;
-  padding: 16px 24px;
-  border-radius: 8px;
-  margin-bottom: 12px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.advisory-content strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.9rem;
+}
+
+.advisory-content p {
+  margin: 0;
 }
 
 .advisory-card.info {
@@ -151,12 +163,12 @@ a.button:hover {
 
 .advisory-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 4px;
+  right: 4px;
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
