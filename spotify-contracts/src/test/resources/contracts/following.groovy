@@ -7,8 +7,14 @@ Contract.make {
 
     request {
         method GET()
-        url "/v1/me/following?type=artist"
+        urlPath("/v1/me/following") {
+            queryParameters {
+                parameter("type", "artist")
+                parameter("limit", "50")
+            }
+        }
     }
+
 
     response {
         status OK()
@@ -30,6 +36,27 @@ Contract.make {
                         name: "ArtistWithoutGenre",
                         genres: [],
                         href: "https://api.spotify.com/v1/artists/artist-without-genre",
+                        images: []
+                    ],
+                    [
+                        id: "21bOoXa6JISSaqYu2oYbWy",
+                        name: "By The Spirits",
+                        genres: [],
+                        href: "https://api.spotify.com/v1/artists/artist-with-genre",
+                        images: []
+                    ],
+                    [
+                        id: "6A0sYtzqMUPBpHzVvEgOhA",
+                        name: "PATHS",
+                        genres: [],
+                        href: "https://api.spotify.com/v1/artists/artist-with-genre",
+                        images: []
+                    ],
+                    [
+                        id: "4uFZsG1vXrPcvnZ4iSQyrx",
+                        name: "C418",
+                        genres: [],
+                        href: "https://api.spotify.com/v1/artists/artist-with-genre",
                         images: []
                     ]
                 ],

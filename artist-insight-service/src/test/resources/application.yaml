@@ -20,8 +20,8 @@ spring:
         registration:
           spotify-artist-insight-service:
             provider: spotify
-            client-id: 123
-            client-secret: 123
+            client-id: 1234e12345678fafbd90fdce7540e12e
+            client-secret: 12b123b7c2ea4cf28abc83f3e12345de
             authorization-grant-type: authorization_code
             scope: user-follow-read, user-read-private
         provider:
@@ -32,13 +32,14 @@ spring:
 
 openai:
   api-key: "mock-api-key"
-  base-url: http://localhost:8101
+  base-url: http://localhost:8101/v1
 
 app:
   default-success-url: /
   cors-allowed-origins: http://localhost:8100
   minimised-http-servlet-logging: false
-  initial-gpt-usages: 10
+  initial-user-gpt-usages: 10
+  initial-global-gpt-usages: 50
 
 spotify:
   api-base-url: http://localhost:8100/v1

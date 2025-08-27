@@ -28,7 +28,7 @@ class ArtistGenreRepositoryImpl(
             SELECT COUNT(e) > 0 
             FROM SpotifyUserEnrichedArtistsEntity e
             WHERE e.user.spotifyId = :spotifyId AND e.artist.artistId = :artistId
-            """, java.lang.Boolean::class.java
+            """, Boolean::class.java
         ).setParameter("spotifyId", spotifyId)
             .setParameter("artistId", artistId)
             .singleResult
