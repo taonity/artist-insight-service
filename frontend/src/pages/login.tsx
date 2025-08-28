@@ -33,22 +33,28 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      <h1>Artist Insight</h1>
-      <p className="tagline">
-        Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
-      </p>
-      <p>You may be redirected to Spotify to log in. This app will be able to:</p>
-      <ul className="scope-list">
-        {scopes.map((scope) => (
-          <li key={scope}>{scope}</li>
-        ))}
-      </ul>
-      <a
-        className="button"
-        href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
-      >
-        Login with Spotify
-      </a>
+      <div className="login-card">
+        <h1>Artist Insight</h1>
+        <p className="tagline">
+          Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
+        </p>
+        <div className="auth-info">
+          <p className="redirect-note">
+            You may be redirected to Spotify to log in. This app will be able to:
+          </p>
+          <ul className="scope-list">
+            {scopes.map((scope) => (
+              <li key={scope}>{scope}</li>
+            ))}
+          </ul>
+        </div>
+        <a
+          className="button"
+          href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
+        >
+          Login with Spotify
+        </a>
+      </div>
     </div>
   )
 }
