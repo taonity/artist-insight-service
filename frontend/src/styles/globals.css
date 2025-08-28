@@ -198,6 +198,27 @@ a.button:hover {
   margin-top: 0;
 }
 
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.scope-list {
+  list-style: disc;
+  padding-left: 20px;
+  text-align: left;
+  margin: 16px 0;
+}
+
+.tagline {
+  margin-bottom: 24px;
+}
+
 @keyframes pulse {
   0% {
     opacity: 1;
