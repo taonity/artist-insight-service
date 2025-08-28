@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
+import org.taonity.artistinsightservice.mvc.EnrichedFollowingsResponse
 import org.taonity.artistinsightservice.mvc.FollowingsResponse
 import org.taonity.artistinsightservice.mvc.SpotifyResponse
+import org.taonity.artistinsightservice.persistence.user.SpotifyUserService
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.PagingArtistObject
 import java.util.ArrayList
@@ -21,6 +23,7 @@ class FollowingsService(
     private val validator: Validator,
     private val newArtistEnrichmentService: NewArtistEnrichmentService,
     private val userArtistEnrichmentService: UserArtistEnrichmentService,
+    private val spotifyUserService: SpotifyUserService,
     @Value("\${spotify.api-base-url}")
     private val spotifyApiBaseUrl: String,
     private val responseAttachments: ResponseAttachments
@@ -35,10 +38,11 @@ class FollowingsService(
         return FollowingsResponse(artists = userFollowings)
     }
 
-    fun fetchGenreEnrichedFollowings(spotifyId: String): FollowingsResponse {
+    fun fetchGenreEnrichedFollowings(spotifyId: String): EnrichedFollowingsResponse {
         val safeFollowings: List<SafeArtistObject> = safeFetchFollowing()
         val enrichedFollowings = newArtistEnrichmentService.enrichNewArtists(spotifyId, safeFollowings)
-        return FollowingsResponse(enrichedFollowings)
+        val userGptUsagesLeft = spotifyUserService.findBySpotifyIdOrThrow(spotifyId).gptUsagesLeft
+        return EnrichedFollowingsResponse(enrichedFollowings, gptUsagesLeft = userGptUsagesLeft)
     }
 
 

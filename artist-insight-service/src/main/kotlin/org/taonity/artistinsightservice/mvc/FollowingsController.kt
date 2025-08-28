@@ -27,10 +27,10 @@ class FollowingsController(
     }
 
     @GetMapping("/followings/enriched")
-    fun genreEnrichedFollowings(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<FollowingsResponse> {
+    fun genreEnrichedFollowings(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<EnrichedFollowingsResponse> {
         LOGGER.info { "Handling /followings/enriched endpoint" }
-        val followingsResponse: FollowingsResponse =
+        val enrichedFollowingsResponse: EnrichedFollowingsResponse =
             followingsService.fetchGenreEnrichedFollowings(principal.getSpotifyId())
-        return ResponseEntity.ok(followingsResponse)
+        return ResponseEntity.ok(enrichedFollowingsResponse)
     }
 }

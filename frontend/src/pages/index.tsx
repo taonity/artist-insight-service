@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { CSVLink } from 'react-csv'
 import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
+import { set } from 'lodash'
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
@@ -15,6 +16,7 @@ export default function Home() {
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
   const [advisories, setAdvisories] = useState<Advisory[]>([])
   const [loading, setLoading] = useState(false)
+  const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
 
   const fetchUser = async () => {
     const res = await fetch(`${API_BASE}/user`, { credentials: 'include' })
@@ -23,9 +25,10 @@ export default function Home() {
       return
     }
     if (res.ok) {
-      const snakeCasedData = await res.json()
-      const camelCasedData = keysToCamel(snakeCasedData)
-      setUser(camelCasedData)
+      const snakeCasedUser = await res.json()
+      const camelCasedUser = keysToCamel(snakeCasedUser)
+      setUser(camelCasedUser)
+      setGptUsagesLeft(camelCasedUser.gptUsagesLeft)
     } else {
       window.location.href = '/login'
     }
@@ -37,7 +40,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      loadFollowings(false)
+      loadUserFollowings()
     }
   }, [user])
 
@@ -56,16 +59,28 @@ export default function Home() {
     window.location.href = '/login'
   }
 
-  const loadFollowings = async (enriched: boolean) => {
+  const loadUserFollowings = async () => {
     setLoading(true)
-    const endpoint = enriched
-      ? `${API_BASE}/followings/enriched`
-      : `${API_BASE}/followings`
+    const endpoint = `${API_BASE}/followings`
     const res = await fetch(endpoint, { credentials: 'include' })
     if (res.ok) {
       const jsonResponse = await res.json()
       setArtists(jsonResponse.artists)
       setAdvisories(jsonResponse.advisories)
+    }
+    setLoading(false)
+  }
+
+  const loadEnrichedFollowings = async () => {
+    setLoading(true)
+    const endpoint = `${API_BASE}/followings/enriched`
+
+    const res = await fetch(endpoint, { credentials: 'include' })
+    if (res.ok) {
+      const jsonResponse = await res.json()
+      setArtists(jsonResponse.artists)
+      setAdvisories(jsonResponse.advisories)
+      setGptUsagesLeft(jsonResponse.gptUsagesLeft)
     }
     setLoading(false)
   }
@@ -104,10 +119,10 @@ export default function Home() {
         <button onClick={logout}>Logout</button>
       </div>
       <div style={{ padding: '16px' }}>
-        <GptUsageBlock count={user.gptUsagesLeft} />
+        <GptUsageBlock count={gptUsagesLeft} />
         {enrichableArtistObjects.length > 0 && (
           <div className="actions">
-            <button onClick={() => loadFollowings(true)} disabled={loading}>
+            <button onClick={() => loadEnrichedFollowings()} disabled={loading}>
               {loading ? 'Enriching…' : 'Enrich followings'}
             </button>
             <CSVLink
