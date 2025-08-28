@@ -1,20 +1,18 @@
 import React from 'react'
 
-
 interface Props {
-  genres: String[],
+  genres: String[]
   enriched: boolean
 }
 
 const Genres: React.FC<Props> = ({ genres, enriched }) => {
   return (
-    <div className={`genres `}>
+    <div className={`genres`}>
       <span className={`genre ${enriched ? 'enriched' : ''}`}>
-          {genres.join(', ') + (enriched ? ' ✨' : '')}
-        </span>
+        {genres.join(', ') + (enriched ? ' ✨' : '')}
+      </span>
     </div>
   )
 }
-
 
 export default Genres

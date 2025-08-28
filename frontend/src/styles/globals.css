@@ -7,8 +7,8 @@ body {
   min-height: 100vh;
 }
 
-button {
-  /* background-color: linear-gradient(90deg, #1db954 0%, #1ed760 100%); */
+button,
+a.button {
   background-color: #1db954;
   color: #191414;
   padding: 10px 20px;
@@ -20,11 +20,12 @@ button {
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s ease-in-out;
   box-shadow: 0 2px 8px rgba(30, 185, 84, 0.15);
+  text-decoration: none;
 }
 
-button:hover {
+button:hover,
+a.button:hover {
   background-color: #1ed760;
-  /* background-color: #083919; */
   color: #191414;
 }
 
@@ -98,4 +99,113 @@ button:hover {
   font-size: 1rem;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(164, 69, 255, 0.25);
+}
+
+.gpt-usage {
+  background: rgba(40, 40, 40, 0.8);
+  border-left: 4px solid #1db954;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.gpt-usage span {
+  color: #1db954;
+  font-weight: 700;
+}
+
+.actions {
+  margin-top: 16px;
+}
+
+.advisories {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.advisory-card {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.advisory-content strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.9rem;
+}
+
+.advisory-content p {
+  margin: 0;
+}
+
+.advisory-card.info {
+  background: rgba(30, 185, 84, 0.15);
+  border-left: 4px solid #1db954;
+}
+
+.advisory-card.warning {
+  background: rgba(255, 221, 0, 0.15);
+  border-left: 4px solid #ffcc00;
+}
+
+.advisory-card.error {
+  background: rgba(255, 0, 0, 0.15);
+  border-left: 4px solid #ff5555;
+}
+
+.advisory-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.skeleton-circle,
+.skeleton-line {
+  background: #333;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.skeleton-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin-right: 18px;
+  border: none;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  margin-top: 6px;
+  width: 180px;
+}
+
+.skeleton-line.short {
+  width: 120px;
+  margin-top: 0;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }
