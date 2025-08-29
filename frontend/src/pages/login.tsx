@@ -38,6 +38,12 @@ export default function Login() {
         <p className="tagline">
           Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
         </p>
+        <a
+          className="button"
+          href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
+        >
+          Login with Spotify
+        </a>
         <div className="auth-info">
           <p className="redirect-note">
             You may be redirected to Spotify to log in. This app will be able to:
@@ -48,12 +54,6 @@ export default function Login() {
             ))}
           </ul>
         </div>
-        <a
-          className="button"
-          href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
-        >
-          Login with Spotify
-        </a>
       </div>
     </div>
   )
