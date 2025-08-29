@@ -26,12 +26,35 @@ export default function Login() {
     return null
   }
 
+  const scopes = [
+    'Read your private profile information',
+    'See your followed artists',
+  ]
+
   return (
-    <div style={{ padding: '32px' }}>
-      <h1>Login</h1>
-      <a href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}>
-        <button>Login with Spotify</button>
-      </a>
+    <div className="login-container">
+      <div className="login-card">
+        <h1>Artist Insight</h1>
+        <p className="tagline">
+          Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
+        </p>
+        <a
+          className="button"
+          href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
+        >
+          Login with Spotify
+        </a>
+        <div className="auth-info">
+          <p className="redirect-note">
+            You may be redirected to Spotify to log in. This app will be able to:
+          </p>
+          <ul className="scope-list">
+            {scopes.map((scope) => (
+              <li key={scope}>{scope}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   )
 }
