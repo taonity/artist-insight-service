@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
@@ -5,7 +7,6 @@ const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 export default function Login() {
   const [loading, setLoading] = useState(true)
   const [loggedIn, setLoggedIn] = useState(false)
-
 
   // runs two times in development mode, but only once in production
   useEffect(() => {
