@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
 import AdvisoryCards, { Advisory } from '../components/AdvisoryCards'
@@ -7,7 +9,6 @@ import Image from 'next/image'
 import { CSVLink } from 'react-csv'
 import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
-import { set } from 'lodash'
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
@@ -125,11 +126,7 @@ export default function Home() {
             <button onClick={() => loadEnrichedFollowings()} disabled={loading}>
               {loading ? 'Enriching…' : 'Enrich followings'}
             </button>
-            <CSVLink
-              data={csvData}
-              filename={"exported-artists.csv"}
-              className="button"
-            >
+            <CSVLink data={csvData} filename={'exported-artists.csv'} className="button">
               Download CSV
             </CSVLink>
           </div>
