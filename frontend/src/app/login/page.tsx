@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
 export default function Login() {
   const [loading, setLoading] = useState(true)
@@ -10,7 +9,7 @@ export default function Login() {
 
   // runs two times in development mode, but only once in production
   useEffect(() => {
-    fetch(`${API_BASE}/user`, { credentials: 'include' })
+    fetch('/api/user', { credentials: 'include' })
       .then((res) => {
         if (res.ok) {
           setLoggedIn(true)
@@ -41,7 +40,7 @@ export default function Login() {
         </p>
         <a
           className="button"
-          href={`${API_BASE}/oauth2/authorization/spotify-artist-insight-service`}
+          href="/api/oauth2/authorization/spotify-artist-insight-service"
         >
           Login with Spotify
         </a>
