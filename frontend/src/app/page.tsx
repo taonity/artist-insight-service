@@ -10,7 +10,6 @@ import { CSVLink } from 'react-csv'
 import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
@@ -20,7 +19,7 @@ export default function Home() {
   const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
 
   const fetchUser = async () => {
-    const res = await fetch(`${API_BASE}/user`, { credentials: 'include' })
+    const res = await fetch('/api/user', { credentials: 'include' })
     if (res.status === 401) {
       window.location.href = '/login'
       return
@@ -52,7 +51,7 @@ export default function Home() {
 
   const logout = async () => {
     const xsrfToken = getCookie('XSRF-TOKEN')
-    await fetch(`${API_BASE}/logout`, {
+    await fetch('/api/logout', {
       method: 'POST',
       credentials: 'include',
       headers: xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {},
@@ -62,8 +61,7 @@ export default function Home() {
 
   const loadUserFollowings = async () => {
     setLoading(true)
-    const endpoint = `${API_BASE}/followings`
-    const res = await fetch(endpoint, { credentials: 'include' })
+    const res = await fetch('/api/followings', { credentials: 'include' })
     if (res.ok) {
       const jsonResponse = await res.json()
       setArtists(jsonResponse.artists)
@@ -74,9 +72,8 @@ export default function Home() {
 
   const loadEnrichedFollowings = async () => {
     setLoading(true)
-    const endpoint = `${API_BASE}/followings/enriched`
 
-    const res = await fetch(endpoint, { credentials: 'include' })
+    const res = await fetch('/api/followings/enriched', { credentials: 'include' })
     if (res.ok) {
       const jsonResponse = await res.json()
       setArtists(jsonResponse.artists)
