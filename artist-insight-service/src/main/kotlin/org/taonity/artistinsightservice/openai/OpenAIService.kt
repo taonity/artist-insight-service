@@ -4,8 +4,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
-import com.openai.models.chat.completions.*
+import com.openai.models.chat.completions.ChatCompletionCreateParams
+import com.openai.models.chat.completions.ChatCompletionMessageParam
+import com.openai.models.chat.completions.ChatCompletionSystemMessageParam
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam
 import org.springframework.stereotype.Service
+import org.taonity.artistinsightservice.utils.hasCause
+import java.io.InterruptedIOException
 
 @Service
 class OpenAIService(
@@ -28,19 +33,26 @@ class OpenAIService(
 
         val request = chatCompletionCreateParams(systemPrompt, userPrompt)
 
-        val response = openAIClient.chat().completions().create(request)
+        val response = try {
+            openAIClient.chat().completions().create(request)
+        } catch (e: Exception) {
+            if (e.hasCause(InterruptedIOException::class.java)) {
+                throw OpenAITimeoutException("OpenAI timed out", e)
+            }
+            throw OpenAIClientException("OpenAI completion threw an exception", e)
+        }
 
         val content = response.choices()
             .firstOrNull()
             ?.message()
             ?.content()
             ?.orElse(null)
-            ?: throw RuntimeException("No genre content returned from OpenAI.")
+            ?: throw OpenAIClientException("No genre content returned from OpenAI.")
 
         val genres: List<String> = try {
             objectMapper.readValue(content)
         } catch (e: Exception) {
-            throw RuntimeException("Failed to parse genres JSON: $content", e)
+            throw OpenAIClientException("Failed to parse genres JSON: $content", e)
         }
 
         return genres

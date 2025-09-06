@@ -1,7 +1,8 @@
 package org.taonity.artistinsightservice.persistence.user
 
-import jakarta.persistence.*
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "spotify_user")

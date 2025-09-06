@@ -8,16 +8,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
-import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor
-import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor.ClientRegistrationIdResolver
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.logout.LogoutFilter
 import org.springframework.security.web.csrf.*
-import org.springframework.web.client.RestClient
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.util.*
@@ -76,25 +70,5 @@ class SecurityConfig(
         source.registerCorsConfiguration("/**", configuration)
         return source
     }
-
-    @Bean
-    fun restClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
-        val requestInterceptor = OAuth2ClientHttpRequestInterceptor(authorizedClientManager)
-        requestInterceptor.setClientRegistrationIdResolver(clientRegistrationIdResolver())
-
-        return RestClient.builder().requestInterceptor(requestInterceptor).build()
-    }
-
-    private fun clientRegistrationIdResolver(): ClientRegistrationIdResolver {
-        return ClientRegistrationIdResolver { request ->
-            val authentication = SecurityContextHolder.getContext().authentication
-            if (authentication is OAuth2AuthenticationToken) {
-                authentication.authorizedClientRegistrationId
-            } else {
-                null
-            }
-        }
-    }
-
 }
 

@@ -6,9 +6,10 @@ import org.springframework.web.context.annotation.RequestScope
 @Component
 @RequestScope
 data class ResponseAttachments(
-    val advisories: MutableList<Advisory> = mutableListOf()
+    val advisories: MutableSet<Advisory> = mutableSetOf()
 ) {
-    fun advisoryDtos(): List<AdvisoryDto> {
+    fun advisoryDtos(): Set<AdvisoryDto> {
         return advisories.map { it.toDto() }
+            .toSet()
     }
 }

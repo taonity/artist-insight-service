@@ -1,21 +1,36 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
+import ErrorNotification from '../../components/ErrorNotification'
 
 export default function Login() {
   const [loading, setLoading] = useState(true)
   const [loggedIn, setLoggedIn] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // runs two times in development mode, but only once in production
   useEffect(() => {
-    fetch('/api/user', { credentials: 'include' })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+
+    fetch('/api/user', { credentials: 'include', signal: controller.signal })
       .then((res) => {
         if (res.ok) {
           setLoggedIn(true)
+        } else if (res.status === 504) {
+          setErrorMessage('Request timed out. Please try again.')
         }
       })
-      .finally(() => setLoading(false))
+      .catch((err) => {
+        if (err.name === 'AbortError') {
+          setErrorMessage('Request timed out. Please try again.')
+        } else {
+          setErrorMessage('Unable to connect to the server. Please check your connection.')
+        }
+      })
+      .finally(() => {
+        clearTimeout(timeoutId)
+        setLoading(false)
+      })
   }, [])
 
   if (loading) return null
@@ -33,6 +48,9 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      {errorMessage && (
+        <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
+      )}
       <div className="login-card">
         <h1>Artist Insight</h1>
         <p className="tagline">

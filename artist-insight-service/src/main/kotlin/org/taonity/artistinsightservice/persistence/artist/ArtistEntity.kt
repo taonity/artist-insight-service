@@ -1,8 +1,10 @@
 package org.taonity.artistinsightservice.persistence.artist
 
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreEntity
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsEntity
 
 @Entity
 @Table(name = "artist")

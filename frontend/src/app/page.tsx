@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { CSVLink } from 'react-csv'
 import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
-
+import ErrorNotification from '../components/ErrorNotification'
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
@@ -17,20 +17,37 @@ export default function Home() {
   const [advisories, setAdvisories] = useState<Advisory[]>([])
   const [loading, setLoading] = useState(false)
   const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const fetchUser = async () => {
-    const res = await fetch('/api/user', { credentials: 'include' })
-    if (res.status === 401) {
-      window.location.href = '/login'
-      return
-    }
-    if (res.ok) {
-      const snakeCasedUser = await res.json()
-      const camelCasedUser = keysToCamel(snakeCasedUser)
-      setUser(camelCasedUser)
-      setGptUsagesLeft(camelCasedUser.gptUsagesLeft)
-    } else {
-      window.location.href = '/login'
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    try {
+      const res = await fetch('/api/user', { credentials: 'include', signal: controller.signal })
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
+      if (res.status === 504) {
+        setErrorMessage('Request timed out. Please try again.')
+        return
+      }
+      if (res.ok) {
+        const snakeCasedUser = await res.json()
+        const camelCasedUser = keysToCamel(snakeCasedUser)
+        setUser(camelCasedUser)
+        setGptUsagesLeft(camelCasedUser.gptUsagesLeft)
+      } else {
+        window.location.href = '/login'
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setErrorMessage('Request timed out. Please try again.')
+      } else {
+        setErrorMessage('Unable to connect to the server. Please check your connection.')
+      }
+    } finally {
+      clearTimeout(timeoutId)
     }
   }
 
@@ -61,27 +78,75 @@ export default function Home() {
 
   const loadUserFollowings = async () => {
     setLoading(true)
-    const res = await fetch('/api/followings', { credentials: 'include' })
-    if (res.ok) {
-      const jsonResponse = await res.json()
-      setArtists(jsonResponse.artists)
-      setAdvisories(jsonResponse.advisories)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    try {
+      const res = await fetch('/api/followings', { credentials: 'include', signal: controller.signal })
+      if (res.status === 504) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
+      } else if (res.status == 500) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
+      } else if (res.ok) {
+        const jsonResponse = await res.json()
+        setArtists(jsonResponse.artists)
+        setAdvisories(jsonResponse.advisories)
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setErrorMessage('Request timed out. Please try again.')
+      } else {
+        setErrorMessage('Unable to connect to the server. Please check your connection.')
+      }
+    } finally {
+      clearTimeout(timeoutId)
+      setLoading(false)
     }
-    setLoading(false)
+  }
+
+  interface ErrorData {
+    advisories: Advisory[];
   }
 
   const loadEnrichedFollowings = async () => {
     setLoading(true)
-
-    const res = await fetch('/api/followings/enriched', { credentials: 'include' })
-    if (res.ok) {
-      const jsonResponse = await res.json()
-      setArtists(jsonResponse.artists)
-      setAdvisories(jsonResponse.advisories)
-      setGptUsagesLeft(jsonResponse.gptUsagesLeft)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    try {
+      const res = await fetch('/api/followings/enriched', { credentials: 'include', signal: controller.signal })
+      if (res.status === 504) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
+      } else if (res.status == 500) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
+      } else if (res.ok) {
+        const jsonResponse = await res.json()
+        setArtists(jsonResponse.artists)
+        setAdvisories(jsonResponse.advisories)
+        setGptUsagesLeft(jsonResponse.gptUsagesLeft)
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setErrorMessage('Request timed out. Please try again.')
+      } else {
+        setErrorMessage('Unable to connect to the server. Please check your connection.')
+      }
+    } finally {
+      clearTimeout(timeoutId)
+      setLoading(false)
     }
-    setLoading(false)
   }
+
+    async function setAdvisoriesOrSetErrorMessage(res: Response, errorMessage: string) {
+      try {
+        let errorBody: ErrorData = await res.json()
+        if (errorBody.advisories.length == 0) {
+          setErrorMessage(errorMessage)
+        } else {
+          setAdvisories(errorBody.advisories)
+        }
+      } catch {
+        setErrorMessage(errorMessage)
+      }
+    }
 
   if (!user) return <Loading />
 
@@ -98,6 +163,9 @@ export default function Home() {
 
   return (
     <div>
+      {errorMessage && (
+        <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
+      )}
       <div className="header">
         <div className="user-info">
           <Image

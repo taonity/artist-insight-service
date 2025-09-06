@@ -8,3 +8,7 @@ inline fun <reified T : Any> Validator.validateOrThrow(obj: T) {
         violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
     }
 }
+
+
+fun Throwable.hasCause(clazz: Class<out Throwable>): Boolean =
+    clazz.isInstance(this) || (cause?.hasCause(clazz) ?: false)
