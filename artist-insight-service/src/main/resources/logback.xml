@@ -3,7 +3,7 @@
 
     <appender name="CONSOLE_DEFAULT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="org.taonity.artistinsightservice.MaskingPatternLayout">
+            <layout class="org.taonity.artistinsightservice.logging.MaskingPatternLayout">
                 <maskPattern>\"x-xsrf-token\"\s*:\s*\"(.*?)\"</maskPattern>
                 <maskPattern>\"JSESSIONID\"\s*:\s*\"(.*?)\"</maskPattern>
                 <maskPattern>\"XSRF-TOKEN\"\s*:\s*\"(.*?)\"</maskPattern>

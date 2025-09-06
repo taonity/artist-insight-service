@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.mvc
+package org.taonity.artistinsightservice.user
 
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity

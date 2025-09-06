@@ -21,7 +21,6 @@ import java.util.*
 @EnableWebSecurity
 class SecurityConfig(
     private val oAuth2UserPersistenceService: OAuth2UserPersistenceService,
-    private val loggingFilter: LoggingFilter,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
     @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String
@@ -36,7 +35,6 @@ class SecurityConfig(
                     .requestMatchers("/", "/error", "/webjars/**", "/me/following").permitAll().anyRequest()
                     .authenticated()
             }
-            .addFilterBefore(loggingFilter, LogoutFilter::class.java)
             .logout { l ->
                 l.logoutSuccessUrl("/").permitAll()
             }

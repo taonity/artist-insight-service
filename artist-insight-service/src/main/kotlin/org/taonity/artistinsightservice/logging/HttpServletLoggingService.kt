@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.mvc.security
+package org.taonity.artistinsightservice.logging
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.annotation.PostConstruct

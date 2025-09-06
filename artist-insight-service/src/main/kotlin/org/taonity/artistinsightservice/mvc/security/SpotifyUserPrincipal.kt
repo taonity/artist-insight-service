@@ -2,7 +2,7 @@ package org.taonity.artistinsightservice.mvc.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
-import org.taonity.artistinsightservice.SafePrivateUserObject
+import org.taonity.artistinsightservice.followings.dto.SafePrivateUserObject
 
 class SpotifyUserPrincipal(
     private val authorities: Collection<GrantedAuthority>,

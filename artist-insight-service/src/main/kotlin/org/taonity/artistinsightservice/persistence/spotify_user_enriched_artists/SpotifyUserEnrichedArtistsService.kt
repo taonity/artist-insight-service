@@ -2,7 +2,7 @@ package org.taonity.artistinsightservice.persistence.spotify_user_enriched_artis
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.SafeArtistObject
+import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
 import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
 import org.taonity.artistinsightservice.persistence.artist.ArtistRepository
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreEntity

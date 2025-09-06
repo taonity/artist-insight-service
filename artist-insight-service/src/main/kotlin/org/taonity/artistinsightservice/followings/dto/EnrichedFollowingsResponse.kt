@@ -1,6 +1,6 @@
-package org.taonity.artistinsightservice.mvc
+package org.taonity.artistinsightservice.followings.dto
 
-import org.taonity.artistinsightservice.AdvisoryDto
+import org.taonity.artistinsightservice.attachments.AdvisoryDto
 
 data class EnrichedFollowingsResponse(
     val artists: List<EnrichableArtists>,

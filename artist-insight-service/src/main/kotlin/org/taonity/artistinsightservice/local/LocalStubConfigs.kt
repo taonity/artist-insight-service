@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.local
 
 import org.springframework.cloud.contract.stubrunner.server.EnableStubRunnerServer
 import org.springframework.context.annotation.Configuration

@@ -3,6 +3,7 @@ package org.taonity.artistinsightservice
 import jakarta.validation.Validation
 import mu.KotlinLogging
 import org.junit.jupiter.api.Test
+import org.taonity.artistinsightservice.followings.dto.ValidatedArtistObject
 import org.taonity.spotify.model.ArtistObject
 
 //TODO: improve test

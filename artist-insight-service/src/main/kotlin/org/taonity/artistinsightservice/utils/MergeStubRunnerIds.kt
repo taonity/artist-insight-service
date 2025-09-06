@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.utils
 
 import org.apache.commons.logging.Log
 import org.springframework.boot.SpringApplication

@@ -8,6 +8,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestHandler
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
+import org.taonity.artistinsightservice.logging.HttpServletLoggingService
 import java.util.function.Supplier
 
 @Service

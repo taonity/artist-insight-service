@@ -1,11 +1,15 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.followings
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionTemplate
-import org.taonity.artistinsightservice.mvc.EnrichableArtists
+import org.taonity.artistinsightservice.attachments.Advisory
+import org.taonity.artistinsightservice.GptUsageService
+import org.taonity.artistinsightservice.attachments.ResponseAttachments
+import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
+import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
 import org.taonity.artistinsightservice.openai.OpenAIClientException
 import org.taonity.artistinsightservice.openai.OpenAIService
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreService

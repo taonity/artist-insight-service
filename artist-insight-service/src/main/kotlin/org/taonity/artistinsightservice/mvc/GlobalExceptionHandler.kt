@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.taonity.artistinsightservice.Advisory
+import org.taonity.artistinsightservice.attachments.Advisory
 import org.taonity.artistinsightservice.openai.OpenAITimeoutException
 import org.taonity.artistinsightservice.spotify.SpotifyClientException
 import org.taonity.artistinsightservice.spotify.SpotifyTimeoutException

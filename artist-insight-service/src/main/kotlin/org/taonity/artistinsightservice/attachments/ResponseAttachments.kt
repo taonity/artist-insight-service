@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.attachments
 
 import org.springframework.stereotype.Component
 import org.springframework.web.context.annotation.RequestScope

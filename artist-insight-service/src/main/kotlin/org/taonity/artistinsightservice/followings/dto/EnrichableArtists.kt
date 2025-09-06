@@ -1,6 +1,4 @@
-package org.taonity.artistinsightservice.mvc
-
-import org.taonity.artistinsightservice.SafeArtistObject
+package org.taonity.artistinsightservice.followings.dto
 
 data class EnrichableArtists(
     val artistObject: SafeArtistObject,

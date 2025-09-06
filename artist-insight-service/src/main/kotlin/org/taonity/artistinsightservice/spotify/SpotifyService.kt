@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
-import org.taonity.artistinsightservice.Advisory
-import org.taonity.artistinsightservice.ResponseAttachments
-import org.taonity.artistinsightservice.SafeArtistObject
-import org.taonity.artistinsightservice.ValidatedArtistObject
-import org.taonity.artistinsightservice.mvc.SpotifyResponse
+import org.taonity.artistinsightservice.attachments.Advisory
+import org.taonity.artistinsightservice.attachments.ResponseAttachments
+import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
+import org.taonity.artistinsightservice.followings.dto.ValidatedArtistObject
+import org.taonity.artistinsightservice.followings.dto.SpotifyResponse
 import org.taonity.artistinsightservice.utils.hasCause
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.PagingArtistObject

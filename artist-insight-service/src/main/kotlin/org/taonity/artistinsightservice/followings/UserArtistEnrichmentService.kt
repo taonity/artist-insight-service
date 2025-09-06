@@ -1,8 +1,11 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.followings
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import org.taonity.artistinsightservice.mvc.EnrichableArtists
+import org.taonity.artistinsightservice.attachments.Advisory
+import org.taonity.artistinsightservice.attachments.ResponseAttachments
+import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
+import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
 import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
 import org.taonity.artistinsightservice.persistence.artist.ArtistRepository
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserService

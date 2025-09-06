@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.followings.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

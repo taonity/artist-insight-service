@@ -1,11 +1,11 @@
-package org.taonity.artistinsightservice.mvc
+package org.taonity.artistinsightservice.followings
 
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import org.taonity.artistinsightservice.FollowingsService
+import org.taonity.artistinsightservice.followings.dto.EnrichedFollowingsResponse
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
 
 @RestController

@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.attachments
 
 data class AdvisoryDto(
     val code: String,

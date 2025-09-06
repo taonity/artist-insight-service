@@ -9,7 +9,8 @@ import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.taonity.artistinsightservice.SafePrivateUserObject
+import org.taonity.artistinsightservice.followings.dto.SafePrivateUserObject
+import org.taonity.artistinsightservice.user.SpotifyUserDto
 import org.taonity.spotify.model.ImageObject
 
 
