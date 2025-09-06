@@ -7,10 +7,13 @@ implement loading on frontend +
 add notification on simple following retrieval if an artist doesn't have genres, with estimation of gpt usages required and possible +
 fix gpt usages left in frontend +
 style login page with some description +
-add error pages for 
-sort genres in openai contracts - the sorting is not guaranteed by gpt anyway
-do I need Read your private profile information? - yes, it is required for /me
-test transactions
+add error pages for +
+fix spending gpt usages on failed openai request +
+manage advisaries in react - idk maybe later
+fix server address in browser search on server down - maybe later
+sort genres in openai contracts + the sorting is not guaranteed by gpt anyway
+do I need Read your private profile information? + yes, it is required for /me
+test transactions +
 add Donate button and the counter charge mechanism
 build modules in right order
 restructure backend code

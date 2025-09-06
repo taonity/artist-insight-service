@@ -2,7 +2,11 @@ package org.taonity.artistinsightservice
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
+import org.springframework.transaction.support.TransactionTemplate
 import org.taonity.artistinsightservice.mvc.EnrichableArtists
+import org.taonity.artistinsightservice.openai.OpenAIClientException
 import org.taonity.artistinsightservice.openai.OpenAIService
 import org.taonity.artistinsightservice.persistence.genre.ArtistGenreService
 import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsService
@@ -13,12 +17,26 @@ class NewArtistEnrichmentService(
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
+    private val responseAttachments: ResponseAttachments,
+    transactionManager: PlatformTransactionManager
 ) {
+    private val transactionTemplate = TransactionTemplate(transactionManager)
+
     fun enrichNewArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
-        return rawArtists.map {
-            NewArtistEnricher(artistGenreService, gptUsageService, openAIService, spotifyUserEnrichedArtistsService,
-                spotifyId, it
-            ).enrichWithGenresIfPossible()
+        return rawArtists.map { rawArtist ->
+            transactionTemplate.execute { transactionStatus ->
+                val newArtistEnricher = NewArtistEnricher(artistGenreService, gptUsageService, openAIService, spotifyUserEnrichedArtistsService,
+                    responseAttachments, transactionStatus,
+                    spotifyId, rawArtist
+                )
+
+                try {
+                    newArtistEnricher.enrichWithGenresIfPossible()
+                } catch (e: Exception) {
+                    transactionStatus.setRollbackOnly()
+                    throw e
+                }
+            }
         }
     }
 }
@@ -28,6 +46,8 @@ class NewArtistEnricher(
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
+    private val responseAttachments: ResponseAttachments,
+    private val transactionStatus: TransactionStatus,
     private val spotifyId: String,
     private val rawArtist: SafeArtistObject,
     private val artistId: String = rawArtist.id,
@@ -84,7 +104,14 @@ class NewArtistEnricher(
         val userUsagesConsumed = gptUsageService.consumeUserUsage(spotifyId)
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
+            transactionStatus.setRollbackOnly()
             LOGGER.info { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }
+            if (!globalUsageConsumed) {
+                responseAttachments.advisories.add(Advisory.GLOBAL_GPT_USAGES_DEPLETED)
+            }
+            if (!userUsagesConsumed) {
+                responseAttachments.advisories.add(Advisory.USER_GPT_USAGES_DEPLETED)
+            }
             return EnrichableArtists(
                 rawArtist,
                 genreEnriched = false,
@@ -92,7 +119,14 @@ class NewArtistEnricher(
                 notEnoughGlobalGptUsages = globalUsageConsumed
             )
         }
-        val openAIProvidedGenres = openAIService.provideGenres(rawArtist.name)
+        val openAIProvidedGenres = try {
+            openAIService.provideGenres(rawArtist.name)
+        } catch (e: OpenAIClientException) {
+            transactionStatus.setRollbackOnly()
+            LOGGER.error(e) { }
+            responseAttachments.advisories.add(Advisory.OPENAI_PROBLEM)
+            return EnrichableArtists(rawArtist.copy(), false)
+        }
         val enrichedArtist = rawArtist.copy(genres = openAIProvidedGenres)
         spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, openAIProvidedGenres)))
         LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by OpenAI call" }

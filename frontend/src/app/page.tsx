@@ -83,7 +83,9 @@ export default function Home() {
     try {
       const res = await fetch('/api/followings', { credentials: 'include', signal: controller.signal })
       if (res.status === 504) {
-        setErrorMessage('Request timed out. Please try again.')
+        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
+      } else if (res.status == 500) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
       } else if (res.ok) {
         const jsonResponse = await res.json()
         setArtists(jsonResponse.artists)
@@ -101,6 +103,10 @@ export default function Home() {
     }
   }
 
+  interface ErrorData {
+    advisories: Advisory[];
+  }
+
   const loadEnrichedFollowings = async () => {
     setLoading(true)
     const controller = new AbortController()
@@ -108,7 +114,9 @@ export default function Home() {
     try {
       const res = await fetch('/api/followings/enriched', { credentials: 'include', signal: controller.signal })
       if (res.status === 504) {
-        setErrorMessage('Request timed out. Please try again.')
+        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
+      } else if (res.status == 500) {
+        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
       } else if (res.ok) {
         const jsonResponse = await res.json()
         setArtists(jsonResponse.artists)
@@ -126,6 +134,19 @@ export default function Home() {
       setLoading(false)
     }
   }
+
+    async function setAdvisoriesOrSetErrorMessage(res: Response, errorMessage: string) {
+      try {
+        let errorBody: ErrorData = await res.json()
+        if (errorBody.advisories.length == 0) {
+          setErrorMessage(errorMessage)
+        } else {
+          setAdvisories(errorBody.advisories)
+        }
+      } catch {
+        setErrorMessage(errorMessage)
+      }
+    }
 
   if (!user) return <Loading />
 

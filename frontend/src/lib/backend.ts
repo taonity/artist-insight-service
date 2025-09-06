@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 
 export const BACKEND_URL = process.env.BACKEND_URL || ''
-const TIMEOUT = 6000
+const TIMEOUT = 600000
 
 export async function fetchFromBackend(
   req: NextRequest,

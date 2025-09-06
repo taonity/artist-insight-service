@@ -2,7 +2,6 @@ package org.taonity.artistinsightservice
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.ImageObject
 import org.taonity.spotify.model.PrivateUserObject
 
