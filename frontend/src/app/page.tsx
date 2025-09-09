@@ -76,6 +76,10 @@ export default function Home() {
     window.location.href = '/login'
   }
 
+    const donate = async () => {
+    window.location.href = '/donate'
+  }
+
   const loadUserFollowings = async () => {
     setLoading(true)
     const controller = new AbortController()
@@ -181,8 +185,11 @@ export default function Home() {
           />
           <div>Logged in as {user.privateUserObject.displayName}</div>
         </div>
+        <div>
+          <button onClick={donate}>Donate <span style={{fontSize: '13px'}}>❤️</span></button>
+          <button onClick={logout}>Logout</button>
+        </div>
 
-        <button onClick={logout}>Logout</button>
       </div>
       <div style={{ padding: '16px' }}>
         <GptUsageBlock count={gptUsagesLeft} />
