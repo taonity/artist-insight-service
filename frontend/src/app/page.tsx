@@ -3,82 +3,29 @@
 import { useEffect, useState } from 'react'
 import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
 import AdvisoryCards, { Advisory } from '../components/AdvisoryCards'
-import User from '../models/User'
-import keysToCamel from '../utils/utils'
-import Image from 'next/image'
 import { CSVLink } from 'react-csv'
 import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
 import ErrorNotification from '../components/ErrorNotification'
+import Header from '@/components/Header'
+import { useUser } from "../hooks/useUser"
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null)
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
   const [advisories, setAdvisories] = useState<Advisory[]>([])
   const [loading, setLoading] = useState(false)
   const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const fetchUser = async () => {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000)
-    try {
-      const res = await fetch('/api/user', { credentials: 'include', signal: controller.signal })
-      if (res.status === 401) {
-        window.location.href = '/login'
-        return
-      }
-      if (res.status === 504) {
-        setErrorMessage('Request timed out. Please try again.')
-        return
-      }
-      if (res.ok) {
-        const snakeCasedUser = await res.json()
-        const camelCasedUser = keysToCamel(snakeCasedUser)
-        setUser(camelCasedUser)
-        setGptUsagesLeft(camelCasedUser.gptUsagesLeft)
-      } else {
-        window.location.href = '/login'
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        setErrorMessage('Request timed out. Please try again.')
-      } else {
-        setErrorMessage('Unable to connect to the server. Please check your connection.')
-      }
-    } finally {
-      clearTimeout(timeoutId)
-    }
-  }
-
-  useEffect(() => {
-    fetchUser()
-  }, [])
+  const user = useUser(setErrorMessage);
 
   useEffect(() => {
     if (user) {
+      setGptUsagesLeft(user.gptUsagesLeft);
+
       loadUserFollowings()
     }
   }, [user])
-
-  function getCookie(name: string) {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-    return match ? decodeURIComponent(match[2]) : null
-  }
-
-  const logout = async () => {
-    const xsrfToken = getCookie('XSRF-TOKEN')
-    await fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include',
-      headers: xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {},
-    })
-    window.location.href = '/login'
-  }
-
-    const donate = async () => {
-    window.location.href = '/donate'
-  }
 
   const loadUserFollowings = async () => {
     setLoading(true)
@@ -170,27 +117,7 @@ export default function Home() {
       {errorMessage && (
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
       )}
-      <div className="header">
-        <div className="user-info">
-          <Image
-            src={
-              user.privateUserObject.images && user.privateUserObject.images.length > 0
-                ? user.privateUserObject.images[0].url
-                : '/default-user-pfp.png'
-            }
-            alt={user.privateUserObject.displayName}
-            width={48}
-            height={48}
-            className="artist-image"
-          />
-          <div>Logged in as {user.privateUserObject.displayName}</div>
-        </div>
-        <div>
-          <button onClick={donate}>Donate <span style={{fontSize: '13px'}}>❤️</span></button>
-          <button onClick={logout}>Logout</button>
-        </div>
-
-      </div>
+      <Header user={user}/>
       <div style={{ padding: '16px' }}>
         <GptUsageBlock count={gptUsagesLeft} />
         {enrichableArtistObjects.length > 0 && (

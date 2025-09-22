@@ -1,4 +1,5 @@
 type PrivateUserObject = {
+    id: string,
     displayName: string,
     images?: { url: string }[]
 }

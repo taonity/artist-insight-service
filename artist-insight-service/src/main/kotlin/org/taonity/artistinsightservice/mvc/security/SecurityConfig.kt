@@ -32,7 +32,15 @@ class SecurityConfig(
         http // ...
             .authorizeHttpRequests { requests ->
                 requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                    .requestMatchers("/", "/error", "/webjars/**", "/me/following").permitAll().anyRequest()
+                    .requestMatchers(
+                        "/",
+                        "/error",
+                        "/webjars/**",
+                        "/me/following",
+                        "/callback/kofi",
+                        //TODO: add for local only?
+                        "/N4N11KVW3E"
+                    ).permitAll().anyRequest()
                     .authenticated()
             }
             .logout { l ->
@@ -44,6 +52,7 @@ class SecurityConfig(
             .csrf { c ->
                 c.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
+                    .ignoringRequestMatchers("/callback/kofi")
             }
             .oauth2Login { o ->
                 o.userInfoEndpoint { u ->

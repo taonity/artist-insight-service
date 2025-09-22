@@ -25,7 +25,7 @@ class SpotifyConfig {
     }
 
     @Bean
-    fun restClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    fun spotifyRestClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
         val requestInterceptor = OAuth2ClientHttpRequestInterceptor(authorizedClientManager)
         requestInterceptor.setClientRegistrationIdResolver(clientRegistrationIdResolver())
 

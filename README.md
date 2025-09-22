@@ -19,3 +19,5 @@ build modules in right order
 restructure backend code
 
 create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
+
+waiting for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
