@@ -1,0 +1,9 @@
+postgres-url: jdbc:postgresql://localhost:5433/artist_insight_service
+
+spring:
+  datasource:
+    url: ${postgres-url}
+    username: d
+    password: d
+  flyway:
+    enabled: false

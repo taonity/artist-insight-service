@@ -38,7 +38,6 @@ class KofiCallbackController (
 
         val message = kofiWebhookData.message
         if (message.isEmpty()) {
-            // make warn
             LOGGER.warn { "Kofi callback message is empty" }
             return
         }
@@ -50,7 +49,6 @@ class KofiCallbackController (
             val spotifyIdOpt = messageWords.stream().filter { it.length >= 26 }
                 .findFirst()
             if (spotifyIdOpt.isEmpty) {
-                // make warn
                 LOGGER.warn { "Failed to find spotifyId in kofi callback message: $message" }
                 return
             }
@@ -59,13 +57,11 @@ class KofiCallbackController (
 
         val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findBySpotifyIdForUpdate(spotifyId)
             ?: run {
-                // make warn
                 throw KofiCallbackHandlingException("Failed to find spotify user in db by spotifyId $spotifyId from message $message")
             }
 
         val amountString = kofiWebhookData.amount
         if (amountString.isEmpty()) {
-            // make error
             throw KofiCallbackHandlingException("Kofi callback amount field is empty")
         }
 
