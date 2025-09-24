@@ -42,7 +42,7 @@ export default function Donate() {
         <section className="user-id-section">
           <div className="user-id-header">
             <h2>Your supporter ID</h2>
-            <p>Put this ID in your "Your message" form in Ko-fi and the service will be able to top up your GPT usages account</p>
+            <p>Put this ID in your &quot;Your message&quot; form in Ko-fi and the service will be able to top up your GPT usages account</p>
             <p>If you have not received GPT usages after donation, please reach the developer in email artiom.diulgher@gmail.com with your supporter ID</p>
           </div>
           <div className="user-id-box" role="group" aria-label="Supporter ID">
