@@ -17,6 +17,7 @@ class SpotifyUserEnrichedArtistsService(
     private val artistGenreRepository: ArtistGenreRepository,
     private val spotifyUserEnrichedArtistsRepository: SpotifyUserEnrichedArtistsRepository
 ) {
+    //TODO: simplify it by removing redundant entity references
     @Transactional
     fun saveEnrichedArtistsForUser(
         spotifyId: String,

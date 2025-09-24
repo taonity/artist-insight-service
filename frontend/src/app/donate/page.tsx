@@ -39,18 +39,11 @@ export default function Donate() {
       )}
       <Header user={user} />
       <main className="donate-content">
-        <section className="donate-hero">
-          <h1>Fuel the Artist Insight groove</h1>
-          <p>
-            Every donation helps us surface fresh artists, craft better insights, and keep your release
-            radar ahead of the crowd.
-          </p>
-        </section>
-
         <section className="user-id-section">
           <div className="user-id-header">
             <h2>Your supporter ID</h2>
-            <p>Include this ID with your donation so we can shout you out with a personalized thank you.</p>
+            <p>Put this ID in your "Your message" form in Ko-fi and the service will be able to top up your GPT usages account</p>
+            <p>If you have not received GPT usages after donation, please reach the developer in email artiom.diulgher@gmail.com with your supporter ID</p>
           </div>
           <div className="user-id-box" role="group" aria-label="Supporter ID">
             <span className="user-id-value">{user.privateUserObject.id}</span>
@@ -66,7 +59,8 @@ export default function Donate() {
         <section className="support-grid" aria-label="Ways to support">
           <article className="support-card kofi-card">
             <h3>Buy us a Ko-fi</h3>
-            <p>Keep the playlists spinning by treating the team to a fresh brew.</p>
+            <p>Donate the developer to make him deliver new features</p>
+            <p>1 USD = 10 GPT usages</p>
             <KoFiButton username="N4N11KVW3E" label="Support me on Ko-fi" />
           </article>
           <article className="support-card placeholder-card">
