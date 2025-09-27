@@ -33,7 +33,7 @@ export default function Login() {
       })
   }, [])
 
-  if (loading) return null
+
   if (loggedIn) {
     if (typeof window !== 'undefined') {
       window.location.href = '/'
