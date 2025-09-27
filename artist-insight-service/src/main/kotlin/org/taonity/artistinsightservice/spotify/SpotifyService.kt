@@ -1,7 +1,9 @@
 package org.taonity.artistinsightservice.spotify
 
 import jakarta.validation.Validator
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.actuate.health.Status
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver.clientRegistrationId
 import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.stereotype.Service
@@ -13,10 +15,19 @@ import org.taonity.artistinsightservice.attachments.ResponseAttachments
 import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
 import org.taonity.artistinsightservice.followings.dto.ValidatedArtistObject
 import org.taonity.artistinsightservice.followings.dto.SpotifyResponse
+import org.taonity.artistinsightservice.health.HealthCheckResult
 import org.taonity.artistinsightservice.utils.hasCause
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.PagingArtistObject
 import java.io.InterruptedIOException
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.nio.charset.StandardCharsets
+import java.time.Duration
+import java.time.Instant
+import java.util.LinkedHashMap
 
 @Service
 class SpotifyService(
@@ -26,6 +37,11 @@ class SpotifyService(
     private val spotifyApiBaseUrl: String,
     private val responseAttachments: ResponseAttachments
 ) {
+
+    companion object {
+        private val LOGGER = KotlinLogging.logger {}
+        private const val MAX_BODY_PREVIEW_CHARS = 160
+    }
 
     fun fetchFollowings(): List<SafeArtistObject> {
         return safeFetchFollowing()
@@ -82,5 +98,51 @@ class SpotifyService(
             throw SpotifyClientException("Failed to retrieve user followings", e)
         }
         return spotifyResponse.artists
+    }
+
+    fun checkAvailability(url: String, requestTimeout: Duration): HealthCheckResult {
+        val httpClient = HttpClient.newBuilder()
+            .connectTimeout(requestTimeout)
+            .build()
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .timeout(requestTimeout)
+            .GET()
+            .build()
+        val start = Instant.now()
+
+        return try {
+            val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
+            val elapsedMs = Duration.between(start, Instant.now()).toMillis()
+            val statusCode = response.statusCode()
+            val details = LinkedHashMap<String, Any?>()
+            details["url"] = url
+            details["statusCode"] = statusCode
+            details["responseTimeMs"] = elapsedMs
+
+            val healthy = statusCode in 200..299 || statusCode == 401 || statusCode == 403
+
+            if (statusCode == 401 || statusCode == 403) {
+                details["note"] = "Received $statusCode indicating OAuth token is required for full access."
+            }
+
+            if (!healthy) {
+                details["responsePreview"] = response.body().take(MAX_BODY_PREVIEW_CHARS)
+            }
+
+            HealthCheckResult(
+                status = if (healthy) Status.UP else Status.DOWN,
+                details = details
+            )
+        } catch (exception: Exception) {
+            val elapsedMs = Duration.between(start, Instant.now()).toMillis()
+            LOGGER.warn(exception) { "Spotify availability check failed for $url" }
+            val details = mapOf(
+                "url" to url,
+                "responseTimeMs" to elapsedMs,
+                "error" to (exception.message ?: exception::class.simpleName)
+            )
+            HealthCheckResult(Status.DOWN, details)
+        }
     }
 }

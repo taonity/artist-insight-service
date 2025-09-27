@@ -1,3 +1,8 @@
 openai:
   api-key: ${OPENAI_API_KEY}
   base-url: https://api.openai.com/v1
+
+health:
+  external:
+    openai:
+      health-url: https://api.openai.com/v1/models

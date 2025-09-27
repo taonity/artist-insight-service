@@ -2,6 +2,11 @@ openai:
   api-key: "mock-api-key"
   base-url: http://localhost:8101/v1
 
+health:
+  external:
+    openai:
+      health-url: http://localhost:8101/v1/models
+
 stubrunner:
   stubs-mode: LOCAL
       

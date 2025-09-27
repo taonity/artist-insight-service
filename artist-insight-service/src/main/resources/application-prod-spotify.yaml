@@ -21,3 +21,8 @@ app:
 
 spotify:
   api-base-url: https://api.spotify.com/v1
+
+health:
+  external:
+    spotify:
+      health-url: https://api.spotify.com/v1
