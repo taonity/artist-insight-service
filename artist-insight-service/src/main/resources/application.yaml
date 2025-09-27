@@ -6,6 +6,34 @@ app:
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState,liveness
+        readiness:
+          include: readinessState,readiness
+
+health:
+  external:
+    refresh-interval-ms: 60000
+    initial-delay-ms: 0
+    request-timeout-ms: 3000
+    spotify:
+      health-url: ${spotify.api-base-url:https://api.spotify.com/v1}
+    openai:
+      health-url: ${openai.base-url:https://api.openai.com/v1}/models
+    kofi:
+      health-url: https://ko-fi.com
+
 #logging:
 #  level:
 #    root: TRACE

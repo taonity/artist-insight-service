@@ -22,6 +22,11 @@ app:
 spotify:
   api-base-url: http://localhost:8100/v1
 
+health:
+  external:
+    spotify:
+      health-url: http://localhost:8100/v1
+
 stubrunner:
   stubs-mode: LOCAL
 
