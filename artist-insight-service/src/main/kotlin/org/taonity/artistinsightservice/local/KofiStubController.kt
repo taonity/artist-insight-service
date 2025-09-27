@@ -41,7 +41,12 @@ class KofiStubController(
             .exchange { request, response ->
                 LOGGER.info { "App returned status ${response.statusCode} on callback post" }
             }
+    }
 
+    @GetMapping("/")
+    fun home() : String {
+        LOGGER.info { "Handling / endpoint" }
+        return "Home page"
     }
 
     private fun buildKofiWebhookData() = KofiWebhookData(

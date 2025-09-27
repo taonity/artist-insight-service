@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import ErrorNotification from '../../components/ErrorNotification'
 
 export default function Login() {
-  const [loading, setLoading] = useState(true)
+  const [userLoading, setUserLoading] = useState(true)
+  const [livenessLoading, setLivenessLoading] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -29,7 +30,7 @@ export default function Login() {
       })
       .finally(() => {
         clearTimeout(timeoutId)
-        setLoading(false)
+        setUserLoading(false)
       })
   }, [])
 
@@ -46,6 +47,36 @@ export default function Login() {
     'See your followed artists',
   ]
 
+  const handleLogin = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    setLivenessLoading(true)
+    setErrorMessage(null)
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+
+    try {
+      // Use /api/user as a lightweight availability check; any completed response means backend is up
+      const response = await fetch('/api/actuator/health/liveness', { signal: controller.signal })
+      const data = await response.json()
+      if (!response.ok || data.status !== 'UP') {
+        setErrorMessage('Backend server is currently unavailable. Please try again later.')
+        setLivenessLoading(false)
+        return
+      }
+      window.location.href = '/api/oauth2/authorization/spotify-artist-insight-service'
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        setErrorMessage('Request timed out. Please try again.')
+      } else {
+        setErrorMessage('Unable to connect to the server. Please check your connection.')
+      }
+    } finally {
+      clearTimeout(timeoutId)
+      setLivenessLoading(false)
+    }
+  }
+
   return (
     <div className="login-container">
       {errorMessage && (
@@ -56,12 +87,13 @@ export default function Login() {
         <p className="tagline">
           Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
         </p>
-        <a
+        <button
           className="button"
-          href="/api/oauth2/authorization/spotify-artist-insight-service"
+          onClick={handleLogin}
+          disabled={userLoading && livenessLoading}
         >
-          Login with Spotify
-        </a>
+          {livenessLoading ? 'Checking server...' : 'Login with Spotify'}
+        </button>
         <div className="auth-info">
           <p className="redirect-note">
             You may be redirected to Spotify to log in. This app will be able to:

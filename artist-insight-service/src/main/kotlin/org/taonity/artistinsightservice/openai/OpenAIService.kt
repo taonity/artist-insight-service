@@ -8,9 +8,22 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionMessageParam
 import com.openai.models.chat.completions.ChatCompletionSystemMessageParam
 import com.openai.models.chat.completions.ChatCompletionUserMessageParam
+import com.openai.models.models.Model
+import mu.KotlinLogging
+import org.springframework.boot.actuate.health.Status
 import org.springframework.stereotype.Service
+import org.taonity.artistinsightservice.health.HealthCheckResult
 import org.taonity.artistinsightservice.utils.hasCause
 import java.io.InterruptedIOException
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.nio.charset.StandardCharsets
+import java.time.Duration
+import java.time.Instant
+import java.util.LinkedHashMap
+import kotlin.sequences.asSequence
 
 @Service
 class OpenAIService(
@@ -56,6 +69,10 @@ class OpenAIService(
         }
 
         return genres
+    }
+
+    fun getModels() : List<Model> {
+        return openAIClient.models().list().data()
     }
 
     private fun chatCompletionCreateParams(

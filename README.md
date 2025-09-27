@@ -15,7 +15,8 @@ sort genres in openai contracts + the sorting is not guaranteed by gpt anyway
 do I need Read your private profile information? + yes, it is required for /me
 test transactions +
 add Donate button and the counter charge mechanism +
-do not redirect to server endpoint if server is down
+do not redirect to server endpoint if server is down +
+refactor kofi controller service
 change donation page loading screen
 build modules in right order
 restructure backend code

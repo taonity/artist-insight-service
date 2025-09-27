@@ -9,6 +9,12 @@ spring:
             client-secret: 12b123b7c2ea4cf28abc83f3e12345de
             authorization-grant-type: authorization_code
             scope: user-follow-read, user-read-private
+          spotify-client-credentials:
+            provider: spotify
+            client-id: 1234e12345678fafbd90fdce7540e12e
+            client-secret: 12b123b7c2ea4cf28abc83f3e12345de
+            authorization-grant-type: client_credentials
+            scope: user-follow-read, user-read-private
         provider:
           spotify:
             issuer-uri: http://localhost:8100

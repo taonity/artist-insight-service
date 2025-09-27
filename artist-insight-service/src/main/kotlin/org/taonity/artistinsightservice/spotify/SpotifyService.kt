@@ -2,6 +2,7 @@ package org.taonity.artistinsightservice.spotify
 
 import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver.clientRegistrationId
 import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.stereotype.Service
@@ -11,8 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder
 import org.taonity.artistinsightservice.attachments.Advisory
 import org.taonity.artistinsightservice.attachments.ResponseAttachments
 import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
-import org.taonity.artistinsightservice.followings.dto.ValidatedArtistObject
 import org.taonity.artistinsightservice.followings.dto.SpotifyResponse
+import org.taonity.artistinsightservice.followings.dto.ValidatedArtistObject
 import org.taonity.artistinsightservice.utils.hasCause
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.PagingArtistObject
@@ -20,10 +21,13 @@ import java.io.InterruptedIOException
 
 @Service
 class SpotifyService(
-    private val spotifyRestClient: RestClient,
+    private val spotifyAuthorisationCodeRestClient: RestClient,
+    private val spotifyClientCredentialsRestClient: RestClient,
     private val validator: Validator,
     @Value("\${spotify.api-base-url}")
     private val spotifyApiBaseUrl: String,
+    @Value("\${spotify.healthcheck-user-id}")
+    private val heathCheckUserId: String,
     private val responseAttachments: ResponseAttachments
 ) {
 
@@ -67,7 +71,7 @@ class SpotifyService(
     }
 
     private fun fetchPageWithAuthentication(uri: String): PagingArtistObject {
-        val responseSpec: RestClient.ResponseSpec = spotifyRestClient.get()
+        val responseSpec: RestClient.ResponseSpec = spotifyAuthorisationCodeRestClient.get()
             .uri(uri)
             .attributes(clientRegistrationId("spotify-artist-insight-service"))
             .attributes(principal("display_name"))
@@ -82,5 +86,19 @@ class SpotifyService(
             throw SpotifyClientException("Failed to retrieve user followings", e)
         }
         return spotifyResponse.artists
+    }
+
+    fun getHealthCheckUserUrl() : String {
+        return "$spotifyApiBaseUrl/users/$heathCheckUserId"
+    }
+
+    fun getHealthCheckUser(): ResponseEntity<String> {
+        val url = getHealthCheckUserUrl()
+        val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
+            .uri(url)
+            .attributes(clientRegistrationId("spotify-client-credentials"))
+            .attributes(principal("display_name"))
+            .retrieve()
+        return responseSpec.toEntity(String::class.java)
     }
 }
