@@ -17,9 +17,10 @@ test transactions +
 add Donate button and the counter charge mechanism +
 do not redirect to server endpoint if server is down +
 refactor kofi controller service +
-change donation page loading screen
-build modules in right order
+change donation page loading screen +
+build modules in right order 
 deal with spring front end
+find a way forward to login page early
 restructure backend code
 move all custom app props under app prop
 

@@ -4,7 +4,6 @@ import KoFiButton from "../../components/KoFiButton"
 import Header from "@/components/Header"
 import { useUser } from "@/hooks/useUser"
 import ErrorNotification from '@/components/ErrorNotification'
-import Loading from '@/components/Loading'
 
 import { useEffect, useState } from 'react'
 
@@ -13,6 +12,7 @@ export default function Donate() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const user = useUser(setErrorMessage);
+  const isLoadingUser = !user;
 
   useEffect(() => {
     if (!copied) return
@@ -21,9 +21,8 @@ export default function Donate() {
     return () => clearTimeout(timer)
   }, [copied])
 
-  if (!user) return <Loading />
-
   const handleCopy = async () => {
+    if (!user) return
     try {
       await navigator.clipboard.writeText(user.privateUserObject.id)
       setCopied(true)
@@ -37,7 +36,7 @@ export default function Donate() {
       {errorMessage && (
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
       )}
-      <Header user={user} />
+      <Header user={user} loading={isLoadingUser} />
       <main className="donate-content">
         <section className="user-id-section">
           <div className="user-id-header">
@@ -45,9 +44,19 @@ export default function Donate() {
             <p>Put this ID in your &quot;Your message&quot; form in Ko-fi and the service will be able to top up your GPT usages account</p>
             <p>If you have not received GPT usages after donation, please reach the developer in email artiom.diulgher@gmail.com with your supporter ID</p>
           </div>
-          <div className="user-id-box" role="group" aria-label="Supporter ID">
-            <span className="user-id-value">{user.privateUserObject.id}</span>
-            <button type="button" className="copy-button" onClick={handleCopy} aria-label="Copy supporter ID">
+          <div className={`user-id-box${isLoadingUser ? ' user-id-box--loading' : ''}`} role="group" aria-label="Supporter ID">
+            {isLoadingUser ? (
+              <span className="user-id-value user-id-value--loading" aria-hidden="true" />
+            ) : (
+              <span className="user-id-value">{user.privateUserObject.id}</span>
+            )}
+            <button
+              type="button"
+              className="copy-button"
+              onClick={handleCopy}
+              aria-label="Copy supporter ID"
+              disabled={isLoadingUser}
+            >
               Copy
             </button>
           </div>

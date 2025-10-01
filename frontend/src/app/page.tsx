@@ -74,6 +74,7 @@ export default function Home() {
         setAdvisories(jsonResponse.advisories)
         setGptUsagesLeft(jsonResponse.gptUsagesLeft)
       }
+      // TODO: test AbortError
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
         setErrorMessage('Request timed out. Please try again.')
@@ -99,7 +100,12 @@ export default function Home() {
       }
     }
 
-  if (!user) return <Loading />
+  if (!user) return (
+    <div>
+      <Header user={user}/>
+      <Loading />
+    </div>
+  )
 
   const csvData = [['name', 'genre', 'enriched']]
   enrichableArtistObjects.forEach((enrichableArtistObject) => {
