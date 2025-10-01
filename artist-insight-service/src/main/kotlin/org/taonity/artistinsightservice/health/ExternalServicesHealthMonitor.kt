@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -12,6 +13,7 @@ import java.util.LinkedHashMap
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
+@ConditionalOnProperty(value = ["health.enabled"], havingValue = "true")
 class ExternalServicesHealthMonitor(
     private val pingers: List<ExternalServiceHealthPinger>,
     @Value("\${health.external.refresh-interval-ms}")

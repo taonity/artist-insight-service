@@ -21,6 +21,7 @@ change donation page loading screen
 build modules in right order
 deal with spring front end
 restructure backend code
+move all custom app props under app prop
 
 create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 

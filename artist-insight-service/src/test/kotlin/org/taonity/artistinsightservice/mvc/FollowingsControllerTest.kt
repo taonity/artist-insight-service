@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.taonity.artistinsightservice.followings.FollowingsResponse
+import org.taonity.artistinsightservice.followings.dto.EnrichedFollowingsResponse
 
 @AutoConfigureStubRunner(
     ids = [
@@ -57,7 +58,7 @@ class FollowingsControllerTest: ControllerTestsBaseClass() {
             .andExpect(status().isOk)
             .andReturn()
 
-        val response: FollowingsResponse = OBJECT_MAPPER.readValue(mvcResult.response.contentAsString)
+        val response: EnrichedFollowingsResponse = OBJECT_MAPPER.readValue(mvcResult.response.contentAsString)
 
         assertThat(response.artists).hasSize(5)
 

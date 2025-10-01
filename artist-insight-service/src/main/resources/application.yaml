@@ -18,6 +18,7 @@ management:
         enabled: true
 
 health:
+  enabled: true
   external:
     refresh-interval-ms: 60000
     initial-delay-ms: 0

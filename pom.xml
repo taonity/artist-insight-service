@@ -17,9 +17,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>spotify-client</module>
-        <module>artist-insight-service</module>
         <module>spotify-contracts</module>
         <module>openai-contracts</module>
+        <module>artist-insight-service</module>
     </modules>
 
     <properties>

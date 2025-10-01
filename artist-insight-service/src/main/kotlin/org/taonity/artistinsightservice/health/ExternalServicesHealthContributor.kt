@@ -4,9 +4,11 @@ import org.springframework.boot.actuate.health.CompositeHealthContributor
 import org.springframework.boot.actuate.health.HealthContributor
 import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.boot.actuate.health.NamedContributor
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
 @Component("externalServices")
+@ConditionalOnProperty(value = ["health.enabled"], havingValue = "true")
 class ExternalServicesHealthContributor(
     monitor: ExternalServicesHealthMonitor
 ) : CompositeHealthContributor {

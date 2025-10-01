@@ -8,5 +8,6 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
   flyway:
+    cleanDisabled: false
     locations:
       - filesystem:../templates/docker/flyway/sql/tables
