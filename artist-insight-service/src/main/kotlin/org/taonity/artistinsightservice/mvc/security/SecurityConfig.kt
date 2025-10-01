@@ -39,7 +39,8 @@ class SecurityConfig(
                         "/me/following",
                         "/callback/kofi",
                         //TODO: add for local only?
-                        "/N4N11KVW3E"
+                        "/N4N11KVW3E",
+                        "/actuator/**"
                     ).permitAll().anyRequest()
                     .authenticated()
             }

@@ -15,9 +15,11 @@ sort genres in openai contracts + the sorting is not guaranteed by gpt anyway
 do I need Read your private profile information? + yes, it is required for /me
 test transactions +
 add Donate button and the counter charge mechanism +
-do not redirect to server endpoint if server is down
+do not redirect to server endpoint if server is down +
+refactor kofi controller service +
 change donation page loading screen
 build modules in right order
+deal with spring front end
 restructure backend code
 
 create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
