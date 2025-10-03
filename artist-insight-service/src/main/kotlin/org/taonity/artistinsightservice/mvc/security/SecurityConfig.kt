@@ -33,14 +33,12 @@ class SecurityConfig(
             .authorizeHttpRequests { requests ->
                 requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                     .requestMatchers(
-                        "/",
-                        "/error",
-                        "/webjars/**",
                         "/me/following",
                         "/callback/kofi",
+                        "/actuator/**",
                         //TODO: add for local only?
                         "/N4N11KVW3E",
-                        "/actuator/**"
+                        "/"
                     ).permitAll().anyRequest()
                     .authenticated()
             }
