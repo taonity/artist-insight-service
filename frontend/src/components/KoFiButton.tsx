@@ -5,7 +5,7 @@ import '../styles/kofi-button.scss'
 interface Props {
     username: string
     label: string
-    title: string
+    title?: string
     preset?: string
     backgroundColor?: ColorName
     animation?: string

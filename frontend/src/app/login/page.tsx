@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react'
 import ErrorNotification from '../../components/ErrorNotification'
 
 export default function Login() {
-  const [userLoading, setUserLoading] = useState(true)
   const [livenessLoading, setLivenessLoading] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -16,7 +14,9 @@ export default function Login() {
     fetch('/api/user', { credentials: 'include', signal: controller.signal })
       .then((res) => {
         if (res.ok) {
-          setLoggedIn(true)
+          if (typeof window !== 'undefined') {
+            window.location.href = '/'
+          }
         } else if (res.status === 504) {
           setErrorMessage('Request timed out. Please try again.')
         }
@@ -30,17 +30,8 @@ export default function Login() {
       })
       .finally(() => {
         clearTimeout(timeoutId)
-        setUserLoading(false)
       })
   }, [])
-
-
-  if (loggedIn) {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/'
-    }
-    return null
-  }
 
   const scopes = [
     'Read your private profile information',
@@ -90,7 +81,7 @@ export default function Login() {
         <button
           className="button"
           onClick={handleLogin}
-          disabled={userLoading && livenessLoading}
+          disabled={livenessLoading}
         >
           {livenessLoading ? 'Checking server...' : 'Login with Spotify'}
         </button>
