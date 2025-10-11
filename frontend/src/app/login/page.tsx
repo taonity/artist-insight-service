@@ -45,9 +45,7 @@ export default function Login() {
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 6000)
-
     try {
-      // Use /api/user as a lightweight availability check; any completed response means backend is up
       const response = await fetch('/api/actuator/health/liveness', { signal: controller.signal })
       const data = await response.json()
       if (!response.ok || data.status !== 'UP') {

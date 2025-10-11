@@ -21,6 +21,11 @@ change donation page loading screen +
 build modules in right order +
 deal with spring front end +
 
+add mdc fields
+implement healthcheck for front end
+fix gradient background in firefox
+deal with prod and test docker templates in target
+update artifact version in back and front
 find a way forward to login page early
 restructure backend code
 move all custom app props under app prop
