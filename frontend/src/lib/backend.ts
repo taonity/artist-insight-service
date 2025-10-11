@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 
-export const BACKEND_URL = process.env.BACKEND_URL || ''
+export const LOCAL_BACKEND_URL = process.env.LOCAL_BACKEND_URL || ''
+export const PUBLIC_BACKEND_URL = process.env.PUBLIC_BACKEND_URL || ''
 const TIMEOUT = 600000
 
 export async function fetchFromBackend(
@@ -18,7 +19,7 @@ export async function fetchFromBackend(
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT)
 
   try {
-    return await fetch(`${BACKEND_URL}${path}`, {
+    return await fetch(`${LOCAL_BACKEND_URL}${path}`, {
       ...init,
       headers,
       signal: controller.signal,

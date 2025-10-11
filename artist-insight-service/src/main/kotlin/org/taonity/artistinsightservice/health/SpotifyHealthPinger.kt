@@ -43,7 +43,7 @@ class SpotifyHealthPinger(
             )
         } catch (exception: Exception) {
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
-            LOGGER.warn(exception) { "Spotify availability check failed for $url" }
+            LOGGER.warn { "Spotify availability check failed for $url" }
             val details = mapOf(
                 "url" to url,
                 "responseTimeMs" to elapsedMs,

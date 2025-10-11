@@ -3,6 +3,7 @@ package org.taonity.artistinsightservice.health
 import mu.KotlinLogging
 import org.springframework.boot.actuate.health.Status
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.taonity.artistinsightservice.donation.kofi.KofiService
 import java.time.Duration
 import java.time.Instant
@@ -48,12 +49,17 @@ class KofiHealthPinger(
             )
         } catch (exception: Exception) {
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
-            LOGGER.warn(exception) { "Ko-fi availability check failed for $url" }
             val details = mapOf(
                 "url" to url,
                 "responseTimeMs" to elapsedMs,
                 "error" to (exception.message ?: exception::class.simpleName)
             )
+
+            if (exception is HttpClientErrorException && exception.statusCode.is4xxClientError) {
+               return HealthCheckResult(Status.UP, details)
+            }
+            LOGGER.warn { "Ko-fi availability check failed for $url" }
+
             HealthCheckResult(Status.DOWN, details)
         }
     }
