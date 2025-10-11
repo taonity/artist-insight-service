@@ -39,7 +39,7 @@ class OpenAIHealthPinger(
             HealthCheckResult(status = Status.UP, details = details)
         } catch (exception: Exception) {
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
-            LOGGER.warn(exception) { "OpenAI availability check failed for $url" }
+            LOGGER.warn { "OpenAI availability check failed for $url" }
             val details = mapOf(
                 "url" to url,
                 "responseTimeMs" to elapsedMs,
