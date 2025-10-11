@@ -91,14 +91,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Push back-end image to DockerHub
-      run: |
-        username=${{ secrets.DOCKER_USERNAME }}
-        artifactId=${{ steps.extract_backend_artifact_id.outputs.artifactId }}
-        tag=${{ steps.extract_tag.outputs.tag }}
-        docker push "$username/$artifactId:$tag"
-        docker push "$username/$artifactId:latest"
-
     - name: Push front-end image to DockerHub
       run: |
         username=${{ secrets.DOCKER_USERNAME }}
@@ -106,3 +98,11 @@ jobs:
         tag=${{ steps.extract_tag.outputs.tag }}
         docker push "$username/$packageName:$tag"
         docker push "$username/$packageName:latest"
+
+    - name: Push back-end image to DockerHub
+      run: |
+        username=${{ secrets.DOCKER_USERNAME }}
+        artifactId=${{ steps.extract_backend_artifact_id.outputs.artifactId }}
+        tag=${{ steps.extract_tag.outputs.tag }}
+        docker push "$username/$artifactId:$tag"
+        docker push "$username/$artifactId:latest"
