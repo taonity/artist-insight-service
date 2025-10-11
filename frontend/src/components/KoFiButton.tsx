@@ -31,7 +31,7 @@ function kofiColors(color: ColorName): string {
   return colors[color] ? colors[color] : color;
 }
 
-const NEXT_PUBLIC_KOFI_URL = process.env.NEXT_PUBLIC_KOFI_URL
+const KOFI_URL = process.env.KOFI_URL
 
 const KoFiButton: React.FC<Props> = ({ 
   username, 
@@ -42,7 +42,7 @@ const KoFiButton: React.FC<Props> = ({
   animation = true
 }) => {
 
-  var profile_url = NEXT_PUBLIC_KOFI_URL + "/" + username;
+  var profile_url = KOFI_URL + "/" + username;
 
   if (preset && !known_presets.includes(preset)) {
     console.warn("Unknown preset \"".concat(preset, "\", reverting to default"));

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "schedule": ["before 4am"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "github-actions dependencies",
+      "groupSlug": "github-actions-patch"
+    },
+    {
+      "matchManagers": ["maven", "docker-compose"],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "packageNames": ["com.google.cloud.tools:jib-maven-plugin"],
+      "allowedVersions": "3.4.2"
+    },
+    {
+      "packageNames": ["com.vk.api:sdk"],
+      "allowedVersions": "1.0.15"
+    },
+    {
+      "packageNames": ["postgres"],
+      "allowedVersions": "16"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Test
+
+on:
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - develop
+# TODO: add test runs
+#  pull_request_target:
+#    paths-ignore:
+#      - 'README.md'
+
+
+jobs:
+
+  approve-workflow:
+    if: github.actor == 'renovate[bot]' || github.actor == 'GeneralTao2'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get environment id
+      uses: actions/github-script@v7
+      id: environment-id
+      with:
+        script: |
+          const environmentResponse = await github.rest.repos.getEnvironment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            environment_name: 'E2E'
+          });
+          const environmentId = environmentResponse.data.id;
+          console.log("Env:", environmentId);
+          return environmentId;
+
+    - name: Approve workflow
+      uses: actions/github-script@v7
+      env:
+        GH_TOKEN: ${{ github.token }}
+      with:
+        github-token: ${{ secrets.APPROVE_WORKFLOW_GITHUB_TOKEN }}
+        # TODO some workflows can fail on pending_deployments request with error massage No pending deployment requests to approve or reject
+        # This happens at least when two workflows are running on several PRs in parralel
+        script: |
+          await github.rest.actions.reviewPendingDeploymentsForRun({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: context.runId,
+            environment_ids: [${{ steps.environment-id.outputs.result }}],
+            state: 'approved',
+            comment: 'Ship it!',
+          });
+
+
+  test:
+    strategy:
+      max-parallel: 1
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+      cancel-in-progress: true
+
+    runs-on: ubuntu-latest
+    environment: E2E
+    steps:
+    - uses: ahmadnassri/action-workflow-queue@v1
+      with:
+        delay: 60000
+        timeout: 1000000
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: |
+        ls -la
+        pwd
+        mvn -v
+        mvn -B -P docker clean package -DskipTests
+
+    - name: Prepare for tests with Maven
+      run: |
+        mvn -B -P automation clean package \
+          -DFORWARDER_VK_TOKEN=${{ secrets.FORWARDER_VK_TOKEN }} \
+          -DFORWARDER_VK_USER_ID=${{ secrets.FORWARDER_VK_USER_ID }} \
+          -DFORWARDER_VK_USERNAME=${{ secrets.FORWARDER_VK_USERNAME }} \
+          -DFORWARDER_VK_PASSWORD=${{ secrets.FORWARDER_VK_PASSWORD }} \
+          -DFORWARDER_TG_TOKEN=${{ secrets.FORWARDER_TG_TOKEN }} \
+          -DFORWARDER_TG_BOT_USERNAME=${{ secrets.FORWARDER_TG_BOT_USERNAME }} \
+          -DskipTests=true
+
+    - name: Cache Docker images.
+      uses: ScribeMD/docker-cache@0.5.0
+      with:
+        key: docker-${{ runner.os }}-${{ hashFiles('target/docker/test/docker-compose.yml') }}
+
+    - name: Run tests with Maven
+      env:
+        FORWARDER_TESTING_TG_BOT_TOKEN: ${{ secrets.FORWARDER_TESTING_TG_BOT_TOKEN }}
+        FORWARDER_TESTING_TG_BOT_USERNAME: ${{ secrets.FORWARDER_TESTING_TG_BOT_USERNAME }}
+        FORWARDER_TESTING_TG_CHANNEL_ID: ${{ secrets.FORWARDER_TESTING_TG_CHANNEL_ID }}
+        FORWARDER_TESTING_VK_GROUP_ID: ${{ secrets.FORWARDER_TESTING_VK_GROUP_ID }}
+        FORWARDER_TG_BOT_USERNAME: ${{ secrets.FORWARDER_TG_BOT_USERNAME }}
+      run: |
+        mvn test -Dtest=automation.runner.CucumberRunnerIT
+

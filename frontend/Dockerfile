@@ -1,6 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 # taken from https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 # docker build -t generaltao725/artist-insight-frontend .
+# docker build -t generaltao725/artist-insight-frontend frontend/
 # docker run -p 3000:3000 generaltao725/artist-insight-frontend
 
 FROM node:22-alpine AS base
