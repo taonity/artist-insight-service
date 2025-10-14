@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import org.taonity.artistinsightservice.attachments.Advisory
 import org.taonity.artistinsightservice.openai.OpenAITimeoutException
 import org.taonity.artistinsightservice.spotify.SpotifyClientException
@@ -21,6 +22,12 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception) {
         LOGGER.error(e) {}
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleException(e: NoResourceFoundException) {
+        LOGGER.debug(e) {}
     }
 
     @ExceptionHandler(OpenAITimeoutException::class)

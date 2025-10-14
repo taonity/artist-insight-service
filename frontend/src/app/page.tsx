@@ -30,7 +30,7 @@ export default function Home() {
   const loadUserFollowings = async () => {
     setLoading(true)
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
     try {
       const res = await fetch('/api/followings', { credentials: 'include', signal: controller.signal })
       if (res.status === 504) {
@@ -61,7 +61,7 @@ export default function Home() {
   const loadEnrichedFollowings = async () => {
     setLoading(true)
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    const timeoutId = setTimeout(() => controller.abort(), 60000)
     try {
       const res = await fetch('/api/followings/enriched', { credentials: 'include', signal: controller.signal })
       if (res.status === 504) {
