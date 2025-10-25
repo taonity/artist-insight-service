@@ -24,7 +24,7 @@ class GlobalExceptionHandler {
         LOGGER.error(e) {}
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException::class)
     fun handleException(e: NoResourceFoundException) {
         LOGGER.debug(e) {}

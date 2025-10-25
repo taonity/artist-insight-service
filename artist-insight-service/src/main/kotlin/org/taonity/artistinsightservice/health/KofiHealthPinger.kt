@@ -49,15 +49,15 @@ class KofiHealthPinger(
             )
         } catch (exception: Exception) {
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
-            val details = mapOf(
-                "url" to url,
-                "responseTimeMs" to elapsedMs,
-                "error" to (exception.message ?: exception::class.simpleName)
-            )
-
+            val details = HashMap<String, Any?>()
+            details["url"] = url
+            details["responseTimeMs"] = elapsedMs
             if (exception is HttpClientErrorException && exception.statusCode.is4xxClientError) {
-               return HealthCheckResult(Status.UP, details)
+                details["error"] = (exception.message?.take(MAX_BODY_PREVIEW_CHARS) ?: exception::class.simpleName)
+                return HealthCheckResult(Status.UP, details)
             }
+            details["error"] = (exception.message ?: exception::class.simpleName)
+
             LOGGER.warn { "Ko-fi availability check failed for $url" }
 
             HealthCheckResult(Status.DOWN, details)

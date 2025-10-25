@@ -29,12 +29,8 @@ update artifact version in back and front
 find a way forward to login page early
 restructure backend code
 move all custom app props under app prop
+measure all requests in backed, including auth
 
 create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 
 waiting for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
-
-check if different backend url actually matters 
-check backend trace logs again
-find out at what point session id is put in requst
-if doens't work then try same subdomain

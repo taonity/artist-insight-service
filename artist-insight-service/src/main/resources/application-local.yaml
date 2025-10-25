@@ -1,0 +1,4 @@
+logging:
+  level:
+    org.taonity.artistinsightservice.logging.HttpServletLoggingService: debug
+#    root: trace

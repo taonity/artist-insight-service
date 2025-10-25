@@ -10,13 +10,17 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus,metrics
   endpoint:
     health:
       show-details: always
       probes:
         enabled: true
-
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: artist-insight-service
 health:
   enabled: true
   external:
@@ -25,7 +29,3 @@ health:
 
 spotify:
   healthcheck-user-id: 3126nx54y24ryqyza3qxcchi4wry
-
-#logging:
-#  level:
-#    root: TRACE

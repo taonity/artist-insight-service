@@ -3,6 +3,8 @@ services:
     extends:
       file: db/docker-compose.yml
       service: db
+    networks:
+      - backend
     ports:
       - 5434:5432
 
@@ -10,6 +12,8 @@ services:
     extends:
       file: flyway/docker-compose.yml
       service: flyway
+    networks:
+      - backend
     depends_on:
       db:
         condition: service_healthy
@@ -18,6 +22,9 @@ services:
     extends:
       file: app/docker-compose.yml
       service: app
+    networks:
+      - backend
+      - prodenv-shared-internal
     depends_on:
       flyway:
         condition: service_completed_successfully
@@ -26,6 +33,8 @@ services:
     extends:
       file: frontend/docker-compose.yml
       service: frontend
+    networks:
+      - prodenv-shared-internal
     depends_on:
       app:
         condition: service_healthy
@@ -33,3 +42,8 @@ services:
 volumes:
   artist-insight-service-volume-db:
   artist-insight-service-volume-db-backup:
+
+networks:
+  backend:
+  prodenv-shared-internal:
+    external: true

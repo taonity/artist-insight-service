@@ -8,12 +8,10 @@ import org.springframework.security.web.csrf.CsrfTokenRequestHandler
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
-import org.taonity.artistinsightservice.logging.HttpServletLoggingService
 import java.util.function.Supplier
 
 @Service
 class SpaCsrfTokenRequestHandler(
-    private val httpServletLoggingService: HttpServletLoggingService
 ) : CsrfTokenRequestHandler {
     private val plain: CsrfTokenRequestHandler = CsrfTokenRequestAttributeHandler()
     private val xor: CsrfTokenRequestHandler = XorCsrfTokenRequestAttributeHandler()
@@ -23,9 +21,7 @@ class SpaCsrfTokenRequestHandler(
          * Always use XorCsrfTokenRequestAttributeHandler to provide BREACH protection of
          * the CsrfToken when it is rendered in the response body.
          */
-        val contentCachingRequestWrapper = httpServletLoggingService.logRequestWithWrapping(request)
-        xor.handle(contentCachingRequestWrapper, response, csrfToken)
-//        xor.handle(request, response, csrfToken)
+        xor.handle(request, response, csrfToken)
         /*
          * Render the token value to a cookie by causing the deferred token to be loaded.
          */
