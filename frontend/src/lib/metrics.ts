@@ -3,13 +3,23 @@ import client from 'prom-client'
 
 type MetricLabelNames = 'method' | 'route' | 'status'
 
+type WebVitalLabelNames = 'metric' | 'page' | 'rating'
+
+type FrontendErrorLabelNames = 'type' | 'page'
+
 type MetricLabels = Record<MetricLabelNames, string>
+
+type WebVitalLabels = Record<WebVitalLabelNames, string>
+
+type FrontendErrorLabels = Record<FrontendErrorLabelNames, string>
 
 type MetricsGlobal = typeof globalThis & {
   __ARTIST_INSIGHT_METRICS__?: {
     registry: client.Registry
     requestCounter: client.Counter<MetricLabelNames>
     requestDurationMax: client.Gauge<MetricLabelNames>
+    webVitalGauge: client.Gauge<WebVitalLabelNames>
+    frontendErrorCounter: client.Counter<FrontendErrorLabelNames>
     maxValues: Map<string, number>
     resetTimer: NodeJS.Timeout
   }
@@ -35,6 +45,20 @@ if (!globalWithMetrics.__ARTIST_INSIGHT_METRICS__) {
     registers: [registry],
   })
 
+  const webVitalGauge = new client.Gauge<WebVitalLabelNames>({
+    name: 'frontend_web_vital_value',
+    help: 'Latest real user monitoring value reported from the browser for a given web vital metric.',
+    labelNames: ['metric', 'page', 'rating'],
+    registers: [registry],
+  })
+
+  const frontendErrorCounter = new client.Counter<FrontendErrorLabelNames>({
+    name: 'frontend_error_total',
+    help: 'Count of client-observed failures grouped by error type and page.',
+    labelNames: ['type', 'page'],
+    registers: [registry],
+  })
+
   const maxValues = new Map<string, number>()
   const resetTimer = setInterval(() => {
     requestDurationMax.reset()
@@ -49,12 +73,21 @@ if (!globalWithMetrics.__ARTIST_INSIGHT_METRICS__) {
     registry,
     requestCounter,
     requestDurationMax,
+    webVitalGauge,
+    frontendErrorCounter,
     maxValues,
     resetTimer,
   }
 }
 
-const { registry, requestCounter, requestDurationMax, maxValues } =
+const {
+  registry,
+  requestCounter,
+  requestDurationMax,
+  webVitalGauge,
+  frontendErrorCounter,
+  maxValues,
+} =
   globalWithMetrics.__ARTIST_INSIGHT_METRICS__!
 
 export const metricsContentType = registry.contentType
@@ -72,6 +105,35 @@ export function recordRequestMetrics(labels: MetricLabels, durationSeconds: numb
     maxValues.set(key, durationSeconds)
     requestDurationMax.set(labels, durationSeconds)
   }
+}
+
+type WebVitalRecord = {
+  metric: string
+  page: string
+  rating: string
+  value: number
+}
+
+export function recordWebVitalMetric(record: WebVitalRecord) {
+  const labels: WebVitalLabels = {
+    metric: record.metric,
+    page: record.page,
+    rating: record.rating,
+  }
+  webVitalGauge.set(labels, record.value)
+}
+
+type FrontendErrorRecord = {
+  type: string
+  page: string
+}
+
+export function recordFrontendErrorMetric(record: FrontendErrorRecord) {
+  const labels: FrontendErrorLabels = {
+    type: record.type,
+    page: record.page,
+  }
+  frontendErrorCounter.inc(labels)
 }
 
 type HandlerOptions = {
