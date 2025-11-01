@@ -1,5 +1,9 @@
 server:
   port: 9016
+  servlet:
+    session:
+      cookie:
+        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:localhost}
 
 app:
   minimised-http-servlet-logging: true

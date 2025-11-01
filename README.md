@@ -1,36 +1,92 @@
-todo
+## artist-insight
+A service that allows you to fetch your Spotify followings and share them with others. This is a test field for new
+technologies I learn too, so the approaches are not necessarily efficient. Yet the project is something that should
+be useful.
 
-put no image placeholders for artists +
-improve profile granularity +
-add load tests, with images too -
-implement loading on frontend +
-add notification on simple following retrieval if an artist doesn't have genres, with estimation of gpt usages required and possible +
-fix gpt usages left in frontend +
-style login page with some description +
-add error pages for +
-fix spending gpt usages on failed openai request +
-manage advisaries in react - idk maybe later
-fix server address in browser search on server down - maybe later
-sort genres in openai contracts + the sorting is not guaranteed by gpt anyway
-do I need Read your private profile information? + yes, it is required for /me
-test transactions +
-add Donate button and the counter charge mechanism +
-do not redirect to server endpoint if server is down +
-refactor kofi controller service +
-change donation page loading screen +
-build modules in right order +
-deal with spring front end +
+### Features
+- Fetch user followings and show them with genres in a list
+- Download the following list as a CSV file
+- Define missing artist genres using OpenAI
+- Log in with a Spotify user using OAuth
 
-add mdc fields
-implement healthcheck for front end
-fix gradient background in firefox
-deal with prod and test docker templates in target
-update artifact version in back and front
-find a way forward to login page early
-restructure backend code
-move all custom app props under app prop
-measure all requests in backed, including auth
+### Roadmap
+- Add more details in the artists list & implement different list views
+- Add more ways to donate to the service
+- Add selectors for grouping artists by details like genre
+- Review site design
+- Add Liked Songs details list
+- Add more music service integrations
 
-create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
+### Project structure
+- Backend - Java Spring Boot application on Maven
+- Frontend - TypeScript Next.js with client and server parts
+- Deployment - Docker Compose template with backend, frontend, Postgres, and Flyway
 
-waiting for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
+### How to run
+#### Backend
+The project has all its resources stubbed for the most comfortable local development. It has a list of profiles for any running requirements.
+
+| Profile      | Resource    | Description                                                        |
+|--------------|-------------|--------------------------------------------------------------------|
+| stub-spotify | Spotify     | Spring Boot Contract Stub with stubbed endpoints                   |
+| prod-spotify | Spotify     | Production configuration that requires Spotify project credentials |
+| stub-openai  | OpenAI      | Spring Boot Contract Stub with stubbed endpoints                   |
+| prod-openai  | OpenAI      | Production configuration that requires OpenAI project api key      |
+| h2           | Postgres    | H2 in-memory database                                              |
+| postgres     | Postgres    | Regular Postgres configuration for a local or remote instance      |
+| stub-kofi    | Ko-Fi       | Stub Spring MVC endpoint that generates Ko-Fi webhook              |
+| prod-kofi    | Ko-Fi       | Production configuration that requires verification token          |
+| local        | No resource | Common local configurations for development                        |
+
+Only one profile from a resource group can be used. For example, for the set for the production environment looks like
+`postgres,prod-spotify,prod-openai`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,local`.
+
+Use IntelliJ to run the backend locally. Add a Run/Debug configuration with Main class `org.taonity.artistinsightservice.MainKt`
+and VM options `-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local` and run the backend.
+
+#### Frontend
+I recommend opening /frontend directory in Visual Code. Run `npm insatll`, and then `npm run dev`.
+
+### Docker Compose deployment
+Docker Compose runs the backend and frontend with all stubs except the Spotify one. The Spotify stub is not workable there yet.
+Therefore, the production configs are used and credentials should be provided.
+
+Run this. These are some shared networks required for production deployment.
+```bash
+docker network create prodenv-shared-internal
+docker network artist-insight-shared
+```
+Run this
+```bash
+# Prepares Docker Compose templates for running. Make sure you are on the last released tag in git.
+mvn clean -P automation compile -DskipTests=true
+# Runs Docker Compose template with images from Dockerhub. Make sure you placed all required env vars.
+docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
+```
+
+Or you can build the images yourself by following the instructions. Run this
+```bash
+# Builds backend Docker image and prepares Docker Compose templates for running
+mvn clean -P docker,automation -pl artist-insight-service install -DskipTests=true
+# Installs npm modules for Next.js frontend
+npm install --prefix frontend/
+# Builds the latest image of the frontend app using Dockerfile
+docker build -t generaltao725/artist-insight-frontend -t generaltao725/artist-insight-frontend frontend/
+# Runs Docker Compose template with images from Dockerhub. Make sure you placed all required env vars.
+docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
+```
+
+### Prod deployment
+The service is deployed in a cheap VPS. [taonity/docker-webhook](https://github.com/taonity/docker-webhook) is used for
+deployment in my custom production environment - [taonity/prodenv](https://github.com/taonity/prodenv/tree/defr-prodenv).
+
+### Tech debts
+- Add mdc fields
+- Implement healthcheck for front-end
+- Fix the gradient background in Firefox
+- Deal with prod and test Docker templates in the target
+- Update artifact version in back and front
+- Found a way forward to login page early
+- Restructure backend code
+- Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
+- Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092

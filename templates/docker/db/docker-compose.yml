@@ -3,6 +3,7 @@ services:
     image: postgres:16
     volumes:
       - artist-insight-service-volume-db:/var/lib/postgresql/data
+#      TODO: implement automated backup
       - artist-insight-service-volume-db-backup:/backup
       - ./shared:/shared
     env_file:

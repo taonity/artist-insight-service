@@ -25,6 +25,7 @@ services:
     networks:
       - backend
       - prodenv-shared-internal
+      - artist-insight-shared
     depends_on:
       flyway:
         condition: service_completed_successfully
@@ -46,4 +47,6 @@ volumes:
 networks:
   backend:
   prodenv-shared-internal:
+    external: true
+  artist-insight-shared:
     external: true

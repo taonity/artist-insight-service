@@ -63,6 +63,7 @@ class SecurityConfig(
         return http.build()
     }
 
+//    TODO: verify effectiveness
     @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration()

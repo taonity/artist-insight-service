@@ -17,22 +17,22 @@ spring:
             scope: user-follow-read, user-read-private
         provider:
           spotify:
-            issuer-uri: http://localhost:8100
-            user-info-uri: http://localhost:8100/v1/me
+            issuer-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}
+            user-info-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}/v1/me
             userNameAttribute: display_name
 
 app:
-  default-success-url: http://localhost:3000
-  cors-allowed-origins: http://localhost:3000
+  default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
+  cors-allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 spotify:
   api-base-url: http://localhost:8100/v1
 
 stubrunner:
-  stubs-mode: LOCAL
+  stubs-mode: CLASSPATH
 
 
 stub-spotify-mergeable:
   stubrunner:
     ids:
-      - org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100
+      - org.taonity:spotify-contracts:@project.version@:stubs:8100

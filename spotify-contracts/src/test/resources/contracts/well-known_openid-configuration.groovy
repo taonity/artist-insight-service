@@ -17,6 +17,7 @@ Contract.make {
         }
 
         // see https://accounts.spotify.com/.well-known/openid-configuration
+        // TODO: make the base url configurable somehow, required for the run in container
         body (
             issuer                               : "http://localhost:8100",
             authorization_endpoint               : "http://localhost:8100/oauth2/v2/auth",

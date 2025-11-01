@@ -3,9 +3,9 @@ openai:
   base-url: http://localhost:8101/v1
 
 stubrunner:
-  stubs-mode: LOCAL
-      
+  stubs-mode: CLASSPATH
+
 stub-openai-mergeable:
   stubrunner:
     ids:
-      - org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101
+      - org.taonity:openai-contracts:@project.version@:stubs:8101
