@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 type Severity = 'INFO' | 'WARNING' | 'ERROR'
 
 export interface Advisory {
-  code: 'TOO_MANY_FOLLOWERS' | 'GPT_ENRICHMENT_AVAILABLE'
+  code: string
   title: string
   detail: string
   severity: Severity

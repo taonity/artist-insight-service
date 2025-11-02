@@ -1,7 +1,5 @@
 ## artist-insight
-A service that allows you to fetch your Spotify followings and share them with others. This is a test field for new
-technologies I learn too, so the approaches are not necessarily efficient. Yet the project is something that should
-be useful.
+A service that allows you to fetch your Spotify followings and share them with others.
 
 ### Features
 - Fetch user followings and show them with genres in a list
@@ -9,11 +7,15 @@ be useful.
 - Define missing artist genres using OpenAI
 - Log in with a Spotify user using OAuth
 
+<img src="images/site-user-page.png" width="600" />
+
 ### Roadmap
+- Add user roles and admin panel
 - Add more details in the artists list & implement different list views
 - Add more ways to donate to the service
 - Add selectors for grouping artists by details like genre
 - Review site design
+- Adopt site for mobile devices
 - Add Liked Songs details list
 - Add more music service integrations
 
@@ -38,7 +40,7 @@ The project has all its resources stubbed for the most comfortable local develop
 | prod-kofi    | Ko-Fi       | Production configuration that requires verification token          |
 | local        | No resource | Common local configurations for development                        |
 
-Only one profile from a resource group can be used. For example, for the set for the production environment looks like
+Only one profile from a resource group can be used. For example, the set for the production environment looks like
 `postgres,prod-spotify,prod-openai`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,local`.
 
 Use IntelliJ to run the backend locally. Add a Run/Debug configuration with Main class `org.taonity.artistinsightservice.MainKt`
@@ -49,7 +51,7 @@ I recommend opening /frontend directory in Visual Code. Run `npm insatll`, and t
 
 ### Docker Compose deployment
 Docker Compose runs the backend and frontend with all stubs except the Spotify one. The Spotify stub is not workable there yet.
-Therefore, the production configs are used and credentials should be provided.
+Therefore, the production configs are used, and credentials should be provided.
 
 Run this. These are some shared networks required for production deployment.
 ```bash
@@ -76,17 +78,46 @@ docker build -t generaltao725/artist-insight-frontend -t generaltao725/artist-in
 docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
 ```
 
+### Environment variable
+The project requires a set of environment variables to be configured for some services, depending on which profile set you use.
+
+| Env var                              | Service  | Description                                  |
+|--------------------------------------|----------|----------------------------------------------|
+| COMPOSE_PROJECT_NAME                 | Postgres | Name for Docker Compose project              |
+| POSTGRES_USER                        | Postgres | Used by Flyway                               |
+| POSTGRES_PASSWORD                    | Postgres | Used by Flyway                               |
+| POSTGRES_DB                          | Postgres | DB name                                      |
+| POSTGRES_APP_USER                    | Postgres | Used by backend                              |
+| POSTGRES_APP_PASSWORD                | Postgres | Used by backend                              |
+| POSTGRES_PORT                        | Postgres |                                              |
+| POSTGRES_ADDRESS                     | Postgres |                                              |
+| SPOTIFY_CLIENT_ID                    | Backend  | Taken from Spotify developer dashboard       |
+| SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard       |
+| DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login |
+| CORS_ALLOWED_ORIGINS                 | Backend  | CORS allowed origins for security            |
+| SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend         |
+| OPENAI_API_KEY                       | Backend  | Taken from OpenAI platform organisation      |
+| KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings        |
+| SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)         |
+| PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation     |
+
 ### Prod deployment
 The service is deployed in a cheap VPS. [taonity/docker-webhook](https://github.com/taonity/docker-webhook) is used for
 deployment in my custom production environment - [taonity/prodenv](https://github.com/taonity/prodenv/tree/defr-prodenv).
 
+#### Grafana dashboard
+The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob/defr-prodenv/logging/grafana/provisioning/dashboards/artist-insight-dashboard.json) with Prometheus
+
+<img src="images/dashboard.png" width="600" />
+
 ### Tech debts
 - Add mdc fields
 - Implement healthcheck for front-end
-- Fix the gradient background in Firefox
+- Fix the gradient background in some browsers
 - Deal with prod and test Docker templates in the target
+- Add automation tests
 - Update artifact version in back and front
-- Found a way forward to login page early
+- Find a way forward to the login page early
 - Restructure backend code
 - Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 - Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
