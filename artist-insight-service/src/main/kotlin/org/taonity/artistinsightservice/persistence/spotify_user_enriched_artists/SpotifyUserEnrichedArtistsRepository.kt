@@ -2,4 +2,6 @@ package org.taonity.artistinsightservice.persistence.spotify_user_enriched_artis
 
 import org.springframework.data.repository.CrudRepository
 
-interface SpotifyUserEnrichedArtistsRepository: CrudRepository<SpotifyUserEnrichedArtistsEntity, SpotifyUserEnrichedArtistsId>
+interface SpotifyUserEnrichedArtistsRepository: CrudRepository<SpotifyUserEnrichedArtistsEntity, SpotifyUserEnrichedArtistsId> {
+    fun deleteAllByUserSpotifyId(spotifyId: String)
+}

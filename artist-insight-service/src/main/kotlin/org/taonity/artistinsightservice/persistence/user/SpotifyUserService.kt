@@ -3,12 +3,15 @@ package org.taonity.artistinsightservice.persistence.user
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
+import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsRepository
 import java.util.Objects.isNull
 
 @Service
 class SpotifyUserService(
     private val spotifyUserRepository: SpotifyUserRepository,
+    private val spotifyUserEnrichedArtistsRepository: SpotifyUserEnrichedArtistsRepository,
     @Value("\${app.initial-user-gpt-usages}") private val initialUserGptUsages: Int
 ) {
     companion object {
@@ -44,6 +47,18 @@ class SpotifyUserService(
 
         spotifyUserRepository.save(spotifyUserEntityToSave)
         LOGGER.info { "User $spotifyUserEntityToSave saved" }
+    }
+
+    @Transactional
+    fun deleteUserBySpotifyId(spotifyId: String) {
+        if (!spotifyUserRepository.existsById(spotifyId)) {
+            LOGGER.warn { "Attempted to delete non-existent user with spotifyId $spotifyId" }
+            return
+        }
+
+        LOGGER.info { "Deleting user data for spotifyId $spotifyId" }
+        spotifyUserEnrichedArtistsRepository.deleteAllByUserSpotifyId(spotifyId)
+        spotifyUserRepository.deleteById(spotifyId)
     }
 
     private fun maskSecret(secret: String): String {
