@@ -800,7 +800,6 @@ button:disabled {
   transform: translateX(-50%);
   width: min(640px, calc(100% - 32px));
   background: rgba(25, 20, 20, 0.95);
-  border: 1px solid #1db954;
   border-radius: 16px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
   z-index: 1000;
