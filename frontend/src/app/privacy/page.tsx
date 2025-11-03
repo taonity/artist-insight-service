@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 }
 
 const PrivacyPolicy = () => {
-  const effectiveDate = new Date('2024-01-01')
+  const effectiveDate = new Date('2025-11-03')
 
   return (
     <div className="legal-page">
