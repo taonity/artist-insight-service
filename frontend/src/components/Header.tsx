@@ -11,19 +11,8 @@ interface Props {
 
 // TODO: check loading
 const Header: React.FC<Props> = ({ user, loading = false }) => {
-  function getCookie(name: string) {
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? decodeURIComponent(match[2]) : null;
-  }
-
-  const logout = async () => {
-    const xsrfToken = getCookie("XSRF-TOKEN");
-    await fetch("/api/logout", {
-      method: "POST",
-      credentials: "include",
-      headers: xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : {},
-    });
-    window.location.href = "/login";
+  const toUserPage = async () => {
+    window.location.href = "/user";
   };
 
   const donate = async () => {
@@ -77,7 +66,7 @@ const Header: React.FC<Props> = ({ user, loading = false }) => {
           <button onClick={toHome}>Home</button>
         )}
 
-        <button onClick={logout}>Logout</button>
+        <button onClick={toUserPage}>User Page</button>
       </div>
     </div>
   );

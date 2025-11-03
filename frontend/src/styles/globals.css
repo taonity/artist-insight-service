@@ -207,6 +207,59 @@ a.button:hover {
   border-left: 4px solid #ff5555;
 }
 
+.user-page {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 640px;
+}
+
+.user-page-card {
+  background: rgba(40, 40, 40, 0.85);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.user-page-card h1 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.75rem;
+}
+
+.user-page-card p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.user-page-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.danger-button {
+  background-color: #e22134;
+  color: #fff;
+}
+
+.danger-button:hover {
+  background-color: #ff4b5c;
+  color: #fff;
+}
+
+.danger-button:disabled,
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-page-warning {
+  font-size: 0.95rem;
+  color: #d1d1d1;
+  line-height: 1.4;
+}
+
 .advisory-close {
   position: absolute;
   top: 4px;
