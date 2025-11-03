@@ -9,7 +9,7 @@ const TermsOfUse = () => {
   return (
     <div className="legal-page">
       <h1>Terms of Use</h1>
-      <p className="legal-effective-date">Effective date: {new Date('2024-01-01').toLocaleDateString()}</p>
+      <p className="legal-effective-date">Effective date: {new Date('2025-11-03').toLocaleDateString()}</p>
 
       <section>
         <h2>Acceptance of terms</h2>
