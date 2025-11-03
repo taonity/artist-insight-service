@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
@@ -24,7 +26,7 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="/donate">Support the project</a>
+              <Link href="/donate">Support the project</Link>
             </li>
           </ul>
         </div>
@@ -36,6 +38,17 @@ const Footer = () => {
             </li>
             <li>
               <span>No ads. No trackers. Just music insights.</span>
+            </li>
+          </ul>
+        </div>
+        <div className="footer-links">
+          <h3>Legal</h3>
+          <ul>
+            <li>
+              <Link href="/privacy">Privacy Policy</Link>
+            </li>
+            <li>
+              <Link href="/terms">Terms of Use</Link>
             </li>
           </ul>
         </div>
