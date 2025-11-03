@@ -207,35 +207,45 @@ a.button:hover {
   border-left: 4px solid #ff5555;
 }
 
-.user-page {
-  padding: 32px;
+.settings-page {
+  padding: 48px 32px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 640px;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-.user-page-card {
-  background: rgba(40, 40, 40, 0.85);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+.settings-page-card {
+  background: rgba(24, 24, 24, 0.9);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
 }
 
-.user-page-card h1 {
+.settings-page-card h1 {
   margin-top: 0;
   margin-bottom: 16px;
-  font-size: 1.75rem;
+  font-size: 2rem;
 }
 
-.user-page-card p {
-  margin: 8px 0;
+.settings-page-card p {
+  margin: 10px 0;
   font-size: 1rem;
+  color: #d1d1d1;
 }
 
-.user-page-actions {
+.settings-page-card strong {
+  color: #fff;
+}
+
+.settings-page-actions {
   display: flex;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .danger-button {
@@ -254,10 +264,11 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.user-page-warning {
+.settings-page-warning {
   font-size: 0.95rem;
   color: #d1d1d1;
-  line-height: 1.4;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .advisory-close {

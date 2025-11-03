@@ -28,7 +28,7 @@ async function requestLogout(xsrfToken: string) {
   }
 }
 
-export default function UserPage() {
+export default function SettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const user = useUser(setErrorMessage)
@@ -107,14 +107,14 @@ export default function UserPage() {
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
       )}
       <Header user={user} loading={isLoadingUser} />
-      <div className="user-page">
+      <div className="settings-page">
         {isLoadingUser ? (
-          <div className="user-page-card">
+          <div className="settings-page-card">
             <p>Loading your account details…</p>
           </div>
         ) : (
           <>
-            <div className="user-page-card">
+            <div className="settings-page-card">
               <h1>Your account</h1>
               <p>
                 <strong>Display name:</strong> {user.privateUserObject.displayName}
@@ -126,7 +126,7 @@ export default function UserPage() {
                 <strong>GPT enrichments remaining:</strong> {user.gptUsagesLeft}
               </p>
             </div>
-            <div className="user-page-actions">
+            <div className="settings-page-actions">
               <button onClick={handleLogout} disabled={isProcessing}>
                 Log out
               </button>
@@ -134,7 +134,7 @@ export default function UserPage() {
                 Delete account
               </button>
             </div>
-            <p className="user-page-warning">
+            <p className="settings-page-warning">
               Deleting your account removes your saved preferences. Artists and genres that have already been
               enriched stay available for the community.
             </p>

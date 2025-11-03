@@ -11,8 +11,8 @@ interface Props {
 
 // TODO: check loading
 const Header: React.FC<Props> = ({ user, loading = false }) => {
-  const toUserPage = async () => {
-    window.location.href = "/user";
+  const toSettingsPage = async () => {
+    window.location.href = "/settings";
   };
 
   const donate = async () => {
@@ -66,7 +66,7 @@ const Header: React.FC<Props> = ({ user, loading = false }) => {
           <button onClick={toHome}>Home</button>
         )}
 
-        <button onClick={toUserPage}>User Page</button>
+        <button onClick={toSettingsPage}>Settings</button>
       </div>
     </div>
   );
