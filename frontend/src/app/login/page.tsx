@@ -1,11 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Righteous } from 'next/font/google'
+import Image from 'next/image'
 import ErrorNotification from '../../components/ErrorNotification'
+import BackgroundPhrases from '../../components/BackgroundPhrases'
+
+const righteous = Righteous({ 
+  weight: '400',
+  subsets: ['latin'],
+})
 
 export default function Login() {
   const [livenessLoading, setLivenessLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [genreDescription, setGenreDescription] = useState<string | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -68,32 +77,41 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      <BackgroundPhrases onGenreHover={setGenreDescription} />
       {errorMessage && (
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
       )}
-      <div className="login-card">
-        <h1>Artist Insight</h1>
-        <p className="tagline">
-          Easily fetch your Spotify followings and share them with friends. Start exploring and enjoy the experience!
-        </p>
-        <button
-          className="button"
-          onClick={handleLogin}
-          disabled={livenessLoading}
-        >
-          {livenessLoading ? 'Checking server...' : 'Login with Spotify'}
-        </button>
-        <div className="auth-info">
-          <p className="redirect-note">
-            You may be redirected to Spotify to log in. This app will be able to:
-          </p>
-          <ul className="scope-list">
-            {scopes.map((scope) => (
-              <li key={scope}>{scope}</li>
-            ))}
-          </ul>
+      <h1 className={`login-logo ${righteous.className}`}>Artist Insight</h1>
+      <button
+        className="button login-button"
+        onClick={handleLogin}
+        disabled={livenessLoading}
+      >
+        {!livenessLoading && (
+          <Image 
+            src="/spotify-logo-white-transparent.png" 
+            alt="Spotify" 
+            width={24} 
+            height={24}
+            className="button-logo"
+          />
+        )}
+        {livenessLoading ? 'Checking server...' : 'Continue with Spotify'}
+      </button>
+      {genreDescription ? (
+        <div key="description" className="login-features genre-description-box">
+          <p>{genreDescription}</p>
         </div>
-      </div>
+      ) : (
+        <div key="features" className="login-features">
+          <p>See your followings genres</p>
+          <p>Discover new genres for your followings</p>
+          <p>Share your followings with friends</p>
+          <p>
+            See the development <a href="https://github.com/taonity/artist-insight-service?tab=readme-ov-file#roadmap" target="_blank" rel="noopener noreferrer">roadmap</a> and suggest your ideas
+          </p>
+        </div>
+      )}
     </div>
   )
 }

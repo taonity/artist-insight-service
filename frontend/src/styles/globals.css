@@ -1,3 +1,9 @@
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1db954 #191414;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -7,6 +13,25 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #191414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1db954;
+  border-radius: 6px;
+  border: 2px solid #191414;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1ed760;
 }
 
 a {
@@ -42,7 +67,7 @@ a.button {
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  margin-right: 12px;
+  margin-right: 0;
   font-weight: bold;
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s ease-in-out;
@@ -562,9 +587,57 @@ button:disabled {
 .login-container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 32px;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-phrases {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 0;
+}
+
+.background-phrase {
+  position: absolute;
+  color: #1db954;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  cursor: pointer;
+  transition: color 0.3s ease, font-weight 0.3s ease, text-shadow 0.3s ease;
+}
+
+.background-phrase:hover {
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.genre-description-box p {
+  color: #b3b3b3 !important;
+  font-size: 1.05rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.login-logo {
+  font-size: 3rem;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(31, 237, 109, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .login-card {
@@ -582,9 +655,43 @@ button:disabled {
   line-height: 1.5;
 }
 
-.login-card .button {
-  margin: 0 auto 16px;
-  display: inline-block;
+.login-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff !important;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.login-button:hover {
+  color: #ffffff !important;
+}
+
+.login-button .button-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.login-features {
+  margin-top: 32px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  height: 166px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-features p {
+  color: #b3b3b3;
+  font-size: 1rem;
+  margin: 8px 0;
+  line-height: 1.6;
 }
 
 .auth-info {
