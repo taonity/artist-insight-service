@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Righteous } from 'next/font/google'
 import Image from 'next/image'
 import ErrorNotification from '../../components/ErrorNotification'
@@ -11,12 +12,20 @@ const righteous = Righteous({
   subsets: ['latin'],
 })
 
-export default function Login() {
+function LoginContent() {
+  const searchParams = useSearchParams()
   const [livenessLoading, setLivenessLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [genreDescription, setGenreDescription] = useState<string | null>(null)
 
   useEffect(() => {
+    // Check for error message from OAuth2 authentication failure
+    const errorParam = searchParams.get('error')
+    if (errorParam) {
+      setErrorMessage(decodeURIComponent(errorParam))
+      return
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 6000)
 
@@ -40,7 +49,7 @@ export default function Login() {
       .finally(() => {
         clearTimeout(timeoutId)
       })
-  }, [])
+  }, [searchParams])
 
   const scopes = [
     'Read your private profile information',
@@ -113,5 +122,13 @@ export default function Login() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div className="login-container"><div>Loading...</div></div>}>
+      <LoginContent />
+    </Suspense>
   )
 }
