@@ -18,7 +18,7 @@ const Footer = () => {
           <ul>
             <li>
               <a
-                href="https://github.com/artist-insight"
+                href="https://github.com/taonity/artist-insight-service"
                 target="_blank"
                 rel="noopener noreferrer"
               >
