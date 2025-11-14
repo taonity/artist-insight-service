@@ -108,38 +108,45 @@ export default function SettingsPage() {
       )}
       <Header user={user} loading={isLoadingUser} />
       <div className="settings-page">
-        {isLoadingUser ? (
-          <div className="settings-page-card">
-            <p>Loading your account details…</p>
-          </div>
-        ) : (
-          <>
-            <div className="settings-page-card">
-              <h1>Your account</h1>
-              <p>
-                <strong>Display name:</strong> {user.privateUserObject.displayName}
-              </p>
-              <p>
-                <strong>Spotify ID:</strong> {user.privateUserObject.id}
-              </p>
-              <p>
-                <strong>GPT enrichments remaining:</strong> {user.gptUsagesLeft}
-              </p>
-            </div>
-            <div className="settings-page-actions">
-              <button onClick={handleLogout} disabled={isProcessing}>
-                Log out
-              </button>
-              <button className="danger-button" onClick={handleDeleteAccount} disabled={isProcessing}>
-                Delete account
-              </button>
-            </div>
-            <p className="settings-page-warning">
-              Deleting your account removes your saved preferences. Artists and genres that have already been
-              enriched stay available for the community.
-            </p>
-          </>
-        )}
+        <div className="settings-page-card">
+          <h1>Your account</h1>
+          <p>
+            <strong>Display name:</strong>{' '}
+            {isLoadingUser ? (
+              <span className="skeleton-line short" style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0 }} />
+            ) : (
+              user.privateUserObject.displayName
+            )}
+          </p>
+          <p>
+            <strong>Spotify ID:</strong>{' '}
+            {isLoadingUser ? (
+              <span className="skeleton-line" style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0 }} />
+            ) : (
+              user.privateUserObject.id
+            )}
+          </p>
+          <p>
+            <strong>GPT enrichments remaining:</strong>{' '}
+            {isLoadingUser ? (
+              <span className="skeleton-line short" style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0, width: '3ch' }} />
+            ) : (
+              user.gptUsagesLeft
+            )}
+          </p>
+        </div>
+        <div className="settings-page-actions">
+          <button onClick={handleLogout} disabled={isProcessing || isLoadingUser}>
+            Log out
+          </button>
+          <button className="danger-button" onClick={handleDeleteAccount} disabled={isProcessing || isLoadingUser}>
+            Delete account
+          </button>
+        </div>
+        <p className="settings-page-warning">
+          Deleting your account removes your saved preferences. Artists and genres that have already been
+          enriched stay available for the community.
+        </p>
       </div>
     </div>
   )

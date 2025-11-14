@@ -40,8 +40,11 @@ class SecurityConfig(
                     ).permitAll().anyRequest()
                     .authenticated()
             }
+            // TODO: do I need this?
             .logout { l ->
-                l.logoutSuccessUrl("/").permitAll()
+                l.logoutSuccessHandler { _, response, _ ->
+                    response.status = 200
+                }.permitAll()
             }
             .exceptionHandling { e ->
                 e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

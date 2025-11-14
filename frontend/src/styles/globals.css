@@ -202,6 +202,20 @@ a.button:hover {
 
 .actions {
   margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.actions button,
+.actions a.button {
+  margin-right: 0;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 20px;
 }
 
 .advisories {
@@ -658,12 +672,15 @@ button:disabled {
 .login-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   color: #ffffff !important;
   padding: 12px 32px;
   font-size: 1.1rem;
   position: relative;
   z-index: 1;
+  min-width: 290px;
+  min-height: 48px;
 }
 
 .login-button:hover {
