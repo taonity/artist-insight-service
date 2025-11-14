@@ -20,6 +20,7 @@ import java.util.*
 @EnableWebSecurity
 class SecurityConfig(
     private val oAuth2UserPersistenceService: OAuth2UserPersistenceService,
+    private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
     @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String
@@ -59,6 +60,7 @@ class SecurityConfig(
                     u.userService(oAuth2UserPersistenceService)
                 }
                     .defaultSuccessUrl(defaultSuccessUrl, true)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
             }
             .oauth2Client(Customizer.withDefaults())
             .cors { }

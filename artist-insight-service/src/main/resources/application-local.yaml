@@ -1,4 +1,6 @@
 logging:
   level:
     org.taonity.artistinsightservice.logging.HttpServletLoggingService: debug
+    org.taonity.artistinsightservice.mvc.GlobalExceptionHandler: debug
+#    org.springframework.security: TRACE
 #    root: trace
