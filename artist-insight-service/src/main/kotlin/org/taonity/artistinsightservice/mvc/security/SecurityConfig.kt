@@ -23,7 +23,8 @@ class SecurityConfig(
     private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
-    @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String
+    @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String,
+    @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String
 ) {
 
     @Bean
@@ -51,7 +52,9 @@ class SecurityConfig(
                 e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             }
             .csrf { c ->
-                c.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                val csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse()
+                csrfTokenRepository.setCookieName(csrfCookieName)
+                c.csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
                     .ignoringRequestMatchers("/callback/kofi")
             }
@@ -63,13 +66,13 @@ class SecurityConfig(
                     .failureHandler(oAuth2AuthenticationFailureHandler)
             }
             .oauth2Client(Customizer.withDefaults())
-            .cors { }
+           .cors { }
 
         return http.build()
     }
 
 //    TODO: verify effectiveness
-    @Bean
+//    @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowCredentials = true

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Header from '@/components/Header'
 import ErrorNotification from '@/components/ErrorNotification'
 import { useUser } from '@/hooks/useUser'
+import { CSRF_COOKIE_NAME } from '@/lib/backend'
 
 const csrfErrorMessage = 'Unable to verify your request. Please refresh the page and try again.'
 const networkErrorMessage = 'Unable to connect to the server. Please check your connection.'
@@ -34,7 +35,7 @@ export default function SettingsPage() {
   const user = useUser(setErrorMessage)
 
   const handleLogout = async () => {
-    const xsrfToken = getCookie('XSRF-TOKEN')
+    const xsrfToken = getCookie(CSRF_COOKIE_NAME)
     if (!xsrfToken) {
       setErrorMessage(csrfErrorMessage)
       return
@@ -56,7 +57,7 @@ export default function SettingsPage() {
       return
     }
 
-    const xsrfToken = getCookie('XSRF-TOKEN')
+    const xsrfToken = getCookie(CSRF_COOKIE_NAME)
     if (!xsrfToken) {
       setErrorMessage(csrfErrorMessage)
       return
