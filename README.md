@@ -81,26 +81,27 @@ docker compose -f artist-insight-service/target/docker/test/docker-compose.yml u
 ### Environment variable
 The project requires a set of environment variables to be configured for some services, depending on which profile set you use.
 
-| Env var                              | Service  | Description                                  |
-|--------------------------------------|----------|----------------------------------------------|
-| COMPOSE_PROJECT_NAME                 | Postgres | Name for Docker Compose project              |
-| POSTGRES_USER                        | Postgres | Used by Flyway                               |
-| POSTGRES_PASSWORD                    | Postgres | Used by Flyway                               |
-| POSTGRES_DB                          | Postgres | DB name                                      |
-| POSTGRES_APP_USER                    | Postgres | Used by backend                              |
-| POSTGRES_APP_PASSWORD                | Postgres | Used by backend                              |
-| POSTGRES_PORT                        | Postgres |                                              |
-| POSTGRES_ADDRESS                     | Postgres |                                              |
-| SPOTIFY_CLIENT_ID                    | Backend  | Taken from Spotify developer dashboard       |
-| SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard       |
-| DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login |
-| LOGIN_URL                            | Backend  | Redirect for a user after a failed login     |
-| CORS_ALLOWED_ORIGINS                 | Backend  | CORS allowed origins for security            |
-| SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend         |
-| OPENAI_API_KEY                       | Backend  | Taken from OpenAI platform organisation      |
-| KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings        |
-| SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)         |
-| PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation     |
+| Env var                              | Service  | Description                                                     |
+|--------------------------------------|----------|-----------------------------------------------------------------|
+| COMPOSE_PROJECT_NAME                 | Postgres | Name for Docker Compose project                                 |
+| POSTGRES_USER                        | Postgres | Used by Flyway                                                  |
+| POSTGRES_PASSWORD                    | Postgres | Used by Flyway                                                  |
+| POSTGRES_DB                          | Postgres | DB name                                                         |
+| POSTGRES_APP_USER                    | Postgres | Used by backend                                                 |
+| POSTGRES_APP_PASSWORD                | Postgres | Used by backend                                                 |
+| POSTGRES_PORT                        | Postgres |                                                                 |
+| POSTGRES_ADDRESS                     | Postgres |                                                                 |
+| SPOTIFY_CLIENT_ID                    | Backend  | Taken from Spotify developer dashboard                          |
+| SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard                          |
+| DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login                    |
+| LOGIN_URL                            | Backend  | Redirect for a user after a failed login                        |
+| CORS_ALLOWED_ORIGINS                 | Backend  | CORS allowed origins for security                               |
+| SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend                            |
+| SERVER_SERVLET_SESSION_COOKIE_NAME   | Backend  | Cookie name for frontend and backend, for ex. JSESSIONID-STAGE  |
+| OPENAI_API_KEY                       | Backend  | Taken from OpenAI platform organisation                         |
+| KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings                           |
+| SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                            |
+| PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation                        |
 
 ### Prod deployment
 The service is deployed in a cheap VPS. [taonity/docker-webhook](https://github.com/taonity/docker-webhook) is used for
@@ -112,6 +113,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
+- Create default app setting row in db
 - Add mdc fields
 - Log frontend version in logs
 - Implement healthcheck for front-end

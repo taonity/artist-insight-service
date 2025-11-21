@@ -5,7 +5,7 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-
+# TODO: not functional, add tests
 name: Test
 
 on:
@@ -85,21 +85,11 @@ jobs:
 
     - name: Build with Maven
       run: |
-        ls -la
-        pwd
-        mvn -v
-        mvn -B -P docker clean package -DskipTests
+        mvn -B -P build-docker-image clean package -DskipTests
 
     - name: Prepare for tests with Maven
       run: |
-        mvn -B -P automation clean package \
-          -DFORWARDER_VK_TOKEN=${{ secrets.FORWARDER_VK_TOKEN }} \
-          -DFORWARDER_VK_USER_ID=${{ secrets.FORWARDER_VK_USER_ID }} \
-          -DFORWARDER_VK_USERNAME=${{ secrets.FORWARDER_VK_USERNAME }} \
-          -DFORWARDER_VK_PASSWORD=${{ secrets.FORWARDER_VK_PASSWORD }} \
-          -DFORWARDER_TG_TOKEN=${{ secrets.FORWARDER_TG_TOKEN }} \
-          -DFORWARDER_TG_BOT_USERNAME=${{ secrets.FORWARDER_TG_BOT_USERNAME }} \
-          -DskipTests=true
+        mvn -B -P build-automation-docker-compose-project clean package -DskipTests=true
 
     - name: Cache Docker images.
       uses: ScribeMD/docker-cache@0.5.0
@@ -107,12 +97,6 @@ jobs:
         key: docker-${{ runner.os }}-${{ hashFiles('target/docker/test/docker-compose.yml') }}
 
     - name: Run tests with Maven
-      env:
-        FORWARDER_TESTING_TG_BOT_TOKEN: ${{ secrets.FORWARDER_TESTING_TG_BOT_TOKEN }}
-        FORWARDER_TESTING_TG_BOT_USERNAME: ${{ secrets.FORWARDER_TESTING_TG_BOT_USERNAME }}
-        FORWARDER_TESTING_TG_CHANNEL_ID: ${{ secrets.FORWARDER_TESTING_TG_CHANNEL_ID }}
-        FORWARDER_TESTING_VK_GROUP_ID: ${{ secrets.FORWARDER_TESTING_VK_GROUP_ID }}
-        FORWARDER_TG_BOT_USERNAME: ${{ secrets.FORWARDER_TG_BOT_USERNAME }}
       run: |
         mvn test -Dtest=automation.runner.CucumberRunnerIT
 

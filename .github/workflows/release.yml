@@ -71,10 +71,10 @@ jobs:
         echo "packageName=$packageName" >> "$GITHUB_OUTPUT"
         echo "Successfully extracted packageName $packageName"
 
-    - name: Build back-end with Maven & create docker image
+    - name: Build back-end with Maven & build docker image
       run: |
         mvn -v
-        mvn -B -P docker clean package -DskipTests
+        mvn -B -P build-docker-image clean package -DskipTests
 
     - name: Build front-end with npm
       run: |

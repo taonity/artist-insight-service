@@ -1,4 +1,4 @@
-COMPOSE_PROJECT_NAME=artist-insight-service
+COMPOSE_PROJECT_NAME=artist-insight-service-test
 POSTGRES_USER=d
 POSTGRES_PASSWORD=d
 POSTGRES_DB=artist_insight_service
@@ -13,5 +13,6 @@ DEFAULT_SUCCESS_URL=http://localhost:3002
 CORS_ALLOWED_ORIGINS=http://host.docker.internal:3002
 SPRING_PROFILES_ACTIVE=postgres,prod-spotify,stub-openai,stub-kofi,local
 
+LOCAL_BACKEND_URL: http://app:9016
 PUBLIC_BACKEND_URL=http://localhost:9016
 

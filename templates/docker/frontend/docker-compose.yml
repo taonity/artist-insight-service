@@ -1,9 +1,5 @@
 services:
   frontend:
     image: generaltao725/artist-insight-frontend:latest
-    environment:
-      LOCAL_BACKEND_URL: http://app:9016
     env_file:
       - ../.env
-    ports:
-      - 127.0.0.1:3002:3000

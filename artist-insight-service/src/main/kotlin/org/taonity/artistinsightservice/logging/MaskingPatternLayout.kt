@@ -44,12 +44,12 @@ class MaskingPatternLayout : PatternLayout() {
         if (length > 8) {
             // Mask all except first and last two characters
             for (i in start + 2 until end - 2) {
-                sb.setCharAt(i, '*')
+                sb[i] = '*'
             }
         } else {
             // Mask all characters
             for (i in start until end) {
-                sb.setCharAt(i, '*')
+                sb[i] = '*'
             }
         }
     }

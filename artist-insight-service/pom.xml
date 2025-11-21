@@ -241,7 +241,7 @@
 
     <profiles>
         <profile>
-            <id>automation</id>
+            <id>build-automation-docker-compose-project</id>
             <properties>
                 <docker-compose.path>target/docker/test</docker-compose.path>
                 <docker-compose.file>docker-compose-test.yml</docker-compose.file>
@@ -303,8 +303,7 @@
         </profile>
 
         <profile>
-<!--           TODO: rename profile -->
-            <id>docker</id>
+            <id>build-docker-image</id>
             <properties>
                 <docker-compose.path>target/docker</docker-compose.path>
                 <docker-compose.file>docker-compose.yml</docker-compose.file>

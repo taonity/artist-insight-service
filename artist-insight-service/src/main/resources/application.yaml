@@ -4,6 +4,7 @@ server:
     session:
       cookie:
         domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:localhost}
+        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME:JSESSIONID-LOCAL}
 
 app:
   minimised-http-servlet-logging: true
