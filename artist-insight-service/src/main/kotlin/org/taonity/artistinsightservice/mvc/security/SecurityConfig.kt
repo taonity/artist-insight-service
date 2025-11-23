@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.csrf.*
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.util.*
 
 
@@ -23,7 +21,6 @@ class SecurityConfig(
     private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
-    @Value("\${app.cors-allowed-origins}") private val corsAllowedOrigins: String,
     @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String
 ) {
 
@@ -66,22 +63,8 @@ class SecurityConfig(
                     .failureHandler(oAuth2AuthenticationFailureHandler)
             }
             .oauth2Client(Customizer.withDefaults())
-           .cors { }
 
         return http.build()
-    }
-
-//    TODO: verify effectiveness
-//    @Bean
-    fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
-        val configuration = CorsConfiguration()
-        configuration.allowCredentials = true
-        configuration.allowedOrigins = listOf(corsAllowedOrigins)
-        configuration.allowedMethods = listOf("*")
-        configuration.allowedHeaders = listOf("*")
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
-        return source
     }
 }
 

@@ -24,7 +24,6 @@ spring:
 app:
   default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
   login-url: ${LOGIN_URL:http://localhost:3000/login}
-  cors-allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 spotify:
   api-base-url: https://api.spotify.com/v1

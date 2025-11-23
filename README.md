@@ -95,7 +95,6 @@ The project requires a set of environment variables to be configured for some se
 | SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard                          |
 | DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login                    |
 | LOGIN_URL                            | Backend  | Redirect for a user after a failed login                        |
-| CORS_ALLOWED_ORIGINS                 | Backend  | CORS allowed origins for security                               |
 | SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend                            |
 | SERVER_SERVLET_SESSION_COOKIE_NAME   | Backend  | Cookie name for frontend and backend, for ex. JSESSIONID-STAGE  |
 | OPENAI_API_KEY                       | Backend  | Taken from OpenAI platform organisation                         |

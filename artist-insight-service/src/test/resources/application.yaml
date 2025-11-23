@@ -30,7 +30,6 @@ openai:
 
 app:
   default-success-url: /
-  cors-allowed-origins: http://localhost:8100
   minimised-http-servlet-logging: false
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50

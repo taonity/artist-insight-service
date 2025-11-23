@@ -10,7 +10,6 @@ POSTGRES_ADDRESS=db
 SPOTIFY_CLIENT_ID=
 SPOTIFY_CLIENT_SECRET=
 DEFAULT_SUCCESS_URL=http://localhost:3002
-CORS_ALLOWED_ORIGINS=http://host.docker.internal:3002
 SPRING_PROFILES_ACTIVE=postgres,prod-spotify,stub-openai,stub-kofi,local
 
 LOCAL_BACKEND_URL: http://app:9016
