@@ -17,6 +17,33 @@
             ],
             // to fix the "not secure" error in Chrome
             "port": 9876
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Docker: Attach to Next.js Server",
+            "address": "localhost",
+            "port": 9229,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/app",
+            "skipFiles": [
+                "<node_internals>/**",
+                "/app/node_modules/**",
+                "/app/.next/**"
+            ],
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/.next/**/*.js"
+            ],
+            "resolveSourceMapLocations": [
+                "/app/src/**",
+                "!**/node_modules/**"
+            ],
+            "sourceMapPathOverrides": {
+                "/app/*": "${workspaceFolder}/*",
+                "webpack://_N_E/*": "${workspaceFolder}/*",
+                "webpack:///*": "${workspaceFolder}/*"
+            }
         }
     ]
 }

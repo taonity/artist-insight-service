@@ -9,6 +9,10 @@ const nextConfig = {
       }
     ]
   },
-  output: 'standalone'
+  output: 'standalone',
+  productionBrowserSourceMaps: true,
+  env: {
+    BUILD_TIME: new Date().toISOString()
+  }
 }
 module.exports = nextConfig
