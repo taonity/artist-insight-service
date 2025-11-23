@@ -2,7 +2,6 @@ import type { NextRequest } from 'next/server'
 
 export const LOCAL_BACKEND_URL = process.env.LOCAL_BACKEND_URL || ''
 export const PUBLIC_BACKEND_URL = process.env.PUBLIC_BACKEND_URL || ''
-export const CSRF_COOKIE_NAME = process.env.NEXT_PUBLIC_CSRF_COOKIE_NAME || 'XSRF-TOKEN-LOCAL'
 const TIMEOUT = 600000
 
 export async function fetchFromBackend(

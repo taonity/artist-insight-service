@@ -113,6 +113,8 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
+- indicate frontend version in buils in site footer
+- Add configuration to throw exception in browser console for stage env
 - Create default app setting row in db
 - Add mdc fields
 - Log frontend version in logs

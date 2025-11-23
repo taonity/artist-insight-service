@@ -58,6 +58,11 @@ const Footer = () => {
           &copy; {currentYear} Artist Insight. Built independently using the
           Spotify API. Artist Insight is not affiliated with Spotify.
         </p>
+        {process.env.BUILD_TIME && (
+          <p style={{ fontSize: '0.85em', opacity: 0.7, marginTop: '0.5rem' }}>
+            Build: {new Date(process.env.BUILD_TIME).toLocaleString()}
+          </p>
+        )}
       </div>
     </footer>
   );
