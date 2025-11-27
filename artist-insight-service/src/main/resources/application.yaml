@@ -1,8 +1,8 @@
 server:
   port: 9016
+  use-forward-headers: true
+  forward-headers-strategy: native
   servlet:
-    use-forward-headers: true
-    forward-headers-strategy: native
     session:
       cookie:
         domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:localhost}
