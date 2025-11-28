@@ -64,12 +64,7 @@ class HttpServletLoggingService(
             return wrappedRequest
         }
 
-        val requestBody = if (isNull(request.characterEncoding)) {
-            LOGGER.debug { "Request character encoding is null, using default UTF-8 for logging." }
-            String(wrappedRequest.contentAsByteArray, Charset.defaultCharset())
-        } else {
-            String(wrappedRequest.contentAsByteArray, Charset.forName(request.characterEncoding))
-        }
+        val requestBody = String(wrappedRequest.contentAsByteArray, Charset.forName(request.characterEncoding))
 
         val headersJson = getInterestedHeaders(request)
         val cookiesJson = getInterestedCookies(request)

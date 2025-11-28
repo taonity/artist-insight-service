@@ -127,3 +127,12 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 - Restructure backend code
 - Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 - Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
+
+#### Notes
+Servlet filters order:
+OrderedCharacterEncodingFilter -2147483648
+ServerHttpObservationFilter -2147483647
+AllRequestsLoggingFilter -2147483646
+OrderedFormContentFilter -9900
+OrderedRequestContextFilter -105
+DelegatingFilterProxyRegistrationBean

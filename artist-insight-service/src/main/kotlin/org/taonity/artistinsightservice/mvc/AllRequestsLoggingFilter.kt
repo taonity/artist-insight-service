@@ -10,7 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import org.taonity.artistinsightservice.logging.HttpServletLoggingService
 
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 class AllRequestsLoggingFilter(
     private val httpServletLoggingService: HttpServletLoggingService
 ): OncePerRequestFilter() {
