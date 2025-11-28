@@ -22,8 +22,8 @@ spring:
             userNameAttribute: display_name
 
 app:
-  default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
-  login-url: ${LOGIN_URL:http://localhost:3000/login}
+  default-success-url: ${DEFAULT_SUCCESS_URL:http://127.0.0.1:3000}
+  login-url: ${LOGIN_URL:http://127.0.0.1:3000/login}
 
 spotify:
   api-base-url: https://api.spotify.com/v1

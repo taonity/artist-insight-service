@@ -14,8 +14,8 @@ import org.taonity.artistinsightservice.followings.dto.EnrichedFollowingsRespons
 
 @AutoConfigureStubRunner(
     ids = [
-        "org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100",
-        "org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101"
+        "org.taonity:spotify-contracts:0.23.0:stubs:8100",
+        "org.taonity:openai-contracts:0.23.0:stubs:8101"
     ],
     stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )

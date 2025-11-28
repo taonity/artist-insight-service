@@ -4,3 +4,11 @@ logging:
     org.taonity.artistinsightservice.mvc.GlobalExceptionHandler: debug
 #    org.springframework.security: TRACE
 #    root: trace
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          spotify-artist-insight-service:
+            redirect-uri: http://127.0.0.1:9016/login/oauth2/code/spotify-artist-insight-service

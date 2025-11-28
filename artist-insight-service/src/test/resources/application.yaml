@@ -33,6 +33,8 @@ app:
   minimised-http-servlet-logging: false
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
+  login-url: http://127.0.0.1:3000/login
+  csrf-cookie-name: XSRF-TOKEN-LOCAL
 
 spotify:
   api-base-url: http://localhost:8100/v1

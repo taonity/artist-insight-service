@@ -16,8 +16,9 @@ import org.taonity.artistinsightservice.user.SpotifyUserDto
 import org.taonity.spotify.model.ImageObject
 
 
+// TODO: make it use the latest version
 @AutoConfigureStubRunner(
-    ids = ["org.taonity:spotify-contracts:1.0-SNAPSHOT:stubs:8100"],
+    ids = ["org.taonity:spotify-contracts:0.23.0:stubs:8100"],
     stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 //@Sql(scripts = ["classpath:sql/test-data.sql"])
