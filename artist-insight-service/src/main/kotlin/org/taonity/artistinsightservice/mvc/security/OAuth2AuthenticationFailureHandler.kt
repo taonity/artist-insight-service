@@ -1,10 +1,10 @@
 package org.taonity.artistinsightservice.mvc.security
 
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
@@ -17,7 +17,8 @@ enum class AuthenticationErrorCode {
 
 @Component
 class OAuth2AuthenticationFailureHandler(
-    @Value("\${app.login-url}") private val loginUrl: String
+    @Value("\${app.login-url}") private val loginUrl: String,
+    @Value("\${server.servlet.session.cookie.domain}") private val cookieDomain: String
 ) : SimpleUrlAuthenticationFailureHandler() {
 
     companion object {
@@ -41,11 +42,15 @@ class OAuth2AuthenticationFailureHandler(
             }
         }
 
-        val cookie = Cookie(AUTH_ERROR_COOKIE_NAME, errorCode.name)
-        cookie.path = "/"
-        cookie.maxAge = 60
-        cookie.isHttpOnly = false
-        response.addCookie(cookie)
+        val cookie = ResponseCookie.from(AUTH_ERROR_COOKIE_NAME, errorCode.name)
+            .path("/")
+            .maxAge(60)
+            .httpOnly(false)
+            .secure(loginUrl.startsWith("https"))
+            .sameSite(if (loginUrl.startsWith("https")) "None" else "Lax")
+            .domain(cookieDomain)
+            .build()
+        response.addHeader("Set-Cookie", cookie.toString())
 
         redirectStrategy.sendRedirect(request, response, loginUrl)
     }

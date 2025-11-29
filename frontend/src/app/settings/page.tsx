@@ -5,15 +5,10 @@ import Header from '@/components/Header'
 import ErrorNotification from '@/components/ErrorNotification'
 import { useUser } from '@/hooks/useUser'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
+import { logError } from '@/utils/logger'
 
 const csrfErrorMessage = 'Unable to verify your request. Please refresh the page and try again.'
 const networkErrorMessage = 'Unable to connect to the server. Please check your connection.'
-
-function logError(message: string, error?: any) {
-  if (typeof window !== 'undefined' && localStorage.getItem('artist-insight-debug') === 'true') {
-    console.error(`[SettingsPage] ${message}`, error)
-  }
-}
 
 function getCookie(name: string) {
   if (typeof document === 'undefined') {
@@ -48,7 +43,7 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     const xsrfToken = getCookie(csrfCookieName)
     if (!xsrfToken) {
-      logError('CSRF token not found for logout with CSRF_COOKIE_NAME=' + csrfCookieName)
+      logError('SettingsPage', 'CSRF token not found for logout with CSRF_COOKIE_NAME=' + csrfCookieName)
       setErrorMessage(csrfErrorMessage)
       return
     }
@@ -58,7 +53,7 @@ export default function SettingsPage() {
       await requestLogout(xsrfToken)
       window.location.href = '/login'
     } catch (err) {
-      logError('Logout failed', err)
+      logError('SettingsPage', 'Logout failed', err)
       setErrorMessage('Unable to log out. Please try again.')
     } finally {
       setIsProcessing(false)
@@ -72,7 +67,7 @@ export default function SettingsPage() {
 
     const xsrfToken = getCookie(csrfCookieName)
     if (!xsrfToken) {
-      logError('CSRF token not found for delete account with CSRF_COOKIE_NAME=' + csrfCookieName)
+      logError('SettingsPage', 'CSRF token not found for delete account with CSRF_COOKIE_NAME=' + csrfCookieName)
       setErrorMessage(csrfErrorMessage)
       return
     }
@@ -91,13 +86,13 @@ export default function SettingsPage() {
       }
 
       if (res.status === 403) {
-        logError('Delete account forbidden - CSRF validation failed')
+        logError('SettingsPage', 'Delete account forbidden - CSRF validation failed')
         setErrorMessage(csrfErrorMessage)
         return
       }
 
       if (!res.ok && res.status !== 204) {
-        logError('Delete account failed with status: ' + res.status)
+        logError('SettingsPage', 'Delete account failed with status: ' + res.status)
         setErrorMessage('Failed to delete your account. Please try again.')
         return
       }
@@ -105,13 +100,13 @@ export default function SettingsPage() {
       try {
         await requestLogout(xsrfToken)
       } catch (err) {
-        logError('Logout after delete account failed', err)
+        logError('SettingsPage', 'Logout after delete account failed', err)
         // Ignore logout failures here and continue redirecting the user.
       }
 
       window.location.href = '/login'
     } catch (err) {
-      logError('Delete account network error', err)
+      logError('SettingsPage', 'Delete account network error', err)
       setErrorMessage(networkErrorMessage)
     } finally {
       setIsProcessing(false)

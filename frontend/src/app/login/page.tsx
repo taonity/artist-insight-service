@@ -7,6 +7,7 @@ import Image from 'next/image'
 import ErrorNotification from '../../components/ErrorNotification'
 import BackgroundPhrases from '../../components/BackgroundPhrases'
 import DevelopmentAccessNotification from '../../components/DevelopmentAccessNotification'
+import { logError, logDebug } from '@/utils/logger'
 
 const righteous = Righteous({ 
   weight: '400',
@@ -38,12 +39,15 @@ function LoginContent() {
   useEffect(() => {
     // Check for error code from OAuth2 authentication failure (stored in cookie)
     const authErrorCode = getCookie('auth_error')
+    logDebug('LoginPage', 'authErrorCode is ' + authErrorCode)
     if (authErrorCode) {
       deleteCookie('auth_error') // Remove cookie after reading
       
       if (authErrorCode === 'UNAUTHORIZED_SPOTIFY_ACCOUNT') {
+        logError('LoginPage', 'Unauthorized Spotify account')
         setShowAccessRequestForm(true)
       } else if (authErrorCode === 'AUTHENTICATION_FAILED') {
+        logError('LoginPage', 'Authentication failed')
         setErrorMessage('Authentication failed. Please try again.')
       }
       return
@@ -59,13 +63,18 @@ function LoginContent() {
             window.location.href = '/'
           }
         } else if (res.status === 504) {
+          logError('LoginPage', 'User fetch timed out with 504 status')
           setErrorMessage('Request timed out. Please try again.')
+        } else {
+          logError('LoginPage', 'User fetch failed with status: ' + res.status)
         }
       })
       .catch((err) => {
         if (err.name === 'AbortError') {
+          logError('LoginPage', 'User fetch aborted due to timeout')
           setErrorMessage('Request timed out. Please try again.')
         } else {
+          logError('LoginPage', 'User fetch network error', err)
           setErrorMessage('Unable to connect to the server. Please check your connection.')
         }
       })
@@ -90,6 +99,7 @@ function LoginContent() {
       const response = await fetch('/api/actuator/health/liveness', { signal: controller.signal })
       const data = await response.json()
       if (!response.ok || data.status !== 'UP') {
+        logError('LoginPage', 'Liveness check failed', { status: response.status, data })
         setErrorMessage('Backend server is currently unavailable. Please try again later.')
         setLivenessLoading(false)
         return
@@ -97,8 +107,10 @@ function LoginContent() {
       window.location.href = '/api/oauth2/authorization/spotify-artist-insight-service'
     } catch (err: any) {
       if (err.name === 'AbortError') {
+        logError('LoginPage', 'Liveness check timed out')
         setErrorMessage('Request timed out. Please try again.')
       } else {
+        logError('LoginPage', 'Liveness check network error', err)
         setErrorMessage('Unable to connect to the server. Please check your connection.')
       }
     } finally {
