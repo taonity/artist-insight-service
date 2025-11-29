@@ -33,6 +33,7 @@ class SecurityConfig(
                     .requestMatchers(
                         "/callback/kofi",
                         "/actuator/**",
+                        "/development-access-request",
                         //TODO: add for local only?
                         "/N4N11KVW3E",
                         "/"

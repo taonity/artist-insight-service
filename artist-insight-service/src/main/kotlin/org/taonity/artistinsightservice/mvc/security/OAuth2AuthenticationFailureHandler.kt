@@ -1,5 +1,6 @@
 package org.taonity.artistinsightservice.mvc.security
 
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
@@ -8,9 +9,11 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.stereotype.Component
-import org.springframework.web.util.UriComponentsBuilder
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+
+enum class AuthenticationErrorCode {
+    UNAUTHORIZED_SPOTIFY_ACCOUNT,
+    AUTHENTICATION_FAILED
+}
 
 @Component
 class OAuth2AuthenticationFailureHandler(
@@ -19,6 +22,7 @@ class OAuth2AuthenticationFailureHandler(
 
     companion object {
         private val LOGGER = KotlinLogging.logger {}
+        private const val AUTH_ERROR_COOKIE_NAME = "auth_error"
     }
 
     override fun onAuthenticationFailure(
@@ -26,22 +30,23 @@ class OAuth2AuthenticationFailureHandler(
         response: HttpServletResponse,
         exception: AuthenticationException
     ) {
-        val errorMessage = when {
+        val errorCode = when {
             exception is OAuth2AuthenticationException && exception.error.errorCode == "invalid_user_info_response" -> {
                 LOGGER.warn { "User authentication failed due to Spotify whitelist: ${exception.message}" }
-                "Access denied. Your Spotify account is not authorized to use this application. Please contact the administrator."
+                AuthenticationErrorCode.UNAUTHORIZED_SPOTIFY_ACCOUNT
             }
             else -> {
                 LOGGER.error(exception) { "Authentication failed: ${exception.message}" }
-                "Authentication failed. Please try again."
+                AuthenticationErrorCode.AUTHENTICATION_FAILED
             }
         }
 
-        val targetUrl = UriComponentsBuilder.fromUriString(loginUrl)
-            .queryParam("error", URLEncoder.encode(errorMessage, StandardCharsets.UTF_8))
-            .build()
-            .toUriString()
+        val cookie = Cookie(AUTH_ERROR_COOKIE_NAME, errorCode.name)
+        cookie.path = "/"
+        cookie.maxAge = 60
+        cookie.isHttpOnly = false
+        response.addCookie(cookie)
 
-        redirectStrategy.sendRedirect(request, response, targetUrl)
+        redirectStrategy.sendRedirect(request, response, loginUrl)
     }
 }

@@ -12,3 +12,10 @@ spring:
         registration:
           spotify-artist-insight-service:
             redirect-uri: http://127.0.0.1:9016/login/oauth2/code/spotify-artist-insight-service
+
+app:
+  admin-email: ${ADMIN_EMAIL}
+  rate-limit:
+    send-email:
+      capacity: 1
+      refill-duration: PT1M

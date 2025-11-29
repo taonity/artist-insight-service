@@ -1,4 +1,4 @@
-postgres-url: jdbc:postgresql://${POSTGRES_ADDRESS:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:artist_insight_service}
+postgres-url: jdbc:postgresql://${POSTGRES_ADDRESS:localhost}:${POSTGRES_PORT:5434}/${POSTGRES_DB:artist_insight_service}
 
 spring:
   datasource:

@@ -13,6 +13,11 @@ app:
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
   csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-LOCAL}
+  admin-email: ${ADMIN_EMAIL}
+  rate-limit:
+    send-email:
+      capacity: 1
+      refill-duration: PT1M
 
 management:
   endpoints:
@@ -37,3 +42,16 @@ health:
 
 spotify:
   healthcheck-user-id: 3126nx54y24ryqyza3qxcchi4wry
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${ORGANISATION_EMAIL}
+    password: ${ORGANISATION_EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

@@ -2,6 +2,6 @@ package org.taonity.artistinsightservice.mvc
 
 import org.taonity.artistinsightservice.attachments.AdvisoryDto
 
-data class ErrorResponse(
+data class AdvisoryResponse(
     val advisories: Set<AdvisoryDto> = setOf()
 )

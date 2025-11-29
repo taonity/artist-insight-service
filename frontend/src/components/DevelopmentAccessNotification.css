@@ -1,0 +1,102 @@
+/* Development Access Notification Styles */
+
+.dev-access-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideDown 0.3s ease-out;
+  z-index: 1100;
+  max-width: 90%;
+  width: auto;
+  min-width: 300px;
+}
+
+.dev-access-notification.warning {
+  background-color: #dc2626;
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.dev-access-notification.success {
+  background-color: #019161;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.notification-actions {
+  margin-left: 12px;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.notification-request-btn {
+  background: #1db954;
+  color: rgb(238, 238, 238);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.notification-request-btn:hover {
+  color: white;
+}
+
+.notification-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+  line-height: 1;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.notification-close-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  opacity: 0.8;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .dev-access-notification {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .notification-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

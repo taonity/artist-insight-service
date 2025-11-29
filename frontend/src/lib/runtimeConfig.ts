@@ -7,7 +7,6 @@ export async function getRuntimeConfig() {
   try {
     const response = await fetch('/api/config')
     configCache = await response.json()
-      console.log(configCache)
     return configCache!
   } catch (error) {
     console.error('Failed to load runtime config:', error)

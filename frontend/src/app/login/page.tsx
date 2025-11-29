@@ -6,23 +6,46 @@ import { Righteous } from 'next/font/google'
 import Image from 'next/image'
 import ErrorNotification from '../../components/ErrorNotification'
 import BackgroundPhrases from '../../components/BackgroundPhrases'
+import DevelopmentAccessNotification from '../../components/DevelopmentAccessNotification'
 
 const righteous = Righteous({ 
   weight: '400',
   subsets: ['latin'],
 })
 
+function getCookie(name: string) {
+  if (typeof document === 'undefined') {
+    return null
+  }
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+  return match ? decodeURIComponent(match[2]) : null
+}
+
+function deleteCookie(name: string) {
+  if (typeof document === 'undefined') {
+    return
+  }
+  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+}
+
 function LoginContent() {
   const searchParams = useSearchParams()
   const [livenessLoading, setLivenessLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [showAccessRequestForm, setShowAccessRequestForm] = useState(false)
   const [genreDescription, setGenreDescription] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check for error message from OAuth2 authentication failure
-    const errorParam = searchParams.get('error')
-    if (errorParam) {
-      setErrorMessage(decodeURIComponent(errorParam))
+    // Check for error code from OAuth2 authentication failure (stored in cookie)
+    const authErrorCode = getCookie('auth_error')
+    if (authErrorCode) {
+      deleteCookie('auth_error') // Remove cookie after reading
+      
+      if (authErrorCode === 'UNAUTHORIZED_SPOTIFY_ACCOUNT') {
+        setShowAccessRequestForm(true)
+      } else if (authErrorCode === 'AUTHENTICATION_FAILED') {
+        setErrorMessage('Authentication failed. Please try again.')
+      }
       return
     }
 
@@ -89,6 +112,12 @@ function LoginContent() {
       <BackgroundPhrases onGenreHover={setGenreDescription} />
       {errorMessage && (
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
+      )}
+      {showAccessRequestForm && (
+        <DevelopmentAccessNotification 
+          message="Your Spotify account is not authorized to use this application. Please request development access." 
+          onClose={() => setShowAccessRequestForm(false)}
+        />
       )}
       <h1 className={`login-logo ${righteous.className}`}>Artist Insight</h1>
       <button
