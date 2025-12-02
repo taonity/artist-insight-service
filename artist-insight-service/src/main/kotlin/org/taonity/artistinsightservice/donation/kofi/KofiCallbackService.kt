@@ -36,7 +36,7 @@ class KofiCallbackService(
         val spotifyId = findSpotifyIdInMessage(message)
             ?: return
 
-        val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findBySpotifyIdForUpdate(spotifyId)
+        val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findByIdForUpdate(spotifyId)
             ?: throw KofiCallbackHandlingException("Failed to find spotify user in db by spotifyId $spotifyId from message $message")
 
         val amountDouble = parseDonationAmount(kofiWebhookData.amount)

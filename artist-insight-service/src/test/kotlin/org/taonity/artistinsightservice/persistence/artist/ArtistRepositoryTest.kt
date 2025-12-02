@@ -18,6 +18,6 @@ class ArtistRepositoryTest {
 
     @Test
     fun testFindAllBySpotifyUser_SpotifyId() {
-        println(artistsRepository.findAllByUserIdWithGenres("3126nx54y24ryqyza3qxcchi4wry"))
+//        println(artistsRepository.findByUserIdAndArtistIdsWithGenres("3126nx54y24ryqyza3qxcchi4wry"))
     }
 }

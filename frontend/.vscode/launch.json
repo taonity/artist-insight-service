@@ -10,7 +10,7 @@
             "name": "Run Chrome",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
-            "userDataDir": "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir1",
+            "userDataDir": "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir2",
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/",
                 "!/node_modules/**"

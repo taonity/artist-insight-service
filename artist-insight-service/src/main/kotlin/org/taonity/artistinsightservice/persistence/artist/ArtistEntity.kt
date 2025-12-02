@@ -1,6 +1,8 @@
 package org.taonity.artistinsightservice.persistence.artist
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
@@ -14,7 +16,22 @@ class ArtistEntity(
 
     val artistName: String,
 
-    // TODO: something is wrong here
-    @OneToMany(mappedBy = "artist")
-    val genres: List<ArtistGenreEntity> = emptyList()
-)
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE], orphanRemoval = true)
+    val genres: MutableSet<ArtistGenreEntity> = mutableSetOf()
+) {
+    fun addGenre(genre: String) {
+        genres.add(ArtistGenreEntity(this, genre))
+    }
+
+    fun addGenres(genreNames: List<String>) {
+        genreNames.forEach { addGenre(it) }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ArtistEntity) return false
+        return artistId == other.artistId
+    }
+
+    override fun hashCode(): Int = artistId.hashCode()
+}

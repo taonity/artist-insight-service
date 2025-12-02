@@ -12,6 +12,10 @@ interface ArtistRepository : CrudRepository<ArtistEntity, String> {
         JOIN uea.artist a
         LEFT JOIN FETCH a.genres g
         WHERE uea.user.spotifyId = :spotifyId
+        AND a.artistId IN :artistIds
     """)
-    fun findAllByUserIdWithGenres(@Param("spotifyId") spotifyId: String): List<ArtistEntity>
+    fun findByUserIdAndArtistIdsWithGenres(
+        @Param("spotifyId") spotifyId: String,
+        @Param("artistIds") artistIds: Collection<String>
+    ): List<ArtistEntity>
 }

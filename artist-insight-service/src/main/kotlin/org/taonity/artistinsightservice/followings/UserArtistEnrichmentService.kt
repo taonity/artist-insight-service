@@ -6,10 +6,8 @@ import org.taonity.artistinsightservice.attachments.Advisory
 import org.taonity.artistinsightservice.attachments.ResponseAttachments
 import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
 import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
-import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
 import org.taonity.artistinsightservice.persistence.artist.ArtistRepository
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserService
-import java.util.Objects.nonNull
 import kotlin.math.min
 
 @Service
@@ -22,11 +20,16 @@ class UserArtistEnrichmentService(
         private val LOGGER = KotlinLogging.logger {}
     }
 
-    fun enrichUserArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
-        val enrichedUserArtists = rawArtists.map {
-            enrichWithGenresFromDb(spotifyId, it)
+    fun enrichUserArtists(spotifyId: String, rawArtists: List<SafeArtistObject>): List<EnrichableArtists> {
+        val artistIds = rawArtists.map { it.id }
+        val dbArtistGenres: Map<String, List<String>> = artistRepository.findByUserIdAndArtistIdsWithGenres(spotifyId, artistIds)
+            .associate { it.artistId to it.genres.map { g -> g.genre } }
+
+        val enrichedUserArtists = rawArtists.map { rawArtist ->
+            enrichWithGenresFromDb(rawArtist, dbArtistGenres)
         }
-        val artistsWithNoGenresCount = enrichedUserArtists.filter { it.artistObject.genres.isEmpty() }.size
+
+        val artistsWithNoGenresCount = enrichedUserArtists.count { it.artistObject.genres.isEmpty() }
         if (artistsWithNoGenresCount > 0) {
             val gptUsagesLeft = spotifyUserService.findBySpotifyIdOrThrow(spotifyId).gptUsagesLeft
             if (gptUsagesLeft > 0) {
@@ -38,14 +41,11 @@ class UserArtistEnrichmentService(
     }
 
     // TODO: remove artists from db if spotify genres appeared
-    private fun enrichWithGenresFromDb(spotifyId: String, rawArtist: SafeArtistObject): EnrichableArtists {
+    private fun enrichWithGenresFromDb(rawArtist: SafeArtistObject, dbArtistGenres: Map<String, List<String>>): EnrichableArtists {
         if (rawArtist.genres.isEmpty()) {
-            val userArtistsFromDb: List<ArtistEntity> = artistRepository.findAllByUserIdWithGenres(spotifyId)
-            val dbGenres = userArtistsFromDb.find { it.artistId == rawArtist.id }
-                ?.genres
-                ?.map { it.genre }
-            if (nonNull(dbGenres)) {
-                return EnrichableArtists(rawArtist.copy(genres = dbGenres!!))
+            val dbGenres = dbArtistGenres[rawArtist.id]
+            if (dbGenres != null) {
+                return EnrichableArtists(rawArtist.copy(genres = dbGenres))
             }
         }
         return EnrichableArtists(rawArtist.copy(), false)

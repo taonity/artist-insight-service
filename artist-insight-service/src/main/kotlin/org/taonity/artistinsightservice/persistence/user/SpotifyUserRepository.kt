@@ -9,9 +9,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SpotifyUserRepository : CrudRepository<SpotifyUserEntity, String> {
-    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select u from SpotifyUserEntity u where u.spotifyId = :spotifyId")
-    fun findBySpotifyIdForUpdate(@Param("spotifyId") spotifyId: String): SpotifyUserEntity?
+    @Query("SELECT u FROM SpotifyUserEntity u WHERE u.spotifyId = :spotifyId")
+    fun findByIdForUpdate(@Param("spotifyId") spotifyId: String): SpotifyUserEntity?
 }

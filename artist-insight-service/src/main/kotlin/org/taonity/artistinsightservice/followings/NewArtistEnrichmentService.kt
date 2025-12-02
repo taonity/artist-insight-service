@@ -66,15 +66,15 @@ class NewArtistEnricher(
             return EnrichableArtists(rawArtist.copy(), false)
         }
         
-        val artistGenresAndUserLinkDto = artistGenreService.getGenresAndUserStatus(artistId, spotifyId)
-        val dbArtistGenres = artistGenresAndUserLinkDto.genres
-        val userHasArtists = artistGenresAndUserLinkDto.userHasArtist
+        val enrichmentInfo = artistGenreService.getArtistEnrichmentInfo(artistId, spotifyId)
+        val dbArtistGenres = enrichmentInfo.genres
+        val isLinkedToUser = enrichmentInfo.isLinkedToUser
 
         if (dbArtistGenres.isEmpty()) {
             return enrichUsingNewGenresFromGptIfPossible()
         }
 
-        if (userHasArtists) {
+        if (isLinkedToUser) {
             return enrichUsingOwnedGenresFromDb(dbArtistGenres)
         }
 

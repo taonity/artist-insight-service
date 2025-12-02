@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsRepository
-import java.util.Objects.isNull
 
 @Service
 class SpotifyUserService(
@@ -19,18 +18,18 @@ class SpotifyUserService(
     }
 
     fun findBySpotifyIdOrThrow(spotifyId: String): SpotifyUserEntity {
-        return spotifyUserRepository.findBySpotifyId(spotifyId)
-            ?: throw RuntimeException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB")
+        return spotifyUserRepository.findById(spotifyId)
+            .orElseThrow { RuntimeException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB") }
     }
 
     fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? {
-        return spotifyUserRepository.findBySpotifyId(spotifyId)
+        return spotifyUserRepository.findById(spotifyId).orElse(null)
     }
 
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
         val maskedTokenValue = maskSecret(tokenValue)
         val foundSpotifyUser = findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
-        val spotifyUserEntityToSave: SpotifyUserEntity = if (isNull(foundSpotifyUser)) {
+        val spotifyUserEntityToSave: SpotifyUserEntity = if (foundSpotifyUser == null) {
             LOGGER.info { "New user created" }
             SpotifyUserEntity(
                 spotifyUserPrincipal.getSpotifyId(),
@@ -40,9 +39,7 @@ class SpotifyUserService(
             )
         } else {
             LOGGER.info { "Existing user updated" }
-            findBySpotifyIdOrThrow(spotifyUserPrincipal.getSpotifyId()).apply {
-                updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
-            }
+            foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
         }
 
         spotifyUserRepository.save(spotifyUserEntityToSave)

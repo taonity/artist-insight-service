@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.persistence.genre
 
-data class ArtistGenresAndUserLinkDto(
+data class ArtistEnrichmentInfo(
     val genres: List<String>,
-    val userHasArtist: Boolean
+    val isLinkedToUser: Boolean
 )

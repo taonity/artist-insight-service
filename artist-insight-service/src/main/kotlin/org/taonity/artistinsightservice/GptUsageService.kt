@@ -20,7 +20,7 @@ class GptUsageService(
 
     @Transactional
     fun consumeUserUsage(spotifyId: String): Boolean {
-        val user = spotifyUserRepository.findBySpotifyIdForUpdate(spotifyId)
+        val user = spotifyUserRepository.findByIdForUpdate(spotifyId)
             ?: throw IllegalArgumentException("User with id $spotifyId not found")
         if (user.gptUsagesLeft <= 0) {
             return false
