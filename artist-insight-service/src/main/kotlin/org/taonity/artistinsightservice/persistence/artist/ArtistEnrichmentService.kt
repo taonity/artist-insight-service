@@ -1,19 +1,19 @@
-package org.taonity.artistinsightservice.persistence.genre
+package org.taonity.artistinsightservice.persistence.artist
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsRepository
+import org.taonity.artistinsightservice.persistence.user.UserArtistLinkRepository
 
 @Service
-class ArtistGenreService(
+class ArtistEnrichmentService(
     private val artistGenreRepository: ArtistGenreRepository,
-    private val enrichedArtistsRepository: SpotifyUserEnrichedArtistsRepository
+    private val userArtistLinkRepository: UserArtistLinkRepository
 ) {
 
     @Transactional(readOnly = true)
     fun getArtistEnrichmentInfo(artistId: String, spotifyId: String): ArtistEnrichmentInfo {
         val genres = artistGenreRepository.findGenresByArtistId(artistId)
-        val isLinkedToUser = enrichedArtistsRepository.existsByUserSpotifyIdAndArtistArtistId(spotifyId, artistId)
+        val isLinkedToUser = userArtistLinkRepository.existsByUserSpotifyIdAndArtistArtistId(spotifyId, artistId)
         return ArtistEnrichmentInfo(genres, isLinkedToUser)
     }
 }

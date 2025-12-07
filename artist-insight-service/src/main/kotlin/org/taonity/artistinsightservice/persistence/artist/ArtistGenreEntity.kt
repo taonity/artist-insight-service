@@ -1,7 +1,6 @@
-package org.taonity.artistinsightservice.persistence.genre
+package org.taonity.artistinsightservice.persistence.artist
 
 import jakarta.persistence.*
-import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
 import java.io.Serializable
 import java.util.Objects
 

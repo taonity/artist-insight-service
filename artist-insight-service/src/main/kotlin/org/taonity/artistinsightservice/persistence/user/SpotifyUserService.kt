@@ -5,12 +5,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.mvc.security.SpotifyUserPrincipal
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsRepository
 
 @Service
 class SpotifyUserService(
     private val spotifyUserRepository: SpotifyUserRepository,
-    private val spotifyUserEnrichedArtistsRepository: SpotifyUserEnrichedArtistsRepository,
+    private val userArtistLinkRepository: UserArtistLinkRepository,
     @Value("\${app.initial-user-gpt-usages}") private val initialUserGptUsages: Int
 ) {
     companion object {
@@ -26,24 +25,24 @@ class SpotifyUserService(
         return spotifyUserRepository.findById(spotifyId).orElse(null)
     }
 
+    @Transactional
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
         val maskedTokenValue = maskSecret(tokenValue)
         val foundSpotifyUser = findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
-        val spotifyUserEntityToSave: SpotifyUserEntity = if (foundSpotifyUser == null) {
-            LOGGER.info { "New user created" }
-            SpotifyUserEntity(
+
+        if (foundSpotifyUser == null) {
+            val newUser = SpotifyUserEntity(
                 spotifyUserPrincipal.getSpotifyId(),
                 spotifyUserPrincipal.getDisplayName(),
                 maskedTokenValue,
                 initialUserGptUsages
             )
+            spotifyUserRepository.save(newUser)
+            LOGGER.info { "User $newUser saved" }
         } else {
-            LOGGER.info { "Existing user updated" }
             foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
+            LOGGER.info { "User $foundSpotifyUser updated" }
         }
-
-        spotifyUserRepository.save(spotifyUserEntityToSave)
-        LOGGER.info { "User $spotifyUserEntityToSave saved" }
     }
 
     @Transactional
@@ -54,7 +53,7 @@ class SpotifyUserService(
         }
 
         LOGGER.info { "Deleting user data for spotifyId $spotifyId" }
-        spotifyUserEnrichedArtistsRepository.deleteAllByUserSpotifyId(spotifyId)
+        userArtistLinkRepository.deleteAllByUserSpotifyId(spotifyId)
         spotifyUserRepository.deleteById(spotifyId)
     }
 

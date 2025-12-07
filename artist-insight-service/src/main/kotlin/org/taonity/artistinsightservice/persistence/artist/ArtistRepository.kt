@@ -8,7 +8,7 @@ interface ArtistRepository : CrudRepository<ArtistEntity, String> {
 
     @Query("""
         SELECT DISTINCT a 
-        FROM SpotifyUserEnrichedArtistsEntity uea
+        FROM UserArtistLinkEntity uea
         JOIN uea.artist a
         LEFT JOIN FETCH a.genres g
         WHERE uea.user.spotifyId = :spotifyId

@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.persistence.app_settings
+package org.taonity.artistinsightservice.persistence.settings
 
 import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.Lock

@@ -6,7 +6,6 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import org.taonity.artistinsightservice.persistence.genre.ArtistGenreEntity
 
 @Entity
 @Table(name = "artist")

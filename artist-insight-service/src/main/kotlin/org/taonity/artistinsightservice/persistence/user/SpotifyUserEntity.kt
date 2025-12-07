@@ -7,7 +7,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsEntity
 
 @Entity
 @Table(name = "spotify_user")
@@ -19,10 +18,10 @@ class SpotifyUserEntity(
     var gptUsagesLeft: Int,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE], orphanRemoval = true)
-    val enrichedArtists: MutableSet<SpotifyUserEnrichedArtistsEntity> = mutableSetOf()
+    val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf()
 ) {
     fun addEnrichedArtist(artist: ArtistEntity) {
-        val link = SpotifyUserEnrichedArtistsEntity(this, artist)
+        val link = UserArtistLinkEntity(this, artist)
         if (link !in enrichedArtists) {
             enrichedArtists.add(link)
         }

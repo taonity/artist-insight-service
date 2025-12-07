@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.persistence.app_settings
+package org.taonity.artistinsightservice.persistence.settings
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id

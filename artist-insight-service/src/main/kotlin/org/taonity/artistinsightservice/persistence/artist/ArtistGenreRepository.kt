@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.persistence.genre
+package org.taonity.artistinsightservice.persistence.artist
 
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

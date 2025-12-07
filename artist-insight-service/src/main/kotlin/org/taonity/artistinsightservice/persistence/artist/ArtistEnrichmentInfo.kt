@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.persistence.genre
+package org.taonity.artistinsightservice.persistence.artist
 
 data class ArtistEnrichmentInfo(
     val genres: List<String>,

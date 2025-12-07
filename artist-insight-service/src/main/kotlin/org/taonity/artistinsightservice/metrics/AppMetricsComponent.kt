@@ -2,9 +2,9 @@ package org.taonity.artistinsightservice.metrics
 
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Component
-import org.taonity.artistinsightservice.persistence.app_settings.AppSettingsRepository
+import org.taonity.artistinsightservice.persistence.artist.ArtistGenreRepository
 import org.taonity.artistinsightservice.persistence.artist.ArtistRepository
-import org.taonity.artistinsightservice.persistence.genre.ArtistGenreRepository
+import org.taonity.artistinsightservice.persistence.settings.AppSettingsRepository
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserRepository
 import javax.annotation.PostConstruct
 

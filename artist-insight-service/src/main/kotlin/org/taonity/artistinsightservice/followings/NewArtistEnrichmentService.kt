@@ -6,21 +6,21 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionTemplate
 import org.taonity.artistinsightservice.attachments.Advisory
-import org.taonity.artistinsightservice.GptUsageService
+import org.taonity.artistinsightservice.persistence.GptUsageService
 import org.taonity.artistinsightservice.attachments.ResponseAttachments
 import org.taonity.artistinsightservice.followings.dto.SafeArtistObject
 import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
 import org.taonity.artistinsightservice.openai.OpenAIClientException
 import org.taonity.artistinsightservice.openai.OpenAIService
-import org.taonity.artistinsightservice.persistence.genre.ArtistGenreService
-import org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists.SpotifyUserEnrichedArtistsService
+import org.taonity.artistinsightservice.persistence.artist.ArtistEnrichmentService
+import org.taonity.artistinsightservice.persistence.user.UserArtistLinkService
 
 @Service
 class NewArtistEnrichmentService(
-    private val artistGenreService: ArtistGenreService,
+    private val artistEnrichmentService: ArtistEnrichmentService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
-    private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
+    private val userArtistLinkService: UserArtistLinkService,
     private val responseAttachments: ResponseAttachments,
     transactionManager: PlatformTransactionManager
 ) {
@@ -29,7 +29,7 @@ class NewArtistEnrichmentService(
     fun enrichNewArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
         return rawArtists.map { rawArtist ->
             transactionTemplate.execute { transactionStatus ->
-                val newArtistEnricher = NewArtistEnricher(artistGenreService, gptUsageService, openAIService, spotifyUserEnrichedArtistsService,
+                val newArtistEnricher = NewArtistEnricher(artistEnrichmentService, gptUsageService, openAIService, userArtistLinkService,
                     responseAttachments, transactionStatus,
                     spotifyId, rawArtist
                 )
@@ -46,10 +46,10 @@ class NewArtistEnrichmentService(
 }
 
 class NewArtistEnricher(
-    private val artistGenreService: ArtistGenreService,
+    private val artistEnrichmentService: ArtistEnrichmentService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
-    private val spotifyUserEnrichedArtistsService: SpotifyUserEnrichedArtistsService,
+    private val userArtistLinkService: UserArtistLinkService,
     private val responseAttachments: ResponseAttachments,
     private val transactionStatus: TransactionStatus,
     private val spotifyId: String,
@@ -66,7 +66,7 @@ class NewArtistEnricher(
             return EnrichableArtists(rawArtist.copy(), false)
         }
         
-        val enrichmentInfo = artistGenreService.getArtistEnrichmentInfo(artistId, spotifyId)
+        val enrichmentInfo = artistEnrichmentService.getArtistEnrichmentInfo(artistId, spotifyId)
         val dbArtistGenres = enrichmentInfo.genres
         val isLinkedToUser = enrichmentInfo.isLinkedToUser
 
@@ -88,7 +88,7 @@ class NewArtistEnricher(
 
     private fun enrichUsingNewGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
         val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
-        spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
+        userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
         LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
         return EnrichableArtists(enrichedArtist, true)
     }
@@ -132,7 +132,7 @@ class NewArtistEnricher(
             return EnrichableArtists(rawArtist.copy(), false)
         }
         val enrichedArtist = rawArtist.copy(genres = openAIProvidedGenres)
-        spotifyUserEnrichedArtistsService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, openAIProvidedGenres)))
+        userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, openAIProvidedGenres)))
         LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by OpenAI call" }
         return EnrichableArtists(enrichedArtist)
     }

@@ -1,11 +1,11 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.persistence
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.persistence.app_settings.AppSettingsEntity
-import org.taonity.artistinsightservice.persistence.app_settings.AppSettingsRepository
+import org.taonity.artistinsightservice.persistence.settings.AppSettingsEntity
+import org.taonity.artistinsightservice.persistence.settings.AppSettingsRepository
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserRepository
 
 @Service

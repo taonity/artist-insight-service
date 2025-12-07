@@ -1,15 +1,14 @@
-package org.taonity.artistinsightservice.persistence.spotify_user_enriched_artists
+package org.taonity.artistinsightservice.persistence.user
 
 import jakarta.persistence.*
 import org.taonity.artistinsightservice.persistence.artist.ArtistEntity
-import org.taonity.artistinsightservice.persistence.user.SpotifyUserEntity
 import java.io.Serializable
 import java.util.Objects
 
 @Entity
 @Table(name = "spotify_user_enriched_artists")
-@IdClass(SpotifyUserEnrichedArtistsId::class)
-class SpotifyUserEnrichedArtistsEntity(
+@IdClass(UserArtistLinkId::class)
+class UserArtistLinkEntity(
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spotify_id", nullable = false)
@@ -21,14 +20,14 @@ class SpotifyUserEnrichedArtistsEntity(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SpotifyUserEnrichedArtistsEntity) return false
+        if (other !is UserArtistLinkEntity) return false
         return user.spotifyId == other.user.spotifyId && artist.artistId == other.artist.artistId
     }
 
     override fun hashCode(): Int = Objects.hash(user.spotifyId, artist.artistId)
 }
 
-data class SpotifyUserEnrichedArtistsId(
+data class UserArtistLinkId(
     val user: String = "",
     val artist: String = ""
 ) : Serializable
