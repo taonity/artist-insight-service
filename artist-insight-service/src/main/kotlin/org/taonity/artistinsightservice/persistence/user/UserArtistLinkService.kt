@@ -25,12 +25,13 @@ class UserArtistLinkService(
                 ArtistEntity(artistObject.id, artistObject.name).apply { addGenres(genres) }
             }
 
-            val existingGenreNames = artistEntity.genres.map { it.genre }.toSet()
-            genres.filterNot { it in existingGenreNames }.forEach { artistEntity.addGenre(it) }
+            val existingGenreNames = artistEntity.genres
+                .map { it.genre }
+                .toSet()
+            genres.filterNot { it in existingGenreNames }
+                .forEach { artistEntity.addGenre(it) }
 
             user.addEnrichedArtist(artistEntity)
         }
-
-        spotifyUserRepository.save(user)
     }
 }

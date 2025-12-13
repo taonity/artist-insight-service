@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.persistence.settings.AppSettingsEntity
 import org.taonity.artistinsightservice.persistence.settings.AppSettingsRepository
+import org.taonity.artistinsightservice.persistence.user.SpotifyUserEntity
 import org.taonity.artistinsightservice.persistence.user.SpotifyUserRepository
 
 @Service
@@ -26,19 +27,42 @@ class GptUsageService(
             return false
         }
         user.gptUsagesLeft--
-        spotifyUserRepository.save(user)
         return true
     }
 
     @Transactional
     fun consumeGlobalUsage(): Boolean {
         val settings = appSettingsRepository.findByIdForUpdate(0)
-            ?: AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages)
+
+        if (settings == null) {
+            val newSettings = AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages - 1)
+            appSettingsRepository.save(newSettings)
+            return true
+        }
+
         if (settings.globalGptUsagesLeft <= 0) {
             return false
         }
         settings.globalGptUsagesLeft--
-        appSettingsRepository.save(settings)
         return true
+    }
+
+    @Transactional
+    fun topUpUserUsage(
+        amountDouble: Double,
+        spotifyId: String
+    ) {
+        val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findByIdForUpdate(spotifyId)
+            ?: throw IllegalArgumentException("Failed to find spotify user in db by spotifyId $spotifyId")
+
+        //TODO: move to db config table
+        val gptUsagesToTopUpDouble = amountDouble / 0.1
+        val gptUsagesToTopUp = gptUsagesToTopUpDouble.toInt()
+
+        spotifyUserEntity.gptUsagesLeft += gptUsagesToTopUp
+
+        val before = spotifyUserEntity.gptUsagesLeft - gptUsagesToTopUp
+        val after = spotifyUserEntity.gptUsagesLeft
+        LOGGER.info { "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)" }
     }
 }

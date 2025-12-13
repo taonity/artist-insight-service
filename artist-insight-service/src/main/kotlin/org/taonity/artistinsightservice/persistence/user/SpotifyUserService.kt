@@ -41,7 +41,7 @@ class SpotifyUserService(
             LOGGER.info { "User $newUser saved" }
         } else {
             foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
-            LOGGER.info { "User $foundSpotifyUser updated" }
+            LOGGER.info { "User to be $foundSpotifyUser updated" }
         }
     }
 

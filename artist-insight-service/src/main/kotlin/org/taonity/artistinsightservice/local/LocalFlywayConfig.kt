@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile
 
 
 @Configuration
-@Profile("h2")
+@Profile("flyway-clean-migrate")
 class LocalFlywayConfig {
 
     @Bean

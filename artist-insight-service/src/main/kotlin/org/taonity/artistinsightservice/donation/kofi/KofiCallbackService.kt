@@ -7,12 +7,11 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.taonity.artistinsightservice.persistence.user.SpotifyUserEntity
-import org.taonity.artistinsightservice.persistence.user.SpotifyUserRepository
+import org.taonity.artistinsightservice.persistence.GptUsageService
 
 @Service
 class KofiCallbackService(
-    private val spotifyUserRepository: SpotifyUserRepository,
+    private val gptUsageService: GptUsageService,
     @Value("\${kofi.verification-token}")
     private val kofiVerificationToken: String
 ) {
@@ -36,30 +35,11 @@ class KofiCallbackService(
         val spotifyId = findSpotifyIdInMessage(message)
             ?: return
 
-        val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findByIdForUpdate(spotifyId)
-            ?: throw KofiCallbackHandlingException("Failed to find spotify user in db by spotifyId $spotifyId from message $message")
-
         val amountDouble = parseDonationAmount(kofiWebhookData.amount)
 
-        topUpGptUsageForUser(amountDouble, spotifyUserEntity)
+        gptUsageService.topUpUserUsage(amountDouble, spotifyId)
     }
 
-    private fun topUpGptUsageForUser(
-        amountDouble: Double,
-        spotifyUserEntity: SpotifyUserEntity
-    ) {
-        //TODO: move to db config table
-        val gptUsagesToTopUpDouble = amountDouble / 0.1
-        val gptUsagesToTopUp = gptUsagesToTopUpDouble.toInt()
-
-        spotifyUserEntity.gptUsagesLeft += gptUsagesToTopUp
-
-        spotifyUserRepository.save(spotifyUserEntity)
-
-        val before = spotifyUserEntity.gptUsagesLeft - gptUsagesToTopUp
-        val after = spotifyUserEntity.gptUsagesLeft
-        LOGGER.info { "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)" }
-    }
 
     private fun parseDonationAmount(amountString: String): Double {
         if (amountString.isEmpty()) {
