@@ -58,7 +58,7 @@ class HttpServletLoggingService(
 
     fun logRequestWithWrapping(request: HttpServletRequest): ContentCachingRequestWrapper {
 
-        val wrappedRequest = ContentCachingRequestWrapper(request)
+        val wrappedRequest = ContentCachingRequestWrapper(request, 256 * 1024)
 
         if (filterEndpointIfEnabled(request)) {
             return wrappedRequest

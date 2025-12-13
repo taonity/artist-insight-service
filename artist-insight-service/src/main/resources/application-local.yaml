@@ -28,21 +28,21 @@ app:
       refill-duration: PT1S
 
 ---
-# clean migrates local pg db
-spring:
-  flyway:
-    enabled: true
-    clean-disabled: false
-    locations:
-#      - filesystem:templates/docker/flyway/sql
-      - filesystem:templates/docker/flyway/sql/tables
-    placeholder-replacement: true
-    placeholder-prefix: "{{ "
-    placeholder-suffix: " }}"
-    placeholders:
-      app_user: d
-      app_password: d
-      db_name: artist_insight_service
-
-app:
-  additional-profiles: flyway-clean-migrate
+############# clean migrates local pg db
+#spring:
+#  flyway:
+#    enabled: true
+#    clean-disabled: false
+#    locations:
+##      - filesystem:templates/docker/flyway/sql
+#      - filesystem:templates/docker/flyway/sql/tables
+#    placeholder-replacement: true
+#    placeholder-prefix: "{{ "
+#    placeholder-suffix: " }}"
+#    placeholders:
+#      app_user: d
+#      app_password: d
+#      db_name: artist_insight_service
+#
+#app:
+#  additional-profiles: flyway-clean-migrate

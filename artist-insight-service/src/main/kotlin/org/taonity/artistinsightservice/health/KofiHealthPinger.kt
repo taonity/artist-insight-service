@@ -1,7 +1,7 @@
 package org.taonity.artistinsightservice.health
 
 import mu.KotlinLogging
-import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.health.contributor.Status
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.taonity.artistinsightservice.donation.kofi.KofiService

@@ -1,11 +1,9 @@
 package org.taonity.artistinsightservice.health
 
-import org.springframework.boot.actuate.health.CompositeHealthContributor
-import org.springframework.boot.actuate.health.HealthContributor
-import org.springframework.boot.actuate.health.HealthIndicator
-import org.springframework.boot.actuate.health.NamedContributor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.health.contributor.*
 import org.springframework.stereotype.Component
+import java.util.stream.Stream
 
 @Component("externalServices")
 @ConditionalOnProperty(value = ["health.enabled"], havingValue = "true")
@@ -18,11 +16,12 @@ class ExternalServicesHealthContributor(
 
     override fun getContributor(name: String): HealthContributor? = contributors[name]
 
-    override fun iterator(): MutableIterator<NamedContributor<HealthContributor>> {
+
+    override fun stream(): Stream<HealthContributors.Entry> {
         return contributors.entries
-            .map { (name, indicator) -> NamedContributor.of<HealthContributor>(name, indicator) }
+            .map { (name, indicator) -> HealthContributors.Entry(name, indicator) }
             .toMutableList()
-            .iterator()
+            .stream()
     }
 
     private class CachedHealthIndicator(

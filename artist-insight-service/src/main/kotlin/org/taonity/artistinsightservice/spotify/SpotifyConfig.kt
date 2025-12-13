@@ -68,7 +68,6 @@ class SpotifyConfig {
     // TODO: Find best values for timeouts
     private fun buildClientHttpRequestFactory(): ClientHttpRequestFactory {
         val clientHttpRequestFactory = HttpComponentsClientHttpRequestFactory()
-        clientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(5))
         clientHttpRequestFactory.setConnectionRequestTimeout(Duration.ofSeconds(5))
         clientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(5))
         return clientHttpRequestFactory

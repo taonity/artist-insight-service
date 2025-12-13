@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.0</version>
         <relativePath/>
     </parent>
 
@@ -27,8 +27,8 @@
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
 
-        <kotlin.version>2.0.0</kotlin.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <kotlin.version>2.2.0</kotlin.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
         <spring-cloud-contract.version>5.0.0-M1</spring-cloud-contract.version>
     </properties>
 

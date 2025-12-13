@@ -31,6 +31,7 @@ class UserArtistEnrichmentService(
 
         val artistsWithNoGenresCount = enrichedUserArtists.count { it.artistObject.genres.isEmpty() }
         if (artistsWithNoGenresCount > 0) {
+            // TODO: redundant db call - try to keep it in one context with oauth2 pers service
             val gptUsagesLeft = spotifyUserService.findBySpotifyIdOrThrow(spotifyId).gptUsagesLeft
             if (gptUsagesLeft > 0) {
                 val artistsAvailableToEnrichCount = min(artistsWithNoGenresCount, gptUsagesLeft)

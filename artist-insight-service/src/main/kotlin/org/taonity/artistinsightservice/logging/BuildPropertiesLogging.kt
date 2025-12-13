@@ -15,7 +15,7 @@ class BuildPropertiesLogging(
         private val LOGGER = KotlinLogging.logger {}
     }
 
-    override fun run(vararg args: String?) {
+    override fun run(vararg args: String) {
         LOGGER.info { "BuildProperties - time: ${buildProperties.time}, version: ${buildProperties.version}" }
     }
 }

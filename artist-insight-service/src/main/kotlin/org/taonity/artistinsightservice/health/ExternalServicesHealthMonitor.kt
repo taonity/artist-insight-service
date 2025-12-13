@@ -3,8 +3,8 @@ package org.taonity.artistinsightservice.health
 import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.Status
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

@@ -1,7 +1,7 @@
 package org.taonity.artistinsightservice.health
 
 import mu.KotlinLogging
-import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.health.contributor.Status
 import org.springframework.stereotype.Component
 import org.taonity.artistinsightservice.openai.OpenAIService
 import java.time.Duration

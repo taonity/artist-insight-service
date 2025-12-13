@@ -38,7 +38,7 @@ class SpotifyUserService(
                 initialUserGptUsages
             )
             spotifyUserRepository.save(newUser)
-            LOGGER.info { "User $newUser saved" }
+            LOGGER.info { "User $newUser to be saved" }
         } else {
             foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
             LOGGER.info { "User to be $foundSpotifyUser updated" }

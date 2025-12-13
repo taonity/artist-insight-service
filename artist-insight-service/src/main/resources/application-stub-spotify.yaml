@@ -20,6 +20,10 @@ spring:
             issuer-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}
             user-info-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}/v1/me
             userNameAttribute: display_name
+  cloud:
+    contract:
+      stubrunner:
+        stubs-mode: CLASSPATH
 
 app:
   default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
@@ -28,11 +32,13 @@ app:
 spotify:
   api-base-url: http://localhost:8100/v1
 
-stubrunner:
-  stubs-mode: CLASSPATH
-
-
 stub-spotify-mergeable:
-  stubrunner:
-    ids:
-      - org.taonity:spotify-contracts:@project.version@:stubs:8100
+  cloud:
+    contract:
+      stubrunner:
+        ids:
+          - org.taonity:spotify-contracts:@project.version@:stubs:8100
+
+logging:
+  level:
+    WireMock: warn
