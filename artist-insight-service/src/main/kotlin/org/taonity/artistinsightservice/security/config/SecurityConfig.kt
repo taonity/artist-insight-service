@@ -37,7 +37,8 @@ class SecurityConfig(
                         "/development-access-request",
                         //TODO: add for local only?
                         "/N4N11KVW3E",
-                        "/"
+                        "/",
+                        "/share/{shareCode}"
                     ).permitAll().anyRequest()
                     .authenticated()
             }

@@ -16,6 +16,8 @@ import org.taonity.artistinsightservice.advisory.AdvisoryResponse
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAITimeoutException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
+import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
+import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -77,5 +79,19 @@ class GlobalExceptionHandler {
     fun handleValidationExceptions(e: Exception) : ResponseEntity<ClientErrorResponse> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ClientErrorResponse(ClientErrorCode.VALIDATION_ERROR, e.message ?: ""))
+    }
+
+    @ExceptionHandler(ShareLinkNotFoundException::class)
+    fun handleShareLinkNotFoundException(e: ShareLinkNotFoundException): ResponseEntity<ClientErrorResponse> {
+        LOGGER.debug(e) {}
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ClientErrorResponse(ClientErrorCode.SHARE_LINK_NOT_FOUND, e.message ?: "Share link not found"))
+    }
+
+    @ExceptionHandler(ShareLinkExpiredException::class)
+    fun handleShareLinkExpiredException(e: ShareLinkExpiredException): ResponseEntity<ClientErrorResponse> {
+        LOGGER.debug(e) {}
+        return ResponseEntity.status(HttpStatus.GONE)
+            .body(ClientErrorResponse(ClientErrorCode.SHARE_LINK_EXPIRED, e.message ?: "Share link has expired"))
     }
 }

@@ -18,6 +18,7 @@ import org.taonity.artistinsightservice.infrastructure.utils.hasCause
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
 import org.taonity.spotify.model.ArtistObject
+import org.taonity.spotify.model.GetMultipleArtists200Response
 import org.taonity.spotify.model.PagingArtistObject
 import java.io.InterruptedIOException
 
@@ -102,5 +103,51 @@ class SpotifyService(
             .attributes(RequestAttributePrincipalResolver.principal("display_name"))
             .retrieve()
         return responseSpec.toEntity(String::class.java)
+    }
+
+    fun fetchArtistsByIds(artistIds: List<String>): List<SafeArtistObject> {
+        if (artistIds.isEmpty()) {
+            return emptyList()
+        }
+
+        // Spotify API allows max 50 artist IDs per request
+        return artistIds.chunked(50).flatMap { chunk ->
+            fetchArtistsBatchWithClientCredentials(chunk)
+        }
+    }
+
+    private fun fetchArtistsBatchWithClientCredentials(artistIds: List<String>): List<SafeArtistObject> {
+        val url = UriComponentsBuilder
+            .fromUriString("$spotifyApiBaseUrl/artists")
+            .queryParam("ids", artistIds.joinToString(","))
+            .build()
+            .toUriString()
+
+        val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
+            .uri(url)
+            .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-client-credentials"))
+            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .retrieve()
+
+        val response = try {
+            responseSpec.body<GetMultipleArtists200Response>()!!
+        } catch (e: Exception) {
+            if (e.hasCause(InterruptedIOException::class.java)) {
+                throw SpotifyTimeoutException("Timeout while retrieving artists by IDs", e)
+            }
+            throw SpotifyClientException("Failed to retrieve artists by IDs", e)
+        }
+
+        return response.artists
+            .filterNotNull()
+            .map(ValidatedArtistObject.Companion::of)
+            .map { validatedArtistObject ->
+                val violations = validator.validate(validatedArtistObject)
+                if (violations.isEmpty()) {
+                    return@map validatedArtistObject.toSafe()
+                }
+                val errorMessage = violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
+                throw SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
+            }
     }
 }

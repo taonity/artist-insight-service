@@ -5,9 +5,9 @@ logging:
     org.taonity.artistinsightservice.mvc.GlobalExceptionHandler: debug
 #    org.springframework.security: TRACE
 #    root: trace
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.orm.jdbc.bind: TRACE
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#    org.hibernate.orm.jdbc.bind: TRACE
 
 
 spring:
