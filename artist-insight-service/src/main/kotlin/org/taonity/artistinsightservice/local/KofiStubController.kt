@@ -10,7 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestClient
-import org.taonity.artistinsightservice.donation.kofi.KofiWebhookData
+import org.taonity.artistinsightservice.donation.kofi.dto.KofiWebhookData
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -45,7 +45,7 @@ class KofiStubController(
 
     @GetMapping("/")
     fun home() : String {
-        LOGGER.info { "Handling / endpoint" }
+        LOGGER.debug { "Handling / endpoint" }
         return "Home page"
     }
 

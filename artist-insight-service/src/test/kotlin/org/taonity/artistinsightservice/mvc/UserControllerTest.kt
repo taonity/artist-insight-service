@@ -7,12 +7,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.taonity.artistinsightservice.followings.dto.SafePrivateUserObject
-import org.taonity.artistinsightservice.user.SpotifyUserDto
+import org.taonity.artistinsightservice.artist.dto.SafePrivateUserObject
+import org.taonity.artistinsightservice.user.dto.SpotifyUserDto
 import org.taonity.spotify.model.ImageObject
 
 

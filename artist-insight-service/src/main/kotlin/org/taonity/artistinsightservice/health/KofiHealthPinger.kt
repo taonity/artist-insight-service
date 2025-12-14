@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import org.springframework.boot.health.contributor.Status
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
-import org.taonity.artistinsightservice.donation.kofi.KofiService
+import org.taonity.artistinsightservice.donation.kofi.service.KofiService
 import java.time.Duration
 import java.time.Instant
 

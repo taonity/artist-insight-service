@@ -1,0 +1,22 @@
+package org.taonity.artistinsightservice.artist.repository
+
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.query.Param
+import org.taonity.artistinsightservice.artist.entity.ArtistEntity
+
+interface ArtistRepository : CrudRepository<ArtistEntity, String> {
+
+    @Query("""
+        SELECT DISTINCT a 
+        FROM UserArtistLinkEntity uea
+        JOIN uea.artist a
+        LEFT JOIN FETCH a.genres g
+        WHERE uea.user.spotifyId = :spotifyId
+        AND a.artistId IN :artistIds
+    """)
+    fun findByUserIdAndArtistIdsWithGenres(
+        @Param("spotifyId") spotifyId: String,
+        @Param("artistIds") artistIds: Collection<String>
+    ): List<ArtistEntity>
+}

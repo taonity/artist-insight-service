@@ -1,3 +1,3 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-org.taonity.artistinsightservice.utils.MergeStubRunnerIds,\
-org.taonity.artistinsightservice.utils.AdditionalProfileActivator
+org.taonity.artistinsightservice.infrastructure.utils.MergeStubRunnerIds,\
+org.taonity.artistinsightservice.infrastructure.utils.AdditionalProfileActivator

@@ -3,7 +3,7 @@ package org.taonity.artistinsightservice.health
 import mu.KotlinLogging
 import org.springframework.boot.health.contributor.Status
 import org.springframework.stereotype.Component
-import org.taonity.artistinsightservice.spotify.SpotifyService
+import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
 import java.time.Duration
 import java.time.Instant
 

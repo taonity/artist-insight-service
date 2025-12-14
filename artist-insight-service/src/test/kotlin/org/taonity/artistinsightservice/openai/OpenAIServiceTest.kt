@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
+import org.taonity.artistinsightservice.integration.openai.config.OpenAIConfig
+import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
 
 @SpringBootTest(classes = [
     OpenAIConfig::class,

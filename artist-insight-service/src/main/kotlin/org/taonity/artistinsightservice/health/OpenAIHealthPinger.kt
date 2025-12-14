@@ -1,15 +1,18 @@
 package org.taonity.artistinsightservice.health
 
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.health.contributor.Status
 import org.springframework.stereotype.Component
-import org.taonity.artistinsightservice.openai.OpenAIService
+import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
 import java.time.Duration
 import java.time.Instant
 
 @Component
 class OpenAIHealthPinger(
     private val openAIService: OpenAIService,
+    @Value("\${spotify.api-base-url}")
+    private val spotifyApiBaseUrl: String,
 ) : ExternalServiceHealthPinger {
 
     companion object {
@@ -19,7 +22,7 @@ class OpenAIHealthPinger(
     override val name: String = "openai"
 
     override fun ping(): HealthCheckResult {
-        val url = "https://api.openai.com/v1/models"
+        val url = "$spotifyApiBaseUrl/models"
         val start = Instant.now()
         return try {
             val models = openAIService.getModels()
