@@ -13,7 +13,7 @@ import { useUser } from "../hooks/useUser"
 export default function Home() {
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
   const [advisories, setAdvisories] = useState<Advisory[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -50,6 +50,7 @@ export default function Home() {
       }
     } finally {
       clearTimeout(timeoutId)
+      new Promise(resolve => setTimeout(resolve, 5000))
       setLoading(false)
     }
   }
@@ -100,13 +101,6 @@ export default function Home() {
       }
     }
 
-  if (!user) return (
-    <div>
-      <Header user={user}/>
-      <Loading />
-    </div>
-  )
-
   const csvData = [['name', 'genre', 'enriched']]
   enrichableArtistObjects.forEach((enrichableArtistObject) => {
     const artist = enrichableArtistObject.artistObject
@@ -125,22 +119,24 @@ export default function Home() {
       )}
       <Header user={user}/>
       <div style={{ padding: '16px' }}>
-        <GptUsageBlock count={gptUsagesLeft} />
-        {enrichableArtistObjects.length > 0 && (
-          <div className="actions">
-            <button onClick={() => loadEnrichedFollowings()} disabled={loading}>
-              {loading ? 'Enriching…' : 'Enrich followings'}
-            </button>
-            <CSVLink data={csvData} filename={'exported-artists.csv'} className="button">
-              Download CSV
-            </CSVLink>
-          </div>
-        )}
-        <AdvisoryCards advisories={advisories} />
         {loading ? (
           <Loading items={enrichableArtistObjects.length || 10} />
         ) : (
-          <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
+          <>
+            <GptUsageBlock count={gptUsagesLeft} />
+            {enrichableArtistObjects.length > 0 && (
+              <div className="actions">
+                <button onClick={() => loadEnrichedFollowings()} disabled={loading}>
+                  {loading ? 'Enriching…' : 'Enrich followings'}
+                </button>
+                <CSVLink data={csvData} filename={'exported-artists.csv'} className="button">
+                  Download CSV
+                </CSVLink>
+              </div>
+            )}
+            <AdvisoryCards advisories={advisories} />
+            <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
+          </>
         )}
       </div>
     </div>

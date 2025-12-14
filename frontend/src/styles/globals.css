@@ -1,7 +1,7 @@
 /* Firefox scrollbar */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #1db954 #191414;
+  scrollbar-width: auto;
+  scrollbar-color: #1e9548 #191414;
 }
 
 body {
@@ -174,14 +174,11 @@ a.button:hover {
 }
 
 .enriched {
-  display: inline-block;
-  padding: 4px 12px;
+  padding: 5px 5px;
   border-radius: 12px;
   background: linear-gradient(90deg, #650cb967 0%, #ff00cc61 100%);
   color: #e9e9e9 !important;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(164, 69, 255, 0.25);
+  box-shadow: 0 1px 4px rgba(164, 69, 255, 0.25);
 }
 
 .gpt-usage {
@@ -190,8 +187,6 @@ a.button:hover {
   padding: 12px 20px;
   border-radius: 8px;
   display: inline-block;
-  margin-top: 16px;
-  margin-bottom: 16px;
   font-weight: 500;
 }
 
@@ -202,6 +197,7 @@ a.button:hover {
 
 .actions {
   margin-top: 16px;
+  margin-bottom: 16px;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -351,6 +347,10 @@ button:disabled {
   flex-shrink: 0;
 }
 
+.skeleton-gpt-usage {
+  min-height: 20px;
+}
+
 .skeleton-line {
   height: 14px;
   border-radius: 4px;
@@ -386,6 +386,57 @@ button:disabled {
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.skeleton-circle.small {
+  width: 40px;
+  height: 40px;
+  margin-right: 0;
+}
+
+.loading-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 185, 84, 0.2);
+}
+
+.loading-table-header {
+  display: flex;
+  background: rgba(25, 20, 20, 0.8);
+  border-bottom: 1px solid rgba(29, 185, 84, 0.2);
+  height: 49px;
+  padding: 0;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.loading-table-header .loading-table-cell {
+  color: #1db954;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.loading-table-row {
+  display: flex;
+  height: 60px;
+  border-bottom: 1px solid rgba(29, 185, 84, 0.1);
+  background: transparent;
+}
+
+.loading-table-row:nth-child(even) {
+  background: rgba(25, 20, 20, 0.4);
+}
+
+.loading-table-row:last-child {
+  border-bottom: none;
+}
+
+.loading-table-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 .donate-page {
@@ -974,4 +1025,21 @@ button:disabled {
   .cookie-content {
     padding: 20px;
   }
+}
+
+.artist-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ag-theme-quartz-dark {
+  --ag-font-family: 'Circular Std', Arial, Helvetica, sans-serif;
+  --ag-background-color: transparent;
+  --ag-header-background-color: rgba(25, 20, 20, 0.8);
+  --ag-odd-row-background-color: rgba(25, 20, 20, 0.4);
+  --ag-row-hover-color: rgba(29, 185, 84, 0.15);
+  --ag-header-foreground-color: #1db954;
+  --ag-foreground-color: #fff;
+  --ag-border-color: rgba(29, 185, 84, 0.2);
+  --ag-row-border-color: rgba(29, 185, 84, 0.1);
 }

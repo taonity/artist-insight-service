@@ -12,6 +12,13 @@ const nextConfig = {
   output: 'standalone',
   env: {
     BUILD_TIME: new Date().toISOString(),
+  },
+  webpack: (config) => {
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { module: /node_modules[\\/]ag-grid-community/ }
+    ];
+    return config;
   }
 }
 module.exports = nextConfig
