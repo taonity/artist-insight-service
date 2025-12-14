@@ -1,10 +1,9 @@
 package org.taonity.artistinsightservice.followings
 
 import mu.KotlinLogging
-import org.springframework.stereotype.Service
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionStatus
-import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAspectSupport
 import org.taonity.artistinsightservice.attachments.Advisory
 import org.taonity.artistinsightservice.persistence.GptUsageService
 import org.taonity.artistinsightservice.attachments.ResponseAttachments
@@ -15,48 +14,36 @@ import org.taonity.artistinsightservice.openai.OpenAIService
 import org.taonity.artistinsightservice.persistence.artist.ArtistEnrichmentService
 import org.taonity.artistinsightservice.persistence.user.UserArtistLinkService
 
-@Service
-class NewArtistEnrichmentService(
+@Component
+class NewArtistEnricherFactory(
     private val artistEnrichmentService: ArtistEnrichmentService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val userArtistLinkService: UserArtistLinkService,
-    private val responseAttachments: ResponseAttachments,
-    transactionManager: PlatformTransactionManager
+    private val responseAttachments: ResponseAttachments
 ) {
-    private val transactionTemplate = TransactionTemplate(transactionManager)
-
-    fun enrichNewArtists(spotifyId: String, rawArtists: List<SafeArtistObject>) : List<EnrichableArtists> {
-        return rawArtists.map { rawArtist ->
-            transactionTemplate.execute { transactionStatus ->
-                val newArtistEnricher = NewArtistEnricher(artistEnrichmentService, gptUsageService, openAIService, userArtistLinkService,
-                    responseAttachments, transactionStatus,
-                    spotifyId, rawArtist
-                )
-
-                try {
-                    newArtistEnricher.enrichWithGenresIfPossible()
-                } catch (e: Exception) {
-                    transactionStatus.setRollbackOnly()
-                    throw e
-                }
-            }
-        }
+    @Transactional
+    fun createAndEnrich(spotifyId: String, rawArtist: SafeArtistObject): EnrichableArtists {
+        return NewArtistEnricher(
+            spotifyId, rawArtist,
+            artistEnrichmentService, gptUsageService, openAIService,
+            userArtistLinkService, responseAttachments
+        ).enrichWithGenresIfPossible()
     }
 }
 
 class NewArtistEnricher(
+    private val spotifyId: String,
+    private val rawArtist: SafeArtistObject,
     private val artistEnrichmentService: ArtistEnrichmentService,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val userArtistLinkService: UserArtistLinkService,
-    private val responseAttachments: ResponseAttachments,
-    private val transactionStatus: TransactionStatus,
-    private val spotifyId: String,
-    private val rawArtist: SafeArtistObject,
-    private val artistId: String = rawArtist.id,
-    private val artistName: String = rawArtist.name
+    private val responseAttachments: ResponseAttachments
 ) {
+    private val artistId: String = rawArtist.id
+    private val artistName: String = rawArtist.name
+
     companion object {
         private val LOGGER = KotlinLogging.logger {}
     }
@@ -108,7 +95,7 @@ class NewArtistEnricher(
         val userUsagesConsumed = gptUsageService.consumeUserUsage(spotifyId)
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
-            transactionStatus.setRollbackOnly()
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
             LOGGER.info { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }
             if (!globalUsageConsumed) {
                 responseAttachments.advisories.add(Advisory.GLOBAL_GPT_USAGES_DEPLETED)
@@ -126,7 +113,7 @@ class NewArtistEnricher(
         val openAIProvidedGenres = try {
             openAIService.provideGenres(rawArtist.name)
         } catch (e: OpenAIClientException) {
-            transactionStatus.setRollbackOnly()
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
             LOGGER.error(e) { }
             responseAttachments.advisories.add(Advisory.OPENAI_PROBLEM)
             return EnrichableArtists(rawArtist.copy(), false)
