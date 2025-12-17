@@ -20,6 +20,7 @@ import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTim
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.GetMultipleArtists200Response
 import org.taonity.spotify.model.PagingArtistObject
+import org.taonity.spotify.model.PublicUserObject
 import java.io.InterruptedIOException
 
 @Service
@@ -149,5 +150,24 @@ class SpotifyService(
                 val errorMessage = violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
                 throw SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
             }
+    }
+
+    fun fetchUserPublicProfile(userId: String): PublicUserObject {
+        val url = "$spotifyApiBaseUrl/users/$userId"
+
+        val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
+            .uri(url)
+            .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-client-credentials"))
+            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .retrieve()
+
+        return try {
+            responseSpec.body<PublicUserObject>()!!
+        } catch (e: Exception) {
+            if (e.hasCause(InterruptedIOException::class.java)) {
+                throw SpotifyTimeoutException("Timeout while retrieving user profile", e)
+            }
+            throw SpotifyClientException("Failed to retrieve user profile", e)
+        }
     }
 }

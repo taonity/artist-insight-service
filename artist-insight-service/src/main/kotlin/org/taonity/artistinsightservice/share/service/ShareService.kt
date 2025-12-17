@@ -1,10 +1,12 @@
 package org.taonity.artistinsightservice.share.service
 
+import jakarta.persistence.EntityManager
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 import org.taonity.artistinsightservice.share.dto.ShareLinkResponse
+import org.taonity.artistinsightservice.share.dto.ShareOwnerInfo
 import org.taonity.artistinsightservice.share.dto.SharedArtistsResponse
 import org.taonity.artistinsightservice.share.entity.SharedLinkEntity
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
@@ -19,7 +21,8 @@ import java.time.OffsetDateTime
 class ShareService(
     private val sharedLinkRepository: SharedLinkRepository,
     private val spotifyUserService: SpotifyUserService,
-    private val spotifyService: SpotifyService
+    private val spotifyService: SpotifyService,
+    private val entityManager: EntityManager
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -40,7 +43,10 @@ class ShareService(
         val sharedLink = if (existingLink != null) {
             LOGGER.info { "Updating existing share link for user: $spotifyId" }
             existingLink.expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
-            existingLink.clearAndAddArtists(artistIds)
+            // TODO: investigate tons of queires
+            existingLink.artists.clear()
+            entityManager.flush()
+            existingLink.addArtists(artistIds)
             sharedLinkRepository.save(existingLink)
         } else {
             LOGGER.info { "Creating new share link for user: $spotifyId" }
@@ -51,7 +57,7 @@ class ShareService(
                 shareCode = shareCode,
                 expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
             )
-            newLink.clearAndAddArtists(artistIds)
+            newLink.addArtists(artistIds)
             sharedLinkRepository.save(newLink)
         }
         
@@ -93,20 +99,41 @@ class ShareService(
         if (sharedLink.isExpired()) {
             throw ShareLinkExpiredException("Share link has expired: $shareCode")
         }
+
+        val ownerInfo = fetchOwnerInfo(sharedLink.user.spotifyId)
         
         val artistIds = sharedLink.artists.map { it.artistId }
         
         if (artistIds.isEmpty()) {
-            return SharedArtistsResponse(artists = emptyList(), mergedGenres = emptyList())
+            return SharedArtistsResponse(owner = ownerInfo, artists = emptyList(), mergedGenres = emptyList())
         }
         
         val artists = spotifyService.fetchArtistsByIds(artistIds)
         val mergedGenres = mergeGenres(artists)
         
         return SharedArtistsResponse(
+            owner = ownerInfo,
             artists = artists,
             mergedGenres = mergedGenres
         )
+    }
+
+    private fun fetchOwnerInfo(spotifyId: String): ShareOwnerInfo {
+        return try {
+            val userProfile = spotifyService.fetchUserPublicProfile(spotifyId)
+            val avatarUrl = userProfile.images?.firstOrNull()?.url
+            ShareOwnerInfo(
+                displayName = userProfile.displayName ?: "Unknown User",
+                avatarUrl = avatarUrl
+            )
+        } catch (e: Exception) {
+            LOGGER.warn(e) { "Failed to fetch owner profile for $spotifyId, using fallback" }
+            val user = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
+            ShareOwnerInfo(
+                displayName = user.displayName,
+                avatarUrl = null
+            )
+        }
     }
 
     private fun mergeGenres(artists: List<SafeArtistObject>): List<String> {

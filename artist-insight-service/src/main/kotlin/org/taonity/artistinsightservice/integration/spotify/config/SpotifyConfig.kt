@@ -1,11 +1,13 @@
 package org.taonity.artistinsightservice.integration.spotify.config
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.openapitools.jackson.nullable.JsonNullableModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
@@ -16,20 +18,24 @@ import org.taonity.artistinsightservice.security.exception.RestClientErrorExcept
 import java.nio.charset.Charset
 import java.time.Duration
 
+
 @Configuration
 class SpotifyConfig {
 
-    companion object {
-        private val objectMapper = jacksonObjectMapper()
-    }
-
     @Bean
-    fun spotifyAuthorisationCodeRestClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    fun spotifyAuthorisationCodeRestClient(
+        authorizedClientManager: OAuth2AuthorizedClientManager,
+        objectMapper: ObjectMapper
+    ): RestClient {
         val requestInterceptor = OAuth2ClientHttpRequestInterceptor(authorizedClientManager)
 
         return RestClient.builder()
             .requestInterceptor(requestInterceptor)
             .requestFactory(buildClientHttpRequestFactory())
+            .messageConverters { converters ->
+                converters.removeIf { it is MappingJackson2HttpMessageConverter }
+                converters.add(MappingJackson2HttpMessageConverter(objectMapper))
+            }
             .defaultStatusHandler(HttpStatusCode::isError) { req, res ->
                 val responseBody = String(res.body.readAllBytes(), Charset.defaultCharset())
                 val headersJson = objectMapper.writeValueAsString(req.headers)
@@ -55,15 +61,26 @@ class SpotifyConfig {
     }
 
     @Bean
-    fun spotifyClientCredentialsRestClient(authorizedClientServiceOAuth2AuthorizedClientManager: AuthorizedClientServiceOAuth2AuthorizedClientManager): RestClient {
+    fun spotifyClientCredentialsRestClient(
+        authorizedClientServiceOAuth2AuthorizedClientManager: AuthorizedClientServiceOAuth2AuthorizedClientManager,
+        objectMapper: ObjectMapper
+    ): RestClient {
         val requestInterceptor =
             OAuth2ClientHttpRequestInterceptor(authorizedClientServiceOAuth2AuthorizedClientManager)
 
         return RestClient.builder()
             .requestInterceptor(requestInterceptor)
             .requestFactory(buildClientHttpRequestFactory())
+            .messageConverters { converters ->
+                converters.removeIf { it is MappingJackson2HttpMessageConverter }
+                converters.add(MappingJackson2HttpMessageConverter(objectMapper))
+            }
             .build()
     }
+
+    // TODO: refactor on jackson-databind-nullable 3
+    @Bean
+    fun jsonNullableModule(): JsonNullableModule = JsonNullableModule()
 
     // TODO: Find best values for timeouts
     private fun buildClientHttpRequestFactory(): ClientHttpRequestFactory {

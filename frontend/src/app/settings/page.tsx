@@ -34,10 +34,13 @@ export default function SettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
+  const [shareLink, setShareLink] = useState<{ shareCode: string; expiresAt: string } | null>(null)
+  const [shareLinkLoading, setShareLinkLoading] = useState(true)
   const user = useUser(setErrorMessage)
 
   useEffect(() => {
     getRuntimeConfig().then(config => setCsrfCookieName(config.csrfCookieName))
+    loadShareLinkStatus()
   }, [])
 
   const handleLogout = async () => {
@@ -113,6 +116,68 @@ export default function SettingsPage() {
     }
   }
 
+  const loadShareLinkStatus = async () => {
+    try {
+      const res = await fetch('/api/share', { credentials: 'include' })
+      if (res.status === 404) {
+        setShareLink(null)
+      } else if (res.ok) {
+        const data = await res.json()
+        setShareLink({ shareCode: data.shareCode, expiresAt: data.expiresAt })
+      }
+    } catch (err) {
+      logError('SettingsPage', 'Failed to load share link status', err)
+    } finally {
+      setShareLinkLoading(false)
+    }
+  }
+
+  const handleDeleteShareLink = async () => {
+    if (!window.confirm('Are you sure you want to delete your share link? Anyone with the link will no longer be able to access it.')) {
+      return
+    }
+
+    const xsrfToken = getCookie(csrfCookieName)
+    if (!xsrfToken) {
+      logError('SettingsPage', 'CSRF token not found for delete share link')
+      setErrorMessage(csrfErrorMessage)
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const res = await fetch('/api/share', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'X-XSRF-TOKEN': xsrfToken },
+      })
+
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
+
+      if (res.status === 403) {
+        logError('SettingsPage', 'Delete share link forbidden - CSRF validation failed')
+        setErrorMessage(csrfErrorMessage)
+        return
+      }
+
+      if (!res.ok && res.status !== 204) {
+        logError('SettingsPage', 'Delete share link failed with status: ' + res.status)
+        setErrorMessage('Failed to delete your share link. Please try again.')
+        return
+      }
+
+      setShareLink(null)
+    } catch (err) {
+      logError('SettingsPage', 'Delete share link network error', err)
+      setErrorMessage(networkErrorMessage)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
   const isLoadingUser = !user
 
   return (
@@ -149,6 +214,41 @@ export default function SettingsPage() {
             )}
           </p>
         </div>
+        
+        <div className="settings-page-card">
+          <h2>Share link</h2>
+          {shareLinkLoading ? (
+            <p>
+              <span className="skeleton-line" style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0 }} />
+            </p>
+          ) : shareLink ? (
+            <>
+              <p>
+                <strong>Share code:</strong> {shareLink.shareCode}
+              </p>
+              <p>
+                <strong>Expires:</strong> {new Date(shareLink.expiresAt).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>URL:</strong>{' '}
+                <a href={`/share/${shareLink.shareCode}`} target="_blank" rel="noopener noreferrer">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/share/${shareLink.shareCode}` : `/share/${shareLink.shareCode}`}
+                </a>
+              </p>
+              <button 
+                className="danger-button" 
+                onClick={handleDeleteShareLink} 
+                disabled={isProcessing}
+                style={{ marginTop: '1rem' }}
+              >
+                Delete share link
+              </button>
+            </>
+          ) : (
+            <p>You don't have an active share link. Create one from the home page.</p>
+          )}
+        </div>
+
         <div className="settings-page-actions">
           <button onClick={handleLogout} disabled={isProcessing || isLoadingUser}>
             Log out

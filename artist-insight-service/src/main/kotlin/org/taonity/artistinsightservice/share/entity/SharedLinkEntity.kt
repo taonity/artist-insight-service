@@ -24,8 +24,7 @@ class SharedLinkEntity(
     @OneToMany(mappedBy = "sharedLink", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val artists: MutableSet<SharedLinkArtistEntity> = mutableSetOf()
 ) {
-    fun clearAndAddArtists(artistIds: List<String>) {
-        artists.clear()
+    fun addArtists(artistIds: List<String>) {
         artistIds.forEach { artistId ->
             artists.add(SharedLinkArtistEntity(sharedLink = this, artistId = artistId))
         }

@@ -17,6 +17,12 @@
             ],
             // to fix the "not secure" error in Chrome
             "port": 9876
-        }
+        },
+    {
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev -- --inspect"
+    },
     ]
 }

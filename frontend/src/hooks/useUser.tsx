@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import User from '../models/User'
 import keysToCamel from '../utils/utils'
 
-export function useUser(setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>) {
+export function useUser(
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+  silentMode: boolean = false
+) {
   const [user, setUser] = useState<User | null>(null);
   
 
@@ -15,11 +18,15 @@ export function useUser(setErrorMessage: React.Dispatch<React.SetStateAction<str
         signal: controller.signal,
       });
       if (res.status === 401) {
-        window.location.href = "/login";
+        if (!silentMode) {
+          window.location.href = "/login";
+        }
         return;
       }
       if (res.status === 504) {
-        setErrorMessage("Request timed out. Please try again.");
+        if (!silentMode) {
+          setErrorMessage("Request timed out. Please try again.");
+        }
         return;
       }
       if (res.ok) {
@@ -27,15 +34,19 @@ export function useUser(setErrorMessage: React.Dispatch<React.SetStateAction<str
         const camelCasedUser = keysToCamel(snakeCasedUser);
         setUser(camelCasedUser);
       } else {
-        window.location.href = "/login";
+        if (!silentMode) {
+          window.location.href = "/login";
+        }
       }
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        setErrorMessage("Request timed out. Please try again.");
-      } else {
-        setErrorMessage(
-          "Unable to connect to the server. Please check your connection."
-        );
+      if (!silentMode) {
+        if (err instanceof Error && err.name === "AbortError") {
+          setErrorMessage("Request timed out. Please try again.");
+        } else {
+          setErrorMessage(
+            "Unable to connect to the server. Please check your connection."
+          );
+        }
       }
     } finally {
       clearTimeout(timeoutId);
