@@ -245,7 +245,7 @@ export default function SettingsPage() {
               </button>
             </>
           ) : (
-            <p>You don't have an active share link. Create one from the home page.</p>
+            <p>You don&apos;t have an active share link. Create one from the home page.</p>
           )}
         </div>
 

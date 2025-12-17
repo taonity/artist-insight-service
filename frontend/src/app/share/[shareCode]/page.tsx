@@ -86,7 +86,7 @@ export default function SharePage() {
         <div className="share-page">
           <div className="share-error-card">
             <h1>Share link not found</h1>
-            <p>This share link doesn't exist or has been deleted.</p>
+            <p>This share link doesn&apos;t exist or has been deleted.</p>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function SharePage() {
                 className="share-owner-avatar"
               />
               <div className="share-owner-details">
-                <h1>{shareData.owner.displayName}'s Followed Artists</h1>
+                <h1>{shareData.owner.displayName}&apos;s Followed Artists</h1>
                 <p>{shareData.artists.length} artists</p>
               </div>
             </div>
