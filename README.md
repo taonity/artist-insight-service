@@ -3,15 +3,15 @@ A service that allows you to fetch your Spotify followings and share them with o
 
 ### Features
 - Fetch user followings and show them with genres in a list
-- Download the following list as a CSV file
+- Download the followings list as a CSV file
+- Share followings page with a share link
 - Define missing artist genres using OpenAI
 - Log in with a Spotify user using OAuth
 
-<img src="images/site-user-page.png" width="600" />
+<img src="images/site-user-page-v2.png" width="600" />
 
 ### Roadmap
 - Add user roles and admin panel
-- Add more details in the artists list & implement different list views
 - Add more ways to donate to the service
 - Add selectors for grouping artists by details like genre
 - Review site design
