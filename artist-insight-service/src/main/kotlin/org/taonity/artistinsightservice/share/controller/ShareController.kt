@@ -22,7 +22,7 @@ class ShareController(
     fun createOrUpdateShareLink(
         @AuthenticationPrincipal principal: SpotifyUserPrincipal
     ): ResponseEntity<ShareLinkResponse> {
-        LOGGER.info { "Handling POST /share endpoint for user: ${principal.getSpotifyId()}" }
+        LOGGER.info { "Handling POST [/share] endpoint for user: ${principal.getSpotifyId()}" }
         val response = shareService.createOrUpdateShareLink(principal.getSpotifyId())
         return ResponseEntity.ok(response)
     }
@@ -31,7 +31,7 @@ class ShareController(
     fun getShareLinkStatus(
         @AuthenticationPrincipal principal: SpotifyUserPrincipal
     ): ResponseEntity<ShareLinkResponse> {
-        LOGGER.info { "Handling GET /share endpoint for user: ${principal.getSpotifyId()}" }
+        LOGGER.info { "Handling GET [/share] endpoint for user: ${principal.getSpotifyId()}" }
         val response = shareService.getShareLinkStatus(principal.getSpotifyId())
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(response)
@@ -41,7 +41,7 @@ class ShareController(
     fun deleteShareLink(
         @AuthenticationPrincipal principal: SpotifyUserPrincipal
     ): ResponseEntity<Void> {
-        LOGGER.info { "Handling DELETE /share endpoint for user: ${principal.getSpotifyId()}" }
+        LOGGER.info { "Handling DELETE [/share] endpoint for user: ${principal.getSpotifyId()}" }
         shareService.deleteShareLink(principal.getSpotifyId())
         return ResponseEntity.noContent().build()
     }

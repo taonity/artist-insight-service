@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 import org.taonity.artistinsightservice.share.dto.ShareLinkResponse
 import org.taonity.artistinsightservice.share.dto.ShareOwnerInfo
 import org.taonity.artistinsightservice.share.dto.SharedArtistsResponse
@@ -13,6 +12,7 @@ import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredExceptio
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
 import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
 import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
+import org.taonity.artistinsightservice.user.repository.UserArtistLinkRepository
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
 import java.security.SecureRandom
 import java.time.OffsetDateTime
@@ -22,6 +22,7 @@ class ShareService(
     private val sharedLinkRepository: SharedLinkRepository,
     private val spotifyUserService: SpotifyUserService,
     private val spotifyService: SpotifyService,
+    private val userArtistLinkRepository: UserArtistLinkRepository,
     private val entityManager: EntityManager
 ) {
     companion object {
@@ -105,16 +106,27 @@ class ShareService(
         val artistIds = sharedLink.artists.map { it.artistId }
         
         if (artistIds.isEmpty()) {
-            return SharedArtistsResponse(owner = ownerInfo, artists = emptyList(), mergedGenres = emptyList())
+            return SharedArtistsResponse(owner = ownerInfo, artists = emptyList())
         }
         
         val artists = spotifyService.fetchArtistsByIds(artistIds)
-        val mergedGenres = mergeGenres(artists)
-        
+
+        // Get enriched artist IDs for the owner - only these will have genres shown
+        val enrichedArtistIds = userArtistLinkRepository
+            .findAllByUserSpotifyIdAndArtistArtistIdIn(sharedLink.user.spotifyId, artistIds)
+            .map { it.artist.artistId }
+            .toSet()
+
+        // Clear genres for artists that are not enriched
+        artists.forEach { artist ->
+            if (artist.id !in enrichedArtistIds) {
+                artist.genres = emptyList()
+            }
+        }
+
         return SharedArtistsResponse(
             owner = ownerInfo,
-            artists = artists,
-            mergedGenres = mergedGenres
+            artists = artists
         )
     }
 
@@ -134,16 +146,6 @@ class ShareService(
                 avatarUrl = null
             )
         }
-    }
-
-    private fun mergeGenres(artists: List<SafeArtistObject>): List<String> {
-        return artists
-            .flatMap { it.genres }
-            .groupingBy { it }
-            .eachCount()
-            .entries
-            .sortedByDescending { it.value }
-            .map { it.key }
     }
 
     private fun generateUniqueShareCode(): String {

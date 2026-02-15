@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -12,6 +13,10 @@ import org.taonity.artistinsightservice.devaccess.dto.DevAccessRequestDto
 import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity
 import org.taonity.artistinsightservice.devaccess.service.MailService
 
+@ConditionalOnProperty(
+    value = ["app.dev-access.enabled"],
+    havingValue = "true",
+    matchIfMissing = false)
 @RestController
 class DevAccessController @Autowired constructor(
     private val devAccessRepository: DevAccessRepository,

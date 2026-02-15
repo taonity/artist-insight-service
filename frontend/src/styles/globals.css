@@ -203,6 +203,8 @@ a.button:hover {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .actions {
@@ -266,7 +268,7 @@ a.button:hover {
 
 .advisory-card {
   position: relative;
-  padding: 8px 16px;
+  padding: 8px 36px 8px 16px;
   border-radius: 6px;
   margin-bottom: 8px;
   font-size: 0.875rem;
@@ -364,13 +366,28 @@ button:disabled {
 
 .advisory-close {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #fff;
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
   cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.advisory-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .skeleton-circle,

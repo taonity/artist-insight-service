@@ -17,8 +17,8 @@ spring:
             scope: user-follow-read, user-read-private
         provider:
           spotify:
-            issuer-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}
-            user-info-uri: ${SPOTIFY_STUB_BASE_URL:http://localhost:8100}/v1/me
+            issuer-uri: ${SPOTIFY_STUB_BASE_URL:http://127.0.0.1:8100}
+            user-info-uri: ${SPOTIFY_STUB_BASE_URL:http://127.0.0.1:8100}/v1/me
             userNameAttribute: display_name
   cloud:
     contract:
@@ -26,19 +26,13 @@ spring:
         stubs-mode: CLASSPATH
 
 app:
-  default-success-url: ${DEFAULT_SUCCESS_URL:http://localhost:3000}
-  login-url: ${LOGIN_URL:http://localhost:3000/login}
+  default-success-url: ${DEFAULT_SUCCESS_URL:http://127.0.0.1:3000}
+  login-url: ${LOGIN_URL:http://127.0.0.1:3000/login}
 
 spotify:
   api-base-url: http://localhost:8100/v1
 
 stub-spotify-mergeable:
-  cloud:
-    contract:
-      stubrunner:
-        ids:
-          - org.taonity:spotify-contracts:@project.version@:stubs:8100
-
-logging:
-  level:
-    WireMock: warn
+  stubrunner:
+    ids:
+      - org.taonity:spotify-contracts:@project.version@:stubs:8100

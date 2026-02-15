@@ -3,12 +3,15 @@ logging:
   level:
     org.taonity.artistinsightservice.logging.HttpServletLoggingService: debug
     org.taonity.artistinsightservice.mvc.GlobalExceptionHandler: debug
+    DB: info
 #    org.springframework.security: TRACE
 #    root: trace
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 #    org.hibernate.orm.jdbc.bind: TRACE
 
+
+#debug: true
 
 spring:
   security:
@@ -23,9 +26,29 @@ spring:
         format_sql: true
 
 app:
+  dev-access:
+    admin-email: local-admin@example.com
   rate-limit:
     send-email:
       refill-duration: PT1S
+
+#decorator:
+#  datasource:
+#    datasource-proxy:
+#      logging: slf4j
+#      query:
+#        enable-logging: true
+#        log-level: info
+#        logger-name: DB
+#      slow-query:
+#        enable-logging: true
+#        log-level: info
+#        logger-name: DB
+#        threshold: 300
+#      multiline: false
+#      format-sql: true
+#      json-format: false
+#      count-query: false
 
 ---
 ############# clean migrates local pg db

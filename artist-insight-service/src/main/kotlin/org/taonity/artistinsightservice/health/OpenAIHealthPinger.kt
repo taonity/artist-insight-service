@@ -11,8 +11,8 @@ import java.time.Instant
 @Component
 class OpenAIHealthPinger(
     private val openAIService: OpenAIService,
-    @Value("\${spotify.api-base-url}")
-    private val spotifyApiBaseUrl: String,
+    @Value("\${openai.base-url}")
+    private val openAiBaseUrl: String,
 ) : ExternalServiceHealthPinger {
 
     companion object {
@@ -22,7 +22,7 @@ class OpenAIHealthPinger(
     override val name: String = "openai"
 
     override fun ping(): HealthCheckResult {
-        val url = "$spotifyApiBaseUrl/models"
+        val url = "$openAiBaseUrl/models"
         val start = Instant.now()
         return try {
             val models = openAIService.getModels()

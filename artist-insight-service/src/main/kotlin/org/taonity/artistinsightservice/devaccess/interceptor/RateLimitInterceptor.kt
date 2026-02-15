@@ -18,10 +18,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class RateLimitInterceptor : HandlerInterceptor {
-    @Value("\${app.rate-limit.send-email.capacity}")
+    @Value("\${app.dev-access.rate-limit.send-email.capacity}")
     private var capacity: Int = 1
 
-    @Value("\${app.rate-limit.send-email.refill-duration}")
+    @Value("\${app.dev-access.rate-limit.send-email.refill-duration}")
     private lateinit var refillDuration: String
 
     private val buckets = ConcurrentHashMap<String, Bucket>()

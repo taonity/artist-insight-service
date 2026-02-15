@@ -17,3 +17,6 @@ spring:
     init:
       mode: always
       data-locations: classpath:sql/test-data.sql
+
+app:
+  additional-profiles: flyway-clean-migrate

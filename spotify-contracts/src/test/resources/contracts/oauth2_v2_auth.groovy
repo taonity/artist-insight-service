@@ -11,7 +11,7 @@ Contract.make {
                 parameter("response_type", "code")
                 parameter("client_id", "1234e12345678fafbd90fdce7540e12e")
                 parameter("scope", "user-follow-read user-read-private")
-                parameter("redirect_uri", "http://localhost:9016/login/oauth2/code/spotify-artist-insight-service")
+                parameter("redirect_uri", "http://127.0.0.1:9016/login/oauth2/code/spotify-artist-insight-service")
 //                parameter("state", "ObcfjFZqredmQena-wKM-afjKGuCHpZ-vDNersT-XPc%3D")
             }
         }

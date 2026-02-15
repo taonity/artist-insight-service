@@ -4,6 +4,5 @@ import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 
 data class SharedArtistsResponse(
     val owner: ShareOwnerInfo,
-    val artists: List<SafeArtistObject>,
-    val mergedGenres: List<String>
+    val artists: List<SafeArtistObject>
 )

@@ -2,6 +2,7 @@ package org.taonity.artistinsightservice.devaccess.service
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Async
@@ -10,12 +11,16 @@ import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity
 import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestStatus
 import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
 
+@ConditionalOnProperty(
+    value = ["app.dev-access.enabled"],
+    havingValue = "true",
+    matchIfMissing = false)
 @Service
 class MailService(
     private val mailSender: JavaMailSender,
     private val devAccessRepository: DevAccessRepository
 ) {
-    @Value("\${app.admin-email}")
+    @Value("\${app.dev-access.admin-email}")
     private lateinit var adminEmail: String
 
     companion object {

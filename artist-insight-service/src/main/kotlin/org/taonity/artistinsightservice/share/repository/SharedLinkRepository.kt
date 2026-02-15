@@ -13,7 +13,11 @@ interface SharedLinkRepository : CrudRepository<SharedLinkEntity, UUID> {
     @Query("SELECT sl FROM SharedLinkEntity sl WHERE sl.user.spotifyId = :userId")
     fun findByUserId(@Param("userId") userId: String): SharedLinkEntity?
 
-    @Query("SELECT sl FROM SharedLinkEntity sl LEFT JOIN FETCH sl.artists WHERE sl.shareCode = :shareCode")
+    @Query("""
+        SELECT sl FROM SharedLinkEntity sl 
+        LEFT JOIN FETCH sl.artists 
+        WHERE sl.shareCode = :shareCode
+    """)
     fun findByShareCodeWithArtists(@Param("shareCode") shareCode: String): SharedLinkEntity?
 
     fun deleteByUserSpotifyId(spotifyId: String)

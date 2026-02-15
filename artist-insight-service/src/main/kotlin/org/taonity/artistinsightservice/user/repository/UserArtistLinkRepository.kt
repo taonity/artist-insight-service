@@ -9,4 +9,5 @@ import org.taonity.artistinsightservice.user.entity.UserArtistLinkId
 interface UserArtistLinkRepository : CrudRepository<UserArtistLinkEntity, UserArtistLinkId> {
     fun deleteAllByUserSpotifyId(spotifyId: String)
     fun existsByUserSpotifyIdAndArtistArtistId(spotifyId: String, artistId: String): Boolean
+    fun findAllByUserSpotifyIdAndArtistArtistIdIn(spotifyId: String, artistIds: List<String>): List<UserArtistLinkEntity>
 }
