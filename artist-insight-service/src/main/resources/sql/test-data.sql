@@ -26,3 +26,13 @@ INSERT INTO spotify_user_enriched_artists (spotify_id, artist_id) VALUES ('3126n
 
 INSERT INTO app_settings (id, global_gpt_usages_left)
 VALUES (0, 100);
+
+
+INSERT INTO shared_link (id, user_id, share_code, created_at, expires_at)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '3126nx54y24ryqyza3qxcchi4wry', 'testCode', CURRENT_TIMESTAMP, DATEADD('DAY', 30, CURRENT_TIMESTAMP));
+
+INSERT INTO shared_link_artist (shared_link_id, artist_id) VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '21bOoXa6JISSaqYu2oYbWy');
+INSERT INTO shared_link_artist (shared_link_id, artist_id) VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '6A0sYtzqMUPBpHzVvEgOhA');
+INSERT INTO shared_link_artist (shared_link_id, artist_id) VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '4uFZsG1vXrPcvnZ4iSQyrx');
+
+

@@ -32,11 +32,14 @@ class SharedLinkEntity(
 
     fun isExpired(): Boolean = OffsetDateTime.now().isAfter(expiresAt)
 
+    override fun hashCode(): Int = id.hashCode()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SharedLinkEntity) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as SharedLinkEntity
+
         return id == other.id
     }
-
-    override fun hashCode(): Int = id.hashCode()
 }

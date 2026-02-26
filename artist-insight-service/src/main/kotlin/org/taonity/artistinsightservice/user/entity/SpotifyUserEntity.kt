@@ -27,13 +27,16 @@ class SpotifyUserEntity(
         }
     }
 
+    override fun hashCode(): Int = spotifyId.hashCode()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SpotifyUserEntity) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as SpotifyUserEntity
+
         return spotifyId == other.spotifyId
     }
-
-    override fun hashCode(): Int = spotifyId.hashCode()
 
     override fun toString(): String {
         return "SpotifyUser(spotifyId='$spotifyId', displayName='$displayName', gptUsagesLeft=$gptUsagesLeft)"

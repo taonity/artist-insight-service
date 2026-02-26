@@ -9,7 +9,8 @@ logging:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 #    org.hibernate.orm.jdbc.bind: TRACE
-
+# For Hibernate's proxy factory
+    org.hibernate.bytecode: DEBUG
 
 #debug: true
 
@@ -32,23 +33,23 @@ app:
     send-email:
       refill-duration: PT1S
 
-#decorator:
-#  datasource:
-#    datasource-proxy:
-#      logging: slf4j
-#      query:
-#        enable-logging: true
-#        log-level: info
-#        logger-name: DB
-#      slow-query:
-#        enable-logging: true
-#        log-level: info
-#        logger-name: DB
-#        threshold: 300
-#      multiline: false
-#      format-sql: true
-#      json-format: false
-#      count-query: false
+decorator:
+  datasource:
+    datasource-proxy:
+      logging: slf4j
+      query:
+        enable-logging: true
+        log-level: info
+        logger-name: DB
+      slow-query:
+        enable-logging: true
+        log-level: info
+        logger-name: DB
+        threshold: 300
+      multiline: false
+      format-sql: true
+      json-format: false
+      count-query: false
 
 ---
 ############# clean migrates local pg db

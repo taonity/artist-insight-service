@@ -9,6 +9,13 @@ spring:
         stubs-mode: CLASSPATH
 
 stub-openai-mergeable:
-  stubrunner:
-    ids:
-      - org.taonity:openai-contracts:@project.version@:stubs:8101
+  spring:
+    cloud:
+      contract:
+        stubrunner:
+          ids:
+            - org.taonity:openai-contracts:@project.version@:stubs:8101
+
+logging:
+  level:
+    WireMock: warn

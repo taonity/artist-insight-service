@@ -12,16 +12,17 @@ class SharedLinkArtistEntity(
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shared_link_id", nullable = false)
-    val sharedLink: SharedLinkEntity,
+    var sharedLink: SharedLinkEntity,
 
     @Id
     @Column(name = "artist_id", nullable = false)
-    val artistId: String,
-
+    var artistId: String,
+) {
+    @JvmField
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", insertable = false, updatable = false)
-    val artist: ArtistEntity? = null
-) {
+    var artist: ArtistEntity? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SharedLinkArtistEntity) return false

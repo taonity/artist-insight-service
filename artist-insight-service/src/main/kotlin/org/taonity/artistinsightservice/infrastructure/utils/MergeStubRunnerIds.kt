@@ -16,7 +16,7 @@ class MergeStubRunnerIds(
 ) : EnvironmentPostProcessor, Ordered {
 
     companion object {
-        private const val SPRING_CLOUD_CONTRACT_STUBRUNNER_IDS = "stubrunner.ids"
+        private const val SPRING_CLOUD_CONTRACT_STUBRUNNER_IDS = "spring.cloud.contract.stubrunner.ids"
     }
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {

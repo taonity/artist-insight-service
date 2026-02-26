@@ -46,6 +46,11 @@ Only one profile from a resource group can be used. For example, the set for the
 Use IntelliJ to run the backend locally. Add a Run/Debug configuration with Main class `org.taonity.artistinsightservice.MainKt`
 and VM options `-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local` and run the backend.
 
+To run it from PS use a command like this:
+```bash
+mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local"'
+```
+
 #### Frontend
 I recommend opening /frontend directory in Visual Code. Run `npm insatll`, and then `npm run dev`.
 
@@ -116,6 +121,8 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
+- no genres in shared pages
+- create github acitons pipeline for deployment
 - fix annoying healthchecks on local, or make the period bigger
 - invesitgate auth metris missmatch in dashboard
 - remove default props from main prop file
