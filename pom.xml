@@ -27,7 +27,7 @@
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
 
-        <kotlin.version>2.2.0</kotlin.version>
+        <kotlin.version>2.3.10</kotlin.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
         <spring-cloud-contract.version>5.0.2</spring-cloud-contract.version>
     </properties>
