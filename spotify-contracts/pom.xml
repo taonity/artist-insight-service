@@ -43,6 +43,9 @@
                 <directory>src/test/resources/contracts</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>${project.build.directory}/stubs</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
