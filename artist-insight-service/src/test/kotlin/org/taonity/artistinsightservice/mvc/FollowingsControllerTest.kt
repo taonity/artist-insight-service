@@ -2,6 +2,7 @@ package org.taonity.artistinsightservice.mvc
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.openapitools.jackson.nullable.JsonNullableModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
@@ -14,8 +15,8 @@ import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
 
 @AutoConfigureStubRunner(
     ids = [
-        "org.taonity:spotify-contracts:0.23.0:stubs:8100",
-        "org.taonity:openai-contracts:0.23.0:stubs:8101"
+        "org.taonity:spotify-contracts:+:stubs:8100",
+        "org.taonity:openai-contracts:+:stubs:8101"
     ],
     stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
@@ -24,7 +25,7 @@ import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
 class FollowingsControllerTest: ControllerTestsBaseClass() {
 
     companion object {
-        private val OBJECT_MAPPER = jacksonObjectMapper()
+        private val OBJECT_MAPPER = jacksonObjectMapper().registerModule(JsonNullableModule())
     }
 
     @Test

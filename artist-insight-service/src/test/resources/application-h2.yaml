@@ -11,3 +11,4 @@ spring:
     cleanDisabled: false
     locations:
       - filesystem:../templates/docker/flyway/sql/tables
+      - filesystem:../templates/docker/flyway/sql/conflicts/h2

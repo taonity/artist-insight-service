@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.http.entity.ContentType
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
@@ -16,6 +17,10 @@ import org.taonity.artistinsightservice.infrastructure.exception.ClientErrorResp
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
+@ConditionalOnProperty(
+    value = ["app.dev-access.enabled"],
+    havingValue = "true",
+    matchIfMissing = false)
 @Component
 class RateLimitInterceptor : HandlerInterceptor {
     @Value("\${app.dev-access.rate-limit.send-email.capacity}")

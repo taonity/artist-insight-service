@@ -57,8 +57,6 @@ spring:
           auth: true
           starttls:
             enable: true
-  jackson:
-    use-jackson2-defaults: true
 
 logging:
   level:

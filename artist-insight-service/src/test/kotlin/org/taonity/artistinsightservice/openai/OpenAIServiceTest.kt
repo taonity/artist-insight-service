@@ -16,7 +16,7 @@ import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
 ],)
 @Disabled("Manual only")
 //@AutoConfigureStubRunner(
-//    ids = ["org.taonity:openai-contracts:1.0-SNAPSHOT:stubs:8101"],
+//    ids = ["org.taonity:openai-contracts:+:stubs:8101"],
 //    stubsMode = StubRunnerProperties.StubsMode.LOCAL
 //)
 class OpenAIServiceTest (

@@ -30,7 +30,7 @@ app:
   login-url: ${LOGIN_URL:http://127.0.0.1:3000/login}
 
 spotify:
-  api-base-url: http://localhost:8100/v1
+  api-base-url: http://127.0.0.1:8100/v1
 
 stub-spotify-mergeable:
   spring:

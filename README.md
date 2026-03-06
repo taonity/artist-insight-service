@@ -122,6 +122,8 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 
 ### Tech debts
 - no genres in shared pages
+- indicate backend version and/or commit in an actuator call
+- make backend port 8080
 - create github acitons pipeline for deployment
 - fix annoying healthchecks on local, or make the period bigger
 - invesitgate auth metris missmatch in dashboard

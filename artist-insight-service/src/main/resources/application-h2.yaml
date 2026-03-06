@@ -9,10 +9,12 @@ spring:
     driver-class-name: org.h2.Driver
 
   flyway:
+#    enabled: true
     enabled: false
     clean-disabled: false
     locations:
       - filesystem:templates/docker/flyway/sql/tables
+      - filesystem:templates/docker/flyway/sql/conflicts/h2
 
   sql:
     init:
