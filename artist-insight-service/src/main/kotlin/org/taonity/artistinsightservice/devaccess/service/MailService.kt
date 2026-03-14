@@ -41,12 +41,12 @@ class MailService(
 
             mailSender.send(message)
 
-            val updatedRequest = request.copy(status = DevAccessRequestStatus.SENT)
-            devAccessRepository.save(updatedRequest)
+            request.status = DevAccessRequestStatus.SENT
+            devAccessRepository.updateStatus(request.id, DevAccessRequestStatus.SENT)
             LOGGER.info { "Email sent successfully for request ID: ${request.id}" }
         } catch (e: Exception) {
-            val failedRequest = request.copy(status = DevAccessRequestStatus.FAILED)
-            devAccessRepository.save(failedRequest)
+            request.status = DevAccessRequestStatus.FAILED
+            devAccessRepository.updateStatus(request.id, DevAccessRequestStatus.FAILED)
             LOGGER.error(e) { "Failed to send email for request ID: ${request.id}" }
         }
     }

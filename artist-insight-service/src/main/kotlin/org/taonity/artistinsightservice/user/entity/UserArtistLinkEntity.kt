@@ -18,13 +18,21 @@ class UserArtistLinkEntity(
     @JoinColumn(name = "artist_id", nullable = false)
     val artist: ArtistEntity
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is UserArtistLinkEntity) return false
-        return user.spotifyId == other.user.spotifyId && artist.artistId == other.artist.artistId
-    }
+
 
     override fun hashCode(): Int = Objects.hash(user.spotifyId, artist.artistId)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UserArtistLinkEntity
+
+        if (user.spotifyId != other.user.spotifyId) return false
+        if (artist.artistId != other.artist.artistId) return false
+
+        return true
+    }
 }
 
 data class UserArtistLinkId(

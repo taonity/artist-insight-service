@@ -9,8 +9,9 @@ logging:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 #    org.hibernate.orm.jdbc.bind: TRACE
-# For Hibernate's proxy factory
-    org.hibernate.bytecode: DEBUG
+
+#    org.apache.hc.client5.http.headers: DEBUG
+#    org.apache.hc.client5.http.wire: DEBUG
 
 #debug: true
 
@@ -28,8 +29,12 @@ spring:
 
 app:
   dev-access:
-    enabled: false
-    admin-email: local-admin@example.com
+    enabled: true
+    admin-email: ${ADMIN_EMAIL:local-admin@example.com}
+    rate-limit:
+      send-email:
+        capacity: 10
+        refill-duration: PT1S
 
 decorator:
   datasource:
@@ -56,9 +61,9 @@ decorator:
 #    enabled: true
 #    clean-disabled: false
 #    locations:
-##      - filesystem:templates/docker/flyway/sql
+##      - filesystem:templates/docker/flyway/sql/init
 #      - filesystem:templates/docker/flyway/sql/tables
-#      - filesystem:templates/docker/flyway/sql/conflicts/h2
+#      - filesystem:templates/docker/flyway/sql/conflicts/postgres
 #    placeholder-replacement: true
 #    placeholder-prefix: "{{ "
 #    placeholder-suffix: " }}"

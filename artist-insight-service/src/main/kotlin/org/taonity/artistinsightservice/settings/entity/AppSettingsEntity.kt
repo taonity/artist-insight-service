@@ -11,11 +11,15 @@ class AppSettingsEntity(
     val id: Int = 0,
     var globalGptUsagesLeft: Int
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AppSettingsEntity) return false
-        return id == other.id
-    }
 
     override fun hashCode(): Int = id.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AppSettingsEntity
+
+        return id == other.id
+    }
 }

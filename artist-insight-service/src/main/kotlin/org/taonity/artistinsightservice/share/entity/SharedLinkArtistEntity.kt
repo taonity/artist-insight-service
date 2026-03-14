@@ -23,13 +23,19 @@ class SharedLinkArtistEntity(
     @JoinColumn(name = "artist_id", insertable = false, updatable = false)
     var artist: ArtistEntity? = null
 
+    override fun hashCode(): Int = Objects.hash(sharedLink.id, artistId)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SharedLinkArtistEntity) return false
-        return sharedLink.id == other.sharedLink.id && artistId == other.artistId
-    }
+        if (javaClass != other?.javaClass) return false
 
-    override fun hashCode(): Int = Objects.hash(sharedLink.id, artistId)
+        other as SharedLinkArtistEntity
+
+        if (sharedLink.id != other.sharedLink.id) return false
+        if (artistId != other.artistId) return false
+
+        return true
+    }
 }
 
 data class SharedLinkArtistId(
