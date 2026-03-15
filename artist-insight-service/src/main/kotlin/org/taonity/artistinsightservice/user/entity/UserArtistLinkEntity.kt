@@ -19,7 +19,6 @@ class UserArtistLinkEntity(
     val artist: ArtistEntity
 ) {
 
-
     override fun hashCode(): Int = Objects.hash(user.spotifyId, artist.artistId)
 
     override fun equals(other: Any?): Boolean {
@@ -39,3 +38,4 @@ data class UserArtistLinkId(
     val user: String = "",
     val artist: String = ""
 ) : Serializable
+

@@ -18,7 +18,6 @@ class SharedLinkArtistEntity(
     @Column(name = "artist_id", nullable = false)
     var artistId: String,
 ) {
-    @JvmField
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", insertable = false, updatable = false)
     var artist: ArtistEntity? = null

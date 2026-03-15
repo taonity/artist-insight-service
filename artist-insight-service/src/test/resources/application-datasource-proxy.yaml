@@ -15,4 +15,4 @@ decorator:
       multiline: false
       format-sql: true
       json-format: false
-      count-query: false
+      count-query: true
