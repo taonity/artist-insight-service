@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.share.dto.ShareLinkResponse
 import org.taonity.artistinsightservice.share.dto.ShareOwnerInfo
+import org.taonity.artistinsightservice.share.dto.SharedArtist
 import org.taonity.artistinsightservice.share.dto.SharedArtistsResponse
 import org.taonity.artistinsightservice.share.entity.SharedLinkEntity
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
 import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
 import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
-import org.taonity.artistinsightservice.user.repository.UserArtistLinkRepository
+import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
 import java.security.SecureRandom
 import java.time.OffsetDateTime
@@ -22,7 +23,7 @@ class ShareService(
     private val sharedLinkRepository: SharedLinkRepository,
     private val spotifyUserService: SpotifyUserService,
     private val spotifyService: SpotifyService,
-    private val userArtistLinkRepository: UserArtistLinkRepository,
+    private val artistRepository: ArtistRepository,
     private val entityManager: EntityManager
 ) {
     companion object {
@@ -111,41 +112,31 @@ class ShareService(
         
         val artists = spotifyService.fetchArtistsByIds(artistIds)
 
-        // Get enriched artist IDs for the owner - only these will have genres shown
-        val enrichedArtistIds = userArtistLinkRepository
-            .findAllByUserSpotifyIdAndArtistArtistIdIn(sharedLink.user.spotifyId, artistIds)
-            .map { it.artist.artistId }
-            .toSet()
+        // Fetch enriched genres from DB for artists the owner has enriched
+        val enrichedGenresByArtistId = artistRepository
+            .findByUserIdAndArtistIdsWithGenres(sharedLink.user.spotifyId, artistIds)
+            .associate { it.artistId to it.genres.map { g -> g.genre } }
 
-        // Clear genres for artists that are not enriched
-        artists.forEach { artist ->
-            if (artist.id !in enrichedArtistIds) {
-                artist.genres = emptyList()
-            }
+        val sharedArtists = artists.map { artist ->
+            SharedArtist(
+                artistObject = artist,
+                enrichedGenres = enrichedGenresByArtistId[artist.id] ?: emptyList()
+            )
         }
 
         return SharedArtistsResponse(
             owner = ownerInfo,
-            artists = artists
+            artists = sharedArtists
         )
     }
 
     private fun fetchOwnerInfo(spotifyId: String): ShareOwnerInfo {
-        return try {
-            val userProfile = spotifyService.fetchUserPublicProfile(spotifyId)
-            val avatarUrl = userProfile.images?.firstOrNull()?.url
-            ShareOwnerInfo(
-                displayName = userProfile.displayName ?: "Unknown User",
-                avatarUrl = avatarUrl
-            )
-        } catch (e: Exception) {
-            LOGGER.warn(e) { "Failed to fetch owner profile for $spotifyId, using fallback" }
-            val user = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
-            ShareOwnerInfo(
-                displayName = user.displayName,
-                avatarUrl = null
-            )
-        }
+        val userProfile = spotifyService.fetchUserPublicProfile(spotifyId)
+        val avatarUrl = userProfile.images?.firstOrNull()?.url
+        return ShareOwnerInfo(
+            displayName = userProfile.displayName ?: "Unknown User",
+            avatarUrl = avatarUrl
+        )
     }
 
     private fun generateUniqueShareCode(): String {

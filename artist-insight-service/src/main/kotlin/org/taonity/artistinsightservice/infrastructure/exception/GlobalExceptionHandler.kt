@@ -1,7 +1,7 @@
 package org.taonity.artistinsightservice.infrastructure.exception
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.module.kotlin.KotlinInvalidNullException
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -64,7 +64,7 @@ class GlobalExceptionHandler {
     fun handleMissingFieldExceptions(e: HttpMessageNotReadableException) : ResponseEntity<ClientErrorResponse> {
         val cause = e.cause
         return when (cause) {
-            is MissingKotlinParameterException, is MismatchedInputException -> {
+            is KotlinInvalidNullException, is MismatchedInputException -> {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ClientErrorResponse(ClientErrorCode.MISSING_FIELD, cause.message ?: ""))
             }

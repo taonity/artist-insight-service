@@ -1,7 +1,6 @@
 package org.taonity.artistinsightservice.integration.spotify.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.openapitools.jackson.nullable.JsonNullableModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
@@ -78,9 +77,6 @@ class SpotifyConfig {
             .build()
     }
 
-    // TODO: refactor on jackson-databind-nullable 3
-    @Bean
-    fun jsonNullableModule(): JsonNullableModule = JsonNullableModule()
 
     // TODO: Find best values for timeouts
     private fun buildClientHttpRequestFactory(): ClientHttpRequestFactory {

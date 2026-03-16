@@ -9,7 +9,10 @@ Contract.make {
         method GET()
         urlPath("/v1/artists") {
             queryParameters {
-                parameter("ids", "artist-with-genre,4uFZsG1vXrPcvnZ4iSQyrx,6A0sYtzqMUPBpHzVvEgOhA,21bOoXa6JISSaqYu2oYbWy,artist-without-genre")
+                parameter("ids", $(
+                    consumer(matching('(?=.*artist-with-genre)(?=.*4uFZsG1vXrPcvnZ4iSQyrx)(?=.*6A0sYtzqMUPBpHzVvEgOhA)(?=.*21bOoXa6JISSaqYu2oYbWy)(?=.*artist-without-genre).+')),
+                    producer("artist-with-genre,4uFZsG1vXrPcvnZ4iSQyrx,6A0sYtzqMUPBpHzVvEgOhA,21bOoXa6JISSaqYu2oYbWy,artist-without-genre")
+                ))
             }
         }
     }

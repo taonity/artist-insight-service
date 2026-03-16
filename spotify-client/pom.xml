@@ -29,9 +29,8 @@
             <version>3.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.9</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
@@ -42,7 +41,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>jsr250-api</artifactId>
@@ -73,6 +71,7 @@
                                 <generatorName>kotlin</generatorName>
                                 <dateLibrary>java17</dateLibrary>
                                 <library>resttemplate</library> <!-- or resttemplate -->
+                                <openApiNullable>false</openApiNullable>
                             </configOptions>
 
                             <generateApis>false</generateApis>

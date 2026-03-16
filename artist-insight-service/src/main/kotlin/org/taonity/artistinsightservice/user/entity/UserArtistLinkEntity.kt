@@ -34,6 +34,7 @@ class UserArtistLinkEntity(
     }
 }
 
+// Default values are required by JPA for @IdClass instantiation
 data class UserArtistLinkId(
     val user: String = "",
     val artist: String = ""

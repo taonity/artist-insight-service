@@ -20,6 +20,11 @@ interface Artist {
   popularity: number
 }
 
+interface SharedArtist {
+  artistObject: Artist
+  enrichedGenres: string[]
+}
+
 interface ShareOwner {
   displayName: string
   avatarUrl: string | null
@@ -27,8 +32,7 @@ interface ShareOwner {
 
 interface SharedArtistsData {
   owner: ShareOwner
-  artists: Artist[]
-  mergedGenres: string[]
+  artists: SharedArtist[]
 }
 
 export default function SharePage() {

@@ -2,7 +2,6 @@ package org.taonity.artistinsightservice.mvc
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.openapitools.jackson.nullable.JsonNullableModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
@@ -25,7 +24,7 @@ import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
 class FollowingsControllerTest: ControllerTestsBaseClass() {
 
     companion object {
-        private val OBJECT_MAPPER = jacksonObjectMapper().registerModule(JsonNullableModule())
+        private val OBJECT_MAPPER = jacksonObjectMapper()
     }
 
     @Test

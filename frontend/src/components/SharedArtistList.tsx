@@ -18,19 +18,24 @@ interface Artist {
   popularity: number
 }
 
+interface SharedArtist {
+  artistObject: Artist
+  enrichedGenres: string[]
+}
+
 interface Props {
-  artists: Artist[]
+  artists: SharedArtist[]
 }
 
 const SharedArtistList: React.FC<Props> = ({ artists }) => {
   const containerStyle = useMemo(() => ({ width: '100%' }), [])
 
-  const columnDefs: ColDef<Artist>[] = [
+  const columnDefs: ColDef<SharedArtist>[] = [
     {
       headerName: 'Avatar',
-      field: 'images',
+      field: 'artistObject.images',
       cellRenderer: (params: any) => {
-        const artist = params.data
+        const artist = params.data.artistObject
         const imageUrl =
           artist.images && artist.images.length > 0
             ? artist.images[0].url
@@ -60,7 +65,7 @@ const SharedArtistList: React.FC<Props> = ({ artists }) => {
     },
     {
       headerName: 'Name',
-      field: 'name',
+      field: 'artistObject.name',
       sortable: true,
       filter: true,
       flex: 1,
@@ -68,13 +73,15 @@ const SharedArtistList: React.FC<Props> = ({ artists }) => {
     },
     {
       headerName: 'Genres',
-      field: 'genres',
       cellRenderer: (params: any) => {
-        const genres = params.value
-        if (!genres || genres.length === 0) return null
+        const sharedArtist: SharedArtist = params.data
+        const spotifyGenres = sharedArtist.artistObject.genres ?? []
+        const enrichedGenres = sharedArtist.enrichedGenres ?? []
+        if (spotifyGenres.length === 0 && enrichedGenres.length === 0) return null
         return (
-          <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-            <Genres genres={genres} enriched={false} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '100%' }}>
+            {spotifyGenres.length > 0 && <Genres genres={spotifyGenres} enriched={false} />}
+            {enrichedGenres.length > 0 && <Genres genres={enrichedGenres} enriched={true} />}
           </div>
         )
       },
@@ -83,7 +90,7 @@ const SharedArtistList: React.FC<Props> = ({ artists }) => {
     },
     {
       headerName: 'Followers',
-      field: 'followers.total',
+      field: 'artistObject.followers.total',
       sortable: true,
       filter: 'agNumberColumnFilter',
       width: 120,
@@ -92,7 +99,7 @@ const SharedArtistList: React.FC<Props> = ({ artists }) => {
     },
     {
       headerName: 'Popularity',
-      field: 'popularity',
+      field: 'artistObject.popularity',
       sortable: true,
       filter: 'agNumberColumnFilter',
       width: 120,
