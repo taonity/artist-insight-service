@@ -32,6 +32,13 @@ class NewArtistEnricherFactory(
     }
 }
 
+sealed class EnrichmentPath {
+    data object AlreadyHasGenres : EnrichmentPath()
+    data class OwnedDbGenres(val genres: List<String>) : EnrichmentPath()
+    data class NewDbGenres(val genres: List<String>) : EnrichmentPath()
+    data object RequiresGpt : EnrichmentPath()
+}
+
 class NewArtistEnricher(
     private val spotifyId: String,
     private val rawArtist: SafeArtistObject,
@@ -49,49 +56,56 @@ class NewArtistEnricher(
     }
 
     fun enrichWithGenresIfPossible(): EnrichableArtists {
+        val path = resolveEnrichmentPath()
+        return enrich(path)
+    }
+
+    private fun resolveEnrichmentPath(): EnrichmentPath {
         if (rawArtist.genres.isNotEmpty()) {
-            return EnrichableArtists(rawArtist.copy(), false)
+            return EnrichmentPath.AlreadyHasGenres
         }
-        
+
         val enrichmentInfo = artistEnrichmentService.getArtistEnrichmentInfo(artistId, spotifyId)
         val dbArtistGenres = enrichmentInfo.genres
         val isLinkedToUser = enrichmentInfo.isLinkedToUser
 
         if (dbArtistGenres.isEmpty()) {
-            return enrichUsingNewGenresFromGptIfPossible()
+            return EnrichmentPath.RequiresGpt
         }
 
-        if (isLinkedToUser) {
-            return enrichUsingOwnedGenresFromDb(dbArtistGenres)
+        return if (isLinkedToUser) {
+            EnrichmentPath.OwnedDbGenres(dbArtistGenres)
+        } else {
+            EnrichmentPath.NewDbGenres(dbArtistGenres)
         }
-
-        val userUsageConsumed = gptUsageService.consumeUserUsage(spotifyId)
-        if (!userUsageConsumed) {
-            return buildWithNoGenresWithGptUserDepletionFlag()
-        }
-
-        return enrichUsingNewGenresFromDb(dbArtistGenres)
     }
 
-    private fun enrichUsingNewGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
-        val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
-        userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
-        LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
-        return EnrichableArtists(enrichedArtist, true)
-    }
-
-    private fun buildWithNoGenresWithGptUserDepletionFlag(): EnrichableArtists {
-        LOGGER.info { "Spotify user with id $spotifyId has no GPT usages left for artist $artistName" }
-        return EnrichableArtists(rawArtist.copy(), false, notEnoughUserGptUsages = true)
+    private fun enrich(path: EnrichmentPath): EnrichableArtists = when (path) {
+        is EnrichmentPath.AlreadyHasGenres -> EnrichableArtists(rawArtist.copy(), false)
+        is EnrichmentPath.OwnedDbGenres   -> enrichUsingOwnedGenresFromDb(path.genres)
+        is EnrichmentPath.NewDbGenres     -> enrichUsingNewGenresFromDb(path.genres)
+        is EnrichmentPath.RequiresGpt     -> enrichUsingGpt()
     }
 
     private fun enrichUsingOwnedGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
         val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
-        LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages not changed" }
+        LOGGER.info { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages not changed" }
         return EnrichableArtists(enrichedArtist)
     }
 
-    private fun enrichUsingNewGenresFromGptIfPossible(): EnrichableArtists {
+    private fun enrichUsingNewGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
+        val userUsageConsumed = gptUsageService.consumeUserUsage(spotifyId)
+        if (!userUsageConsumed) {
+            LOGGER.info { "Spotify user with id $spotifyId has no GPT usages left for artist $artistName" }
+            return EnrichableArtists(rawArtist.copy(), false, notEnoughUserGptUsages = true)
+        }
+        val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
+        userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
+        LOGGER.info { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
+        return EnrichableArtists(enrichedArtist, true)
+    }
+
+    private fun enrichUsingGpt(): EnrichableArtists {
         val userUsagesConsumed = gptUsageService.consumeUserUsage(spotifyId)
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
@@ -120,7 +134,7 @@ class NewArtistEnricher(
         }
         val enrichedArtist = rawArtist.copy(genres = openAIProvidedGenres)
         userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, openAIProvidedGenres)))
-        LOGGER.info { "Artis $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by OpenAI call" }
+        LOGGER.info { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by OpenAI call" }
         return EnrichableArtists(enrichedArtist)
     }
 }
