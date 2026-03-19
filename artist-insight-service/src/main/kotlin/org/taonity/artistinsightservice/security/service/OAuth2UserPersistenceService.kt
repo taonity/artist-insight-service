@@ -42,13 +42,13 @@ class OAuth2UserPersistenceService(
         }
         val safePrivateUserObject = validatePrivateUserObjectOrThrow(privateUserObject)
 
-        val spotifyUserPrincipal: SpotifyUserPrincipal = SpotifyUserPrincipal.Companion.of(safePrivateUserObject, oAuth2User)
+        val spotifyUserPrincipal: SpotifyUserPrincipal = SpotifyUserPrincipal.of(safePrivateUserObject, oAuth2User)
         spotifyUserService.createOrUpdateUser(spotifyUserPrincipal, userRequest!!.accessToken.tokenValue)
         return spotifyUserPrincipal
     }
 
     private fun validatePrivateUserObjectOrThrow(privateUserObject: PrivateUserObject): SafePrivateUserObject {
-        val validationPrivateUserObject = ValidatedPrivateUserObject.Companion.of(privateUserObject)
+        val validationPrivateUserObject = ValidatedPrivateUserObject.of(privateUserObject)
         val violations = validator.validate(validationPrivateUserObject)
         val safePrivateUserObject = if (violations.isEmpty()) {
             validationPrivateUserObject.toSafe()

@@ -61,10 +61,7 @@ class SpotifyUserService(
     }
 
     private fun maskSecret(secret: String): String {
-        val sb = StringBuilder(secret)
-        for (i in 2 until secret.length - 2) {
-            sb.setCharAt(i, '*')
-        }
-        return sb.toString()
+        if (secret.length <= 4) return "*".repeat(8)
+        return secret.take(2) + "*".repeat(4) + secret.takeLast(2)
     }
 }
