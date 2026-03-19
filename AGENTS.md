@@ -48,7 +48,7 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,local`. Stubs use Spring Cloud
 
 - **Package-per-feature**: each feature has `controller/`, `service/`, `dto/`, `entity/`, `repository/`, `exception/` sub-packages. Follow this layout when adding features.
 - **Logging**: use `mu.KotlinLogging` (`private val LOGGER = KotlinLogging.logger {}`), placed in a `companion object`.
-- **Controller pattern**: `@RestController`, inject services, log endpoint entry with `LOGGER.info { "Handling /path endpoint" }`, use `@AuthenticationPrincipal principal: SpotifyUserPrincipal` for auth.
+- **Controller pattern**: `@RestController`, inject services, use `@AuthenticationPrincipal principal: SpotifyUserPrincipal` for auth. **Do NOT add manual entry-point logging** — `ControllerLoggingAspect` (AOP) automatically logs every `@RestController` method invocation with HTTP method, path, class, method name, and execution time.
 - **Advisory system**: backend attaches `Advisory` enums to responses (via `ResponseAttachments`) to surface warnings/errors to the frontend (e.g., rate limits, timeouts).
 - **CSRF**: SPA pattern with `CookieCsrfTokenRepository` + `SpaCsrfTokenRequestHandler`. Frontend reads CSRF cookie and sends `X-XSRF-TOKEN` header on mutating requests.
 - **Frontend API proxy**: every backend call is proxied through Next.js API routes in `src/app/api/`. Never call the backend directly from client components.

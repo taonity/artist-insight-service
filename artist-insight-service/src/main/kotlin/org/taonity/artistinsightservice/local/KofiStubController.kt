@@ -28,7 +28,6 @@ class KofiStubController(
 
     @GetMapping("/N4N11KVW3E")
     fun callback() {
-        LOGGER.info { "Handling /N4N11KVW3E endpoint" }
 
         val kofiWebhookData = buildKofiWebhookData()
 
@@ -45,7 +44,6 @@ class KofiStubController(
 
     @GetMapping("/")
     fun home() : String {
-        LOGGER.debug { "Handling / endpoint" }
         return "Home page"
     }
 

@@ -31,7 +31,6 @@ class DevAccessController @Autowired constructor(
         @Valid @RequestBody dto: DevAccessRequestDto,
         request: HttpServletRequest
     ) {
-        LOGGER.info { "Development access request processing started" }
 
         val accessRequest = DevAccessRequestEntity(
             email = dto.email,
