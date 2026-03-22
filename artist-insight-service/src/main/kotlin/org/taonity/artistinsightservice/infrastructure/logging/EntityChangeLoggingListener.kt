@@ -16,7 +16,7 @@ class EntityChangeLoggingListener : PostInsertEventListener, PostUpdateEventList
     }
 
     override fun onPostInsert(event: PostInsertEvent) {
-        LOGGER.info {
+        LOGGER.debug {
             "Entity INSERTED: ${event.entity::class.simpleName} | id=${event.id} | " +
                     formatState(event.state, event.persister.propertyNames)
         }
@@ -31,18 +31,18 @@ class EntityChangeLoggingListener : PostInsertEventListener, PostUpdateEventList
                 val newVal = event.state[idx]
                 "$name: '$oldVal' → '$newVal'"
             }
-            LOGGER.info {
+            LOGGER.debug {
                 "Entity UPDATED: ${event.entity::class.simpleName} | id=${event.id} | changes=[$changes]"
             }
         } else {
-            LOGGER.info {
+            LOGGER.debug {
                 "Entity UPDATED: ${event.entity::class.simpleName} | id=${event.id} | (no dirty properties detected)"
             }
         }
     }
 
     override fun onPostDelete(event: PostDeleteEvent) {
-        LOGGER.info {
+        LOGGER.debug {
             "Entity DELETED: ${event.entity::class.simpleName} | id=${event.id}"
         }
     }

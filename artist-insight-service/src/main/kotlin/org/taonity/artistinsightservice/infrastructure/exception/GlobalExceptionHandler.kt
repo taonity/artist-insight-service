@@ -28,7 +28,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ServerErrorResponse> {
-        LOGGER.error(e) {}
+        LOGGER.error(e) { "Unhandled exception" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ServerErrorResponse(ServerErrorCode.UNKNOWN))
     }
@@ -42,21 +42,21 @@ class GlobalExceptionHandler {
     @ExceptionHandler(OpenAITimeoutException::class)
     fun handleOpenAITimeoutException(e: OpenAITimeoutException): ResponseEntity<AdvisoryResponse> {
         val advisoryResponse = AdvisoryResponse(setOf(Advisory.OPENAI_TIMEOUT.toDto()))
-        LOGGER.error(e) {}
+        LOGGER.warn(e) { "OpenAI request timed out" }
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(advisoryResponse)
     }
 
     @ExceptionHandler(SpotifyClientException::class)
     fun handleSpotifyClientException(e: SpotifyClientException): ResponseEntity<AdvisoryResponse> {
         val advisoryResponse = AdvisoryResponse(setOf(Advisory.SPOTIFY_PROBLEM.toDto()))
-        LOGGER.error(e) {}
+        LOGGER.warn(e) { "Spotify client error" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(advisoryResponse)
     }
 
     @ExceptionHandler(SpotifyTimeoutException::class)
     fun handleSpotifyTimeoutException(e: SpotifyTimeoutException): ResponseEntity<AdvisoryResponse> {
         val advisoryResponse = AdvisoryResponse(setOf(Advisory.SPOTIFY_TIMEOUT.toDto()))
-        LOGGER.error(e) {}
+        LOGGER.warn(e) { "Spotify request timed out" }
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(advisoryResponse)
     }
 

@@ -3,6 +3,7 @@ logging:
   level:
     org.taonity.artistinsightservice.logging.HttpServletLoggingService: debug
     org.taonity.artistinsightservice.mvc.GlobalExceptionHandler: debug
+#    org.taonity.artistinsightservice: debug
     DB: info
 #    org.springframework.security: TRACE
 #    root: trace
@@ -57,21 +58,21 @@ decorator:
 
 ---
 ############# clean migrates local pg db
-spring:
-  flyway:
-    enabled: true
-    clean-disabled: false
-    locations:
-#      - filesystem:templates/docker/flyway/sql/init
-      - filesystem:templates/docker/flyway/sql/tables
-      - filesystem:templates/docker/flyway/sql/conflicts/postgres
-    placeholder-replacement: true
-    placeholder-prefix: "{{ "
-    placeholder-suffix: " }}"
-    placeholders:
-      app_user: d
-      app_password: d
-      db_name: artist_insight_service
-
-app:
-  additional-profiles: flyway-clean-migrate
+#spring:
+#  flyway:
+#    enabled: true
+#    clean-disabled: false
+#    locations:
+##      - filesystem:templates/docker/flyway/sql/init
+#      - filesystem:templates/docker/flyway/sql/tables
+#      - filesystem:templates/docker/flyway/sql/conflicts/postgres
+#    placeholder-replacement: true
+#    placeholder-prefix: "{{ "
+#    placeholder-suffix: " }}"
+#    placeholders:
+#      app_user: d
+#      app_password: d
+#      db_name: artist_insight_service
+#
+#app:
+#  additional-profiles: flyway-clean-migrate

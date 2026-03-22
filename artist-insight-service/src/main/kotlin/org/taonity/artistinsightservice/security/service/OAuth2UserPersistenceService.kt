@@ -31,7 +31,7 @@ class OAuth2UserPersistenceService(
         val oAuth2User: OAuth2User = try {
             super.loadUser(userRequest)
         } catch (e: OAuth2AuthenticationException) {
-            LOGGER.error { e.message }
+            LOGGER.error(e) { "OAuth2 user loading failed" }
             throw e
         }
 

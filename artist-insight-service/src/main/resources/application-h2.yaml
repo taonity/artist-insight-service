@@ -9,8 +9,8 @@ spring:
     driver-class-name: org.h2.Driver
 
   flyway:
-#    enabled: true
-    enabled: false
+    enabled: true
+#    enabled: false
     clean-disabled: false
     locations:
       - filesystem:templates/docker/flyway/sql/tables
@@ -22,4 +22,4 @@ spring:
 #      data-locations: classpath:sql/test-data.sql
 
 app:
-#  additional-profiles: flyway-clean-migrate
+  additional-profiles: flyway-clean-migrate

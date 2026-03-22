@@ -10,8 +10,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.context.SecurityContextHolderFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.taonity.artistinsightservice.security.handler.OAuth2AuthenticationFailureHandler
+import org.taonity.artistinsightservice.security.filter.UserMdcFilter
 import org.taonity.artistinsightservice.security.service.OAuth2UserPersistenceService
 import org.taonity.artistinsightservice.security.handler.SpaCsrfTokenRequestHandler
 
@@ -22,13 +24,15 @@ class SecurityConfig(
     private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
+    private val userMdcFilter: UserMdcFilter,
     @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String
 ) {
 
     @Bean
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http // ...
+        http
+            .addFilterAfter(userMdcFilter, SecurityContextHolderFilter::class.java)
             .authorizeHttpRequests { requests ->
                 requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                     .requestMatchers(

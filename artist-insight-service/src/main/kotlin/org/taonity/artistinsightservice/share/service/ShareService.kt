@@ -35,15 +35,12 @@ class ShareService(
 
     @Transactional
     fun createOrUpdateShareLink(spotifyId: String): ShareLinkResponse {
-        LOGGER.info { "Creating or updating share link for user: $spotifyId" }
-        
         val followings = spotifyService.fetchFollowings()
         val artistIds = followings.map { it.id }
         
         val existingLink = sharedLinkRepository.findByUserId(spotifyId)
         
         val sharedLink = if (existingLink != null) {
-            LOGGER.info { "Updating existing share link for user: $spotifyId" }
             existingLink.expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
             // TODO: investigate tons of queires
             existingLink.artists.clear()
@@ -51,7 +48,6 @@ class ShareService(
             existingLink.addArtists(artistIds)
             sharedLinkRepository.save(existingLink)
         } else {
-            LOGGER.info { "Creating new share link for user: $spotifyId" }
             val user = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
             val shareCode = generateUniqueShareCode()
             val newLink = SharedLinkEntity(
@@ -72,13 +68,11 @@ class ShareService(
 
     @Transactional
     fun deleteShareLink(spotifyId: String) {
-        LOGGER.info { "Deleting share link for user: $spotifyId" }
         sharedLinkRepository.deleteByUserSpotifyId(spotifyId)
     }
 
     @Transactional(readOnly = true)
     fun getShareLinkStatus(spotifyId: String): ShareLinkResponse? {
-        LOGGER.info { "Getting share link status for user: $spotifyId" }
         val sharedLink = sharedLinkRepository.findByUserId(spotifyId) ?: return null
         
         if (sharedLink.isExpired()) {
@@ -93,8 +87,6 @@ class ShareService(
 
     @Transactional(readOnly = true)
     fun getSharedArtists(shareCode: String): SharedArtistsResponse {
-        LOGGER.info { "Fetching shared artists for share code: $shareCode" }
-        
         val sharedLink = sharedLinkRepository.findByShareCodeWithArtists(shareCode)
             ?: throw ShareLinkNotFoundException("Share link not found: $shareCode")
         

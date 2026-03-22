@@ -89,19 +89,19 @@ class NewArtistEnricher(
 
     private fun enrichUsingOwnedGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
         val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
-        LOGGER.info { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages not changed" }
+        LOGGER.debug { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages not changed" }
         return EnrichableArtists(enrichedArtist)
     }
 
     private fun enrichUsingNewGenresFromDb(dbArtistGenres: List<String>): EnrichableArtists {
         val userUsageConsumed = gptUsageService.consumeUserUsage(spotifyId)
         if (!userUsageConsumed) {
-            LOGGER.info { "Spotify user with id $spotifyId has no GPT usages left for artist $artistName" }
+            LOGGER.warn { "Spotify user with id $spotifyId has no GPT usages left for artist $artistName" }
             return EnrichableArtists(rawArtist.copy(), false, notEnoughUserGptUsages = true)
         }
         val enrichedArtist = rawArtist.copy(genres = dbArtistGenres)
         userArtistLinkService.saveEnrichedArtistsForUser(spotifyId, listOf(Pair(enrichedArtist, dbArtistGenres)))
-        LOGGER.info { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
+        LOGGER.debug { "Artist $artistName with id $artistId was provided with genres ${enrichedArtist.genres} by DB call, GPT usages decremented" }
         return EnrichableArtists(enrichedArtist, true)
     }
 
@@ -110,7 +110,7 @@ class NewArtistEnricher(
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
-            LOGGER.info { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }
+            LOGGER.warn { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }
             if (!globalUsageConsumed) {
                 responseAttachments.advisories.add(Advisory.GLOBAL_GPT_USAGES_DEPLETED)
             }
@@ -128,7 +128,7 @@ class NewArtistEnricher(
             openAIService.provideGenres(rawArtist.name)
         } catch (e: OpenAIClientException) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
-            LOGGER.error(e) { }
+            LOGGER.error(e) { "Failed to enrich artist $artistName with id $artistId via OpenAI" }
             responseAttachments.advisories.add(Advisory.OPENAI_PROBLEM)
             return EnrichableArtists(rawArtist.copy(), false)
         }

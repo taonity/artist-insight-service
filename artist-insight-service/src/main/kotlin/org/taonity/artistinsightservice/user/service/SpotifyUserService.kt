@@ -41,10 +41,8 @@ class SpotifyUserService(
                 initialUserGptUsages
             )
             spotifyUserRepository.save(newUser)
-            LOGGER.info { "User $newUser to be saved" }
         } else {
             foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
-            LOGGER.info { "User to be $foundSpotifyUser updated" }
         }
     }
 
@@ -55,7 +53,6 @@ class SpotifyUserService(
             return
         }
 
-        LOGGER.info { "Deleting user data for spotifyId $spotifyId" }
         userArtistLinkRepository.deleteAllByUserSpotifyId(spotifyId)
         spotifyUserRepository.deleteById(spotifyId)
     }
