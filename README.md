@@ -121,7 +121,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
-- indicate backend version and/or commit in an actuator call
 - make backend port 8080
 - create github acitons pipeline for deployment
 - fix annoying healthchecks on local, or make the period bigger

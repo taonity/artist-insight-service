@@ -33,6 +33,12 @@ management:
         enabled: true
     prometheus:
       enabled: true
+  info:
+    git:
+      enabled: true
+      mode: full
+    build:
+      enabled: true
   metrics:
     tags:
       application: artist-insight-service
