@@ -4,5 +4,5 @@ spring:
       enabled: false
 
 kofi:
-  url: http://localhost:9016
+  url: http://localhost:8080
   verification-token: e9c903f3-ec7f-456c-9c14-3f14217d33e3

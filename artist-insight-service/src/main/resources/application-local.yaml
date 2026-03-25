@@ -22,7 +22,7 @@ spring:
       client:
         registration:
           spotify-artist-insight-service:
-            redirect-uri: http://127.0.0.1:9016/login/oauth2/code/spotify-artist-insight-service
+            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/spotify-artist-insight-service
   jpa:
     properties:
       hibernate:

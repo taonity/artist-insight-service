@@ -21,7 +21,7 @@ Contract.make {
 //        body(
 //                grant_type: 'authorization_code',
 //                code: "AQDumADm_Lo9NowrjxjTNmSxDHAjBJyAM5SjAqgDJFctaMRqsE7Ygwh7TN4IYfJzg8Q_QAcC_EX9WVXqdoSn0OpV837TodeHH05nbnVZh6Oe701XYy8DVgaNGULoS8x-1543zAW4pfUz4t2XrN8qUaim_23IRwQzAba-a6LdlHYFPrG-E-mBy4m3j4-FQv6toBjnMwqvjwoPFSEw7cQOMeK4MWx0DWizTXgyn8j5wAQzTGtqf76BTHOBb_naWQVKBPT3otyzvhNQflFQEDCn",
-//                redirect_uri: "http://localhost:9016/login/oauth2/code/spotify-artist-insight-service", no :9016
+//                redirect_uri: "http://localhost:8080/login/oauth2/code/spotify-artist-insight-service", no :8080
 //        )
     }
 

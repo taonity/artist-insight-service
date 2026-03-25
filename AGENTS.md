@@ -30,7 +30,7 @@ mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2
 cd frontend && npm install && npm run dev
 ```
 
-Backend runs on port **9016**, frontend on **3000**.
+Backend runs on port **8080**, frontend on **3000**.
 
 ### Profile system (one per resource group)
 

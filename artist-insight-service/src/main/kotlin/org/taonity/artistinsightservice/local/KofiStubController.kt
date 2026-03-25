@@ -34,7 +34,7 @@ class KofiStubController(
         val kofiWebhookDataJson = objectMapper.writeValueAsString(kofiWebhookData)
         val encoded: String = URLEncoder.encode(kofiWebhookDataJson, StandardCharsets.UTF_8)
         kofiRestClient.post()
-            .uri("http://localhost:9016/callback/kofi")
+            .uri("http://localhost:8080/callback/kofi")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body("data=" + encoded)
             .exchange { request, response ->
