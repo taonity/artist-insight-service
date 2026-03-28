@@ -40,18 +40,31 @@ class ControllerLoggingAspect {
         val httpMethod = resolveHttpMethod(method)
         val path = resolvePath(joinPoint.target.javaClass, method)
 
-        LOGGER.debug { "$httpMethod $path -> $className.$methodName()" }
+        val level = method.getAnnotation(EndpointLogLevel::class.java)?.value ?: LogLevel.INFO
+        val entryLevel = level.demote()
+
+        logAtLevel(entryLevel) { "$httpMethod $path -> $className.$methodName()" }
 
         val startTime = System.currentTimeMillis()
         return try {
             val result = joinPoint.proceed()
             val elapsed = System.currentTimeMillis() - startTime
-            LOGGER.info { "$httpMethod $path -> $className.$methodName() completed in ${elapsed}ms" }
+            logAtLevel(level) { "$httpMethod $path -> $className.$methodName() completed in ${elapsed}ms" }
             result
         } catch (ex: Throwable) {
             val elapsed = System.currentTimeMillis() - startTime
             LOGGER.warn { "$httpMethod $path -> $className.$methodName() failed in ${elapsed}ms with ${ex.javaClass.simpleName}" }
             throw ex
+        }
+    }
+
+    private fun logAtLevel(level: LogLevel, msg: () -> String) {
+        when (level) {
+            LogLevel.TRACE -> LOGGER.trace(msg)
+            LogLevel.DEBUG -> LOGGER.debug(msg)
+            LogLevel.INFO  -> LOGGER.info(msg)
+            LogLevel.WARN  -> LOGGER.warn(msg)
+            LogLevel.ERROR -> LOGGER.error(msg)
         }
     }
 

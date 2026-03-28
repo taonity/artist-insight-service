@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestClient
 import org.taonity.artistinsightservice.donation.kofi.dto.KofiWebhookData
+import org.taonity.artistinsightservice.infrastructure.logging.EndpointLogLevel
+import org.taonity.artistinsightservice.infrastructure.logging.LogLevel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -42,6 +44,7 @@ class KofiStubController(
             }
     }
 
+    @EndpointLogLevel(LogLevel.DEBUG)
     @GetMapping("/")
     fun home() : String {
         return "Home page"

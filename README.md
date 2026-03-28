@@ -121,7 +121,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
-- create github acitons pipeline for deployment
 - fix annoying healthchecks on local, or make the period bigger
 - invesitgate auth metris missmatch in dashboard
 - remove default props from main prop file
