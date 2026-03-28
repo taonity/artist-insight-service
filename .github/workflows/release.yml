@@ -106,3 +106,32 @@ jobs:
         tag=${{ steps.extract_tag.outputs.tag }}
         docker push "$username/$artifactId:$tag"
         docker push "$username/$artifactId:latest"
+
+  deploy-stage:
+    needs: release
+    uses: taonity/docker-webhook/.github/workflows/deploy.yml@main
+    with:
+      project_name: artist-insight-service
+      environment: stage
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+
+  approve-prod:
+    needs: deploy-stage
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Approved for production
+        run: echo "Production deployment approved"
+
+  deploy-prod:
+    needs: approve-prod
+    uses: taonity/docker-webhook/.github/workflows/deploy.yml@main
+    with:
+      project_name: artist-insight-service
+      environment: prod
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+

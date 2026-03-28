@@ -1,0 +1,16 @@
+name: Promote to Production (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-prod:
+    uses: taonity/docker-webhook/.github/workflows/deploy.yml@main
+    with:
+      project_name: artist-insight-service
+      environment: prod
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+
+
