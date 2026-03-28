@@ -121,7 +121,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
-- fix annoying healthchecks on local, or make the period bigger
 - invesitgate auth metris missmatch in dashboard
 - remove default props from main prop file
 - fix occasionally failing builds because of missing module artifacts
@@ -148,3 +147,8 @@ AllRequestsLoggingFilter -2147483646
 OrderedFormContentFilter -9900
 OrderedRequestContextFilter -105
 DelegatingFilterProxyRegistrationBean
+
+#### Error notes
+
+org.springframework.security.oauth2.core.OAuth2AuthenticationException: [invalid_user_info_response] An error occurred while attempting to retrieve the UserInfo Resource: I/O error on GET request for "https://api.spotify.com/v1/me": Network is unreachable
+org.springframework.security.oauth2.core.OAuth2AuthenticationException: [authorization_request_not_found] 

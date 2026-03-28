@@ -40,9 +40,10 @@ Backend runs on port **8080**, frontend on **3000**.
 | Spotify  | `stub-spotify`        | `prod-spotify`     |
 | OpenAI   | `stub-openai`         | `prod-openai`      |
 | Ko-Fi    | `stub-kofi`           | `prod-kofi`        |
+| Logging  | `plain-log`           | *(not needed)*     |
 | General  | `local`               | *(not needed)*     |
 
-Local set: `h2,stub-spotify,stub-openai,stub-kofi,local`. Stubs use Spring Cloud Contract stub runner (classpath mode).
+Local set: `h2,stub-spotify,stub-openai,stub-kofi,local` (`local` auto-includes `plain-log`). Stubs use Spring Cloud Contract stub runner (classpath mode).
 
 ## Conventions & Patterns
 

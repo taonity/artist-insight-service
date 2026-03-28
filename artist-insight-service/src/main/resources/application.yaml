@@ -52,6 +52,11 @@ spotify:
   healthcheck-user-id: 3126nx54y24ryqyza3qxcchi4wry
 
 spring:
+  profiles:
+    group:
+      local: plain-log
+  application:
+    name: artist-insight-service
   mail:
     host: smtp.gmail.com
     port: 587
@@ -65,5 +70,17 @@ spring:
             enable: true
 
 logging:
+  structured:
+    format:
+      console: logstash
+    json:
+      add:
+        git_commit: "@git.commit.id.abbrev@"
+        app_version: "@project.version@"
+      stacktrace:
+        root: first
+        max-length: 2048
+        include-common-frames: false
+        include-hashes: true
   level:
     WireMock: warn
