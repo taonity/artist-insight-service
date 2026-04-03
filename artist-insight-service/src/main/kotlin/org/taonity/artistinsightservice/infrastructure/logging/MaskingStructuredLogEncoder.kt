@@ -14,7 +14,8 @@ class MaskingStructuredLogEncoder : StructuredLogEncoder() {
     override fun encode(event: ILoggingEvent): ByteArray {
         val raw = super.encode(event)
         val masked = masker.mask(String(raw, Charsets.UTF_8))
-        return masked.toByteArray(Charsets.UTF_8)
+        val cleaned = masked.replace(Regex(",\"level_value\":\\d+|\"level_value\":\\d+,"), "")
+        return cleaned.toByteArray(Charsets.UTF_8)
     }
 }
 

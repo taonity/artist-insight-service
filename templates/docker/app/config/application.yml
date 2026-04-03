@@ -1,4 +1,9 @@
-#---
+---
 #logging:
 #  level:
 #    discord.http.LoggingInterceptor: INFO
+
+#spring:
+#  profiles:
+#    group:
+#      local:

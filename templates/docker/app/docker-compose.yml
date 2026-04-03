@@ -11,7 +11,7 @@ services:
     env_file:
       - ../.env
     volumes:
-      - ./config:/config
+      - ./config:/artist-insight-service/config
     healthcheck:
       test: curl localhost:8080/actuator/health || exit 1
       interval: 10s
