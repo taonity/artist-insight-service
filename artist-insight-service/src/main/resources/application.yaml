@@ -5,14 +5,14 @@ server:
   servlet:
     session:
       cookie:
-        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:127.0.0.1}
-        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME:JSESSIONID-LOCAL}
+        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN}
+        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME}
 
 app:
   minimised-http-servlet-logging: true
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
-  csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-LOCAL}
+  csrf-cookie-name: ${CSRF_COOKIE_NAME}
   dev-access:
     enabled: true
     admin-email: ${ADMIN_EMAIL}

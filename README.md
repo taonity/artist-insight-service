@@ -122,6 +122,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
+
 - remove default props from main prop file
 - fix occasionally failing builds because of missing module artifacts
 - indicate frontend version in buils in site footer
@@ -136,6 +137,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 - Update artifact version in back and front
 - Find a way forward to the login page early
 - Restructure backend code
+- add db table visualiser
 - Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 - Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
 

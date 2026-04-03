@@ -17,8 +17,8 @@ spring:
             scope: user-follow-read, user-read-private
         provider:
           spotify:
-            issuer-uri: ${SPOTIFY_STUB_BASE_URL:http://127.0.0.1:8100}
-            user-info-uri: ${SPOTIFY_STUB_BASE_URL:http://127.0.0.1:8100}/v1/me
+            issuer-uri: http://127.0.0.1:8100
+            user-info-uri: http://127.0.0.1:8100/v1/me
             userNameAttribute: display_name
   cloud:
     contract:
@@ -26,8 +26,8 @@ spring:
         stubs-mode: CLASSPATH
 
 app:
-  default-success-url: ${DEFAULT_SUCCESS_URL:http://127.0.0.1:3000}
-  login-url: ${LOGIN_URL:http://127.0.0.1:3000/login}
+  default-success-url: http://127.0.0.1:3000
+  login-url: http://127.0.0.1:3000/login
 
 spotify:
   api-base-url: http://127.0.0.1:8100/v1

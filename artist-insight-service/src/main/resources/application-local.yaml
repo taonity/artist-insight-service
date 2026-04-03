@@ -16,6 +16,13 @@ logging:
 
 #debug: true
 
+server:
+  servlet:
+    session:
+      cookie:
+        domain: 127.0.0.1
+        name: JSESSIONID-LOCAL
+
 spring:
   security:
     oauth2:
@@ -29,6 +36,7 @@ spring:
         format_sql: true
 
 app:
+  csrf-cookie-name: XSRF-TOKEN-LOCAL
   dev-access:
     enabled: true
     admin-email: ${ADMIN_EMAIL:local-admin@example.com}
