@@ -123,7 +123,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
 
-- Log frontend version in logs
 - Implement healthcheck for front-end
 - Fix the gradient background in some browsers
 - Deal with prod and test Docker templates in the target
