@@ -60,7 +60,7 @@ const Footer = () => {
         </p>
         {process.env.BUILD_TIME && (
           <p style={{ fontSize: '0.85em', opacity: 0.7, marginTop: '0.5rem' }}>
-            Build: {new Date(process.env.BUILD_TIME).toLocaleString()}
+            Build: {new Date(process.env.BUILD_TIME).toLocaleString()} UTC
           </p>
         )}
       </div>
