@@ -1,18 +1,18 @@
-package org.taonity.artistinsightservice.mvc
+package org.taonity.artistinsightservice.user.controller
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.taonity.artistinsightservice.artist.dto.SafePrivateUserObject
+import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 import org.taonity.artistinsightservice.user.dto.SpotifyUserDto
 import org.taonity.spotify.model.ImageObject
-
 
 @AutoConfigureStubRunner(
     ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
@@ -52,14 +52,13 @@ class UserControllerTest: ControllerTestsBaseClass() {
         val mockHttpSession = authorizeOAuth2()
 
         val userMvcResult = mockMvc.perform(
-            get("/user")
+            MockMvcRequestBuilders.get("/user")
                 .session(mockHttpSession))
-            .andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 
         val spotifyUserDto: SpotifyUserDto = OBJECT_MAPPER.readValue(userMvcResult.response.contentAsString)
 
-        assertThat(spotifyUserDto).isEqualTo(EXPECTED_SPOTIFY_USER_DTO)
+        Assertions.assertThat(spotifyUserDto).isEqualTo(EXPECTED_SPOTIFY_USER_DTO)
     }
 }
-

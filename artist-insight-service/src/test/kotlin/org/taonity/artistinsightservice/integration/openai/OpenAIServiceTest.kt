@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.openai
+package org.taonity.artistinsightservice.integration.openai
 
 import com.openai.springboot.OpenAIClientAutoConfiguration
 import org.junit.jupiter.api.Disabled

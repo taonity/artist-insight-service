@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.mvc
+package org.taonity.artistinsightservice.other
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

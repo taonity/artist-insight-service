@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.user.entity
+package org.taonity.artistinsightservice.user.repository
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest

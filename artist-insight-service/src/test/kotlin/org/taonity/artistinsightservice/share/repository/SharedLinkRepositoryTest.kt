@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.share
+package org.taonity.artistinsightservice.share.repository
 
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -7,7 +7,6 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest

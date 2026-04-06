@@ -123,9 +123,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
 
-- Implement healthcheck for front-end
-- Fix the gradient background in some browsers
-- Deal with prod and test Docker templates in the target
 - Add automation tests
 - Update artifact version in back and front
 - Find a way forward to the login page early

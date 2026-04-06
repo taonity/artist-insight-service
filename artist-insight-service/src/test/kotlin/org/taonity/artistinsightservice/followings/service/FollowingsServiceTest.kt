@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice
+package org.taonity.artistinsightservice.followings.service
 
 import jakarta.validation.Validation
 import mu.KotlinLogging
@@ -25,7 +25,7 @@ class FollowingsServiceTest {
         val list = listOf(
             artist
         )
-        val output = list.map(ValidatedArtistObject::of)
+        val output = list.map(ValidatedArtistObject.Companion::of)
             .filter { validatedArtistObject ->
                 val violations = validator.validate(validatedArtistObject)
                 if (violations.isEmpty()) {

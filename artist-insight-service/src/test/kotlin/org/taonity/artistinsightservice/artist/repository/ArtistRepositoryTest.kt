@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.persistence.artist
+package org.taonity.artistinsightservice.artist.repository
 
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.test.context.jdbc.Sql
-import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
