@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -60,5 +61,29 @@ class UserControllerTest: ControllerTestsBaseClass() {
         val spotifyUserDto: SpotifyUserDto = OBJECT_MAPPER.readValue(userMvcResult.response.contentAsString)
 
         Assertions.assertThat(spotifyUserDto).isEqualTo(EXPECTED_SPOTIFY_USER_DTO)
+    }
+
+    @Test
+    fun `delete user`() {
+        val mockHttpSession = authorizeOAuth2()
+
+        // Verify user exists
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/user")
+                .session(mockHttpSession))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+
+        // Delete user
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/user")
+                .session(mockHttpSession)
+                .with(csrf()))
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
+
+        // Verify user is gone — findBySpotifyIdOrThrow will throw, resulting in 500
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/user")
+                .session(mockHttpSession))
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError)
     }
 }
