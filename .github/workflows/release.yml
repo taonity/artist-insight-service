@@ -107,6 +107,15 @@ jobs:
         docker push "$username/$artifactId:$tag"
         docker push "$username/$artifactId:latest"
 
+  update-erd:
+    needs: release
+    uses: taonity/mermerd-flyway-github-action/.github/workflows/mermerd.yml@main
+    with:
+      migration_paths: 'templates/docker/flyway/sql/tables,templates/docker/flyway/sql/conflicts/postgres'
+      commit_message: 'chore: update mermerd ERD diagram [skip ci]'
+    permissions:
+      contents: write
+
   deploy-stage:
     needs: release
     uses: taonity/docker-webhook/.github/workflows/deploy.yml@main

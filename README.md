@@ -111,6 +111,15 @@ The project requires a set of environment variables to be configured for some se
 | SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                                |
 | PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation                            |
 
+### PostgreSQL database ERD diagram
+
+<!-- mermerd-start -->
+```mermaid
+erDiagram
+    ...
+```
+<!-- mermerd-end -->
+
 ### Prod deployment
 The service is deployed in a cheap VPS. [taonity/docker-webhook](https://github.com/taonity/docker-webhook) is used for
 deployment in my custom production environment - [taonity/prodenv](https://github.com/taonity/prodenv/tree/defr-prodenv).
@@ -122,11 +131,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
-
-- Add automation tests
-- Update artifact version in back and front
 - Find a way forward to the login page early
-- Restructure backend code
 - add db table visualiser
 - Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 - Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
@@ -144,3 +149,14 @@ DelegatingFilterProxyRegistrationBean
 
 org.springframework.security.oauth2.core.OAuth2AuthenticationException: [invalid_user_info_response] An error occurred while attempting to retrieve the UserInfo Resource: I/O error on GET request for "https://api.spotify.com/v1/me": Network is unreachable
 org.springframework.security.oauth2.core.OAuth2AuthenticationException: [authorization_request_not_found] 
+
+
+integrate that action for db diagram creation into your release flow https://github.com/taonity/mermerd-flyway-github-action. the action should fork from release stage and run in parallel with deploy ones. make sure the new commit with the readme update to not trigger any ci cd workflows. do necessary check. ask if somthing, or mention if something should be alligned on the onther end
+
+Things to align on the action side (mermerd-flyway-github-action):
+
+Placeholder handling — The init scripts (V000001, V000002) use custom Flyway placeholders ({{ app_user }}, etc.) with non-default prefix/suffix. I excluded them since they only create users/grant privileges and don't define tables. If you ever want to include init scripts, the action would need to support custom FLYWAY_PLACEHOLDER_PREFIX/FLYWAY_PLACEHOLDER_SUFFIX env vars.
+
+First run behavior — The action docs say it "detects changes by comparing against the previous commit." On the very first run after merging this, there won't be a previous migration change to diff against. You may need to verify the action handles the initial population case (i.e., generates the diagram even when migration files aren't newly changed). If it doesn't, a workflow_dispatch trigger or a no-op migration file change would bootstrap it.
+
+README markers — Already present in README.md:116-121, no changes needed.
