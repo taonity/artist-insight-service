@@ -116,7 +116,61 @@ The project requires a set of environment variables to be configured for some se
 <!-- mermerd-start -->
 ```mermaid
 erDiagram
-    ...
+    app_settings {
+        integer global_gpt_usages_left "{NOT_NULL}"
+        integer id PK "{NOT_NULL}"
+    }
+
+    artist {
+        character_varying artist_id PK "{NOT_NULL}"
+        character_varying artist_name "{NOT_NULL}"
+    }
+
+    artist_genres {
+        character_varying artist_id PK,FK "{NOT_NULL}"
+        character_varying genre PK "{NOT_NULL}"
+    }
+
+    development_access_requests {
+        timestamp_with_time_zone created_at 
+        character_varying email "{NOT_NULL}"
+        uuid id PK "{NOT_NULL}"
+        character_varying ip_address 
+        text message 
+        character_varying status 
+        text user_agent 
+    }
+
+    shared_link {
+        timestamp_with_time_zone created_at "{NOT_NULL}"
+        timestamp_with_time_zone expires_at "{NOT_NULL}"
+        uuid id PK "{NOT_NULL}"
+        character_varying share_code UK "{NOT_NULL}"
+        character_varying user_id FK,UK "{NOT_NULL}"
+    }
+
+    shared_link_artist {
+        character_varying artist_id UK "{NOT_NULL}"
+        uuid shared_link_id FK,UK "{NOT_NULL}"
+    }
+
+    spotify_user {
+        character_varying display_name "{NOT_NULL}"
+        integer gpt_usages_left "{NOT_NULL}"
+        character_varying spotify_id PK "{NOT_NULL}"
+        character_varying token_value "{NOT_NULL}"
+    }
+
+    spotify_user_enriched_artists {
+        character_varying artist_id PK,FK "{NOT_NULL}"
+        character_varying spotify_id PK,FK "{NOT_NULL}"
+    }
+
+    artist_genres }o--|| artist : "artist_id"
+    spotify_user_enriched_artists }o--|| artist : "artist_id"
+    shared_link }o--|| spotify_user : "user_id"
+    shared_link_artist }o--|| shared_link : "shared_link_id"
+    spotify_user_enriched_artists }o--|| spotify_user : "spotify_id"
 ```
 <!-- mermerd-end -->
 
