@@ -111,6 +111,15 @@ The project requires a set of environment variables to be configured for some se
 | SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                                |
 | PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation                            |
 
+### PostgreSQL database ERD diagram
+
+<!-- mermerd-start -->
+```mermaid
+erDiagram
+    ...
+```
+<!-- mermerd-end -->
+
 ### Prod deployment
 The service is deployed in a cheap VPS. [taonity/docker-webhook](https://github.com/taonity/docker-webhook) is used for
 deployment in my custom production environment - [taonity/prodenv](https://github.com/taonity/prodenv/tree/defr-prodenv).
@@ -122,11 +131,11 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
-
-- Add automation tests
-- Update artifact version in back and front
 - Find a way forward to the login page early
-- Restructure backend code
+- kotlinise the code
+- run tests before release
+- consider tests for frontend
+- consider simpliying the other side
 - add db table visualiser
 - Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
 - Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
@@ -144,3 +153,5 @@ DelegatingFilterProxyRegistrationBean
 
 org.springframework.security.oauth2.core.OAuth2AuthenticationException: [invalid_user_info_response] An error occurred while attempting to retrieve the UserInfo Resource: I/O error on GET request for "https://api.spotify.com/v1/me": Network is unreachable
 org.springframework.security.oauth2.core.OAuth2AuthenticationException: [authorization_request_not_found] 
+
+
