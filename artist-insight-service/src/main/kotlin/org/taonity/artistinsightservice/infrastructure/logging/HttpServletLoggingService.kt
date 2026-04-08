@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.util.ContentCachingRequestWrapper
 import java.nio.charset.Charset
-import java.util.*
-import java.util.Objects.isNull
+import java.util.AbstractMap
+import java.util.Enumeration
 
 @Service
 class HttpServletLoggingService(
-    @Value ("\${app.minimised-http-servlet-logging}") private val minimisedHttpServletLogging: Boolean
+    @Value("\${app.minimised-http-servlet-logging}") private val minimisedHttpServletLogging: Boolean
 ) {
     companion object {
         private val objectMapper = jacksonObjectMapper()
@@ -60,11 +60,14 @@ class HttpServletLoggingService(
 
         val wrappedRequest = ContentCachingRequestWrapper(request, 256 * 1024)
 
-        if (filterEndpointIfEnabled(request)) {
+        if (shouldSkipEndpointLogging(request)) {
             return wrappedRequest
         }
 
-        val requestBody = String(wrappedRequest.contentAsByteArray, Charset.forName(request.characterEncoding))
+        val requestBody = String(
+            wrappedRequest.contentAsByteArray,
+            request.characterEncoding?.let(Charset::forName) ?: Charsets.UTF_8
+        )
 
         val headersJson = getInterestedHeaders(request)
         val cookiesJson = getInterestedCookies(request)
@@ -80,34 +83,35 @@ class HttpServletLoggingService(
         return wrappedRequest
     }
 
-    private fun filterEndpointIfEnabled(request: HttpServletRequest) =
-        endpointBlacklist.contains(request.requestURI) || !minimisedHttpServletLogging
+    private fun shouldSkipEndpointLogging(request: HttpServletRequest) =
+        minimisedHttpServletLogging && request.requestURI in endpointBlacklist
 
-    private fun getInterestedCookies(request: HttpServletRequest): String? {
-        val requestCookies = if (isNull(request.cookies)) {
-            emptyList()
-        } else {
-            Arrays.stream(request.cookies)
-                .filter { cookie -> filterCookieIfEnabled(cookie) }
-                .map { cookie -> AbstractMap.SimpleEntry(cookie.name, cookie.value) }
-                .toList()
-        }
-        val cookiesJson = objectMapper.writeValueAsString(requestCookies)
-        return cookiesJson
-    }
+    private fun getInterestedCookies(request: HttpServletRequest): String = objectMapper.writeValueAsString(
+        request.cookies
+            .orEmpty()
+            .asSequence()
+            .filter(::filterCookieIfEnabled)
+            .map { cookie -> AbstractMap.SimpleEntry(cookie.name, cookie.value) }
+            .toList()
+    )
 
     private fun filterCookieIfEnabled(cookie: Cookie) =
-        !cookiesLoggingBackList.contains(cookie.name) || !minimisedHttpServletLogging
+        cookie.name !in cookiesLoggingBackList || !minimisedHttpServletLogging
 
-    private fun getInterestedHeaders(request: HttpServletRequest): String? {
-        val requestHeaders = Collections.list(request.headerNames).stream()
-            .filter { headerName -> filterHeaderIfEnabled(headerName) }
+    private fun getInterestedHeaders(request: HttpServletRequest): String = objectMapper.writeValueAsString(
+        request.headerNames
+            .asSequence()
+            .filter(::filterHeaderIfEnabled)
             .map { headerName -> AbstractMap.SimpleEntry(headerName, request.getHeader(headerName)) }
             .toList()
-        val headersJson = objectMapper.writeValueAsString(requestHeaders)
-        return headersJson
-    }
+    )
 
     private fun filterHeaderIfEnabled(headerName: String) =
-        !headerLoggingBackList.contains(headerName) || !minimisedHttpServletLogging
+        headerName !in headerLoggingBackList || !minimisedHttpServletLogging
+
+    private fun <T> Enumeration<T>.asSequence(): Sequence<T> = sequence {
+        while (hasMoreElements()) {
+            yield(nextElement())
+        }
+    }
 }

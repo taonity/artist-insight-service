@@ -17,12 +17,9 @@ class ExternalServicesHealthContributor(
     override fun getContributor(name: String): HealthContributor? = contributors[name]
 
 
-    override fun stream(): Stream<HealthContributors.Entry> {
-        return contributors.entries
+    override fun stream(): Stream<HealthContributors.Entry> = contributors.entries
+        .stream()
             .map { (name, indicator) -> HealthContributors.Entry(name, indicator) }
-            .toMutableList()
-            .stream()
-    }
 
     private class CachedHealthIndicator(
         private val monitor: ExternalServicesHealthMonitor,

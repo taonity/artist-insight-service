@@ -25,9 +25,7 @@ class UserArtistEnrichmentService(
         val dbArtistGenres: Map<String, List<String>> = artistRepository.findByUserIdAndArtistIdsWithGenres(spotifyId, artistIds)
             .associate { it.artistId to it.genres.map { g -> g.genre } }
 
-        val enrichedUserArtists = rawArtists.map { rawArtist ->
-            enrichWithGenresFromDb(rawArtist, dbArtistGenres)
-        }
+        val enrichedUserArtists = rawArtists.map { enrichWithGenresFromDb(it, dbArtistGenres) }
 
         val artistsWithNoGenresCount = enrichedUserArtists.count { it.artistObject.genres.isEmpty() }
         if (artistsWithNoGenresCount > 0) {
@@ -42,13 +40,12 @@ class UserArtistEnrichmentService(
     }
 
     // TODO: remove artists from db if spotify genres appeared
-    private fun enrichWithGenresFromDb(rawArtist: SafeArtistObject, dbArtistGenres: Map<String, List<String>>): EnrichableArtists {
-        if (rawArtist.genres.isEmpty()) {
-            val dbGenres = dbArtistGenres[rawArtist.id]
-            if (dbGenres != null) {
-                return EnrichableArtists(rawArtist.copy(genres = dbGenres))
-            }
+    private fun enrichWithGenresFromDb(rawArtist: SafeArtistObject, dbArtistGenres: Map<String, List<String>>): EnrichableArtists =
+        if (rawArtist.genres.isNotEmpty()) {
+            EnrichableArtists(rawArtist.copy(), false)
+        } else {
+            dbArtistGenres[rawArtist.id]
+                ?.let { EnrichableArtists(rawArtist.copy(genres = it)) }
+                ?: EnrichableArtists(rawArtist.copy(), false)
         }
-        return EnrichableArtists(rawArtist.copy(), false)
-    }
 }

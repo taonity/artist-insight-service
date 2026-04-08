@@ -24,26 +24,23 @@ class SpotifyUserService(
             .orElseThrow { RuntimeException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB") }
     }
 
-    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? {
-        return spotifyUserRepository.findById(spotifyId).orElse(null)
-    }
+    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? = spotifyUserRepository.findById(spotifyId).orElse(null)
 
     @Transactional
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
         val maskedTokenValue = maskSecret(tokenValue)
-        val foundSpotifyUser = findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
-
-        if (foundSpotifyUser == null) {
-            val newUser = SpotifyUserEntity(
-                spotifyUserPrincipal.getSpotifyId(),
-                spotifyUserPrincipal.getDisplayName(),
-                maskedTokenValue,
-                initialUserGptUsages
+        findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
+            ?.also { foundSpotifyUser ->
+                foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
+            }
+            ?: spotifyUserRepository.save(
+                SpotifyUserEntity(
+                    spotifyUserPrincipal.getSpotifyId(),
+                    spotifyUserPrincipal.getDisplayName(),
+                    maskedTokenValue,
+                    initialUserGptUsages
+                )
             )
-            spotifyUserRepository.save(newUser)
-        } else {
-            foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
-        }
     }
 
     @Transactional
@@ -57,8 +54,6 @@ class SpotifyUserService(
         spotifyUserRepository.deleteById(spotifyId)
     }
 
-    private fun maskSecret(secret: String): String {
-        if (secret.length <= 4) return "*".repeat(8)
-        return secret.take(2) + "*".repeat(4) + secret.takeLast(2)
-    }
+    private fun maskSecret(secret: String): String =
+        if (secret.length <= 4) "*".repeat(8) else secret.take(2) + "*".repeat(4) + secret.takeLast(2)
 }

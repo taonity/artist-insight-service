@@ -15,6 +15,7 @@ import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.dto.SpotifyResponse
 import org.taonity.artistinsightservice.artist.dto.ValidatedArtistObject
 import org.taonity.artistinsightservice.infrastructure.utils.hasCause
+import org.taonity.artistinsightservice.infrastructure.utils.validateOrThrow
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
 import org.taonity.spotify.model.ArtistObject
@@ -35,30 +36,19 @@ class SpotifyService(
     private val responseAttachments: ResponseAttachments
 ) {
 
-    fun fetchFollowings(): List<SafeArtistObject> {
-        return safeFetchFollowing()
-    }
+    fun fetchFollowings(): List<SafeArtistObject> = safeFetchFollowing()
 
     private fun safeFetchFollowing() = fetchAllPages()
-        .map(ValidatedArtistObject.Companion::of)
-        .map { validatedArtistObject ->
-            val violations = validator.validate(validatedArtistObject)
-            if (violations.isEmpty()) {
-                return@map validatedArtistObject.toSafe()
-            }
-            val errorMessage = violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
-            throw SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
-        }
+        .map(::validateAndMapArtist)
 
     private fun fetchAllPages(): List<ArtistObject> {
-        val allItems: MutableList<ArtistObject> = ArrayList()
-        val initialUrl = UriComponentsBuilder
+        val allItems = mutableListOf<ArtistObject>()
+        var url: String? = UriComponentsBuilder
             .fromUriString("$spotifyApiBaseUrl/me/following")
             .queryParam("type", "artist")
             .queryParam("limit", 50)
             .build()
             .toUriString()
-        var url: String? = initialUrl
 
         // TODO: implement timeout fo whole page series retrieval
         while (url != null) {
@@ -81,20 +71,13 @@ class SpotifyService(
             .attributes(RequestAttributePrincipalResolver.principal("display_name"))
             .retrieve()
 
-        val spotifyResponse = try {
-            responseSpec.body<SpotifyResponse<PagingArtistObject>>()!!
-        } catch (e: Exception) {
-            if (e.hasCause(InterruptedIOException::class.java)) {
-                throw SpotifyTimeoutException("Timeout while retrieving user followings", e)
-            }
-            throw SpotifyClientException("Failed to retrieve user followings", e)
-        }
-        return spotifyResponse.artists
+        return responseSpec.bodyOrThrow<SpotifyResponse<PagingArtistObject>>(
+            timeoutMessage = "Timeout while retrieving user followings",
+            failureMessage = "Failed to retrieve user followings"
+        ).artists
     }
 
-    fun getHealthCheckUserUrl() : String {
-        return "$spotifyApiBaseUrl/users/$heathCheckUserId"
-    }
+    fun getHealthCheckUserUrl(): String = "$spotifyApiBaseUrl/users/$heathCheckUserId"
 
     fun getHealthCheckUser(): ResponseEntity<String> {
         val url = getHealthCheckUserUrl()
@@ -130,26 +113,14 @@ class SpotifyService(
             .attributes(RequestAttributePrincipalResolver.principal("display_name"))
             .retrieve()
 
-        val response = try {
-            responseSpec.body<GetMultipleArtists200Response>()!!
-        } catch (e: Exception) {
-            if (e.hasCause(InterruptedIOException::class.java)) {
-                throw SpotifyTimeoutException("Timeout while retrieving artists by IDs", e)
-            }
-            throw SpotifyClientException("Failed to retrieve artists by IDs", e)
-        }
+        val response = responseSpec.bodyOrThrow<GetMultipleArtists200Response>(
+            timeoutMessage = "Timeout while retrieving artists by IDs",
+            failureMessage = "Failed to retrieve artists by IDs"
+        )
 
         return response.artists
             .filterNotNull()
-            .map(ValidatedArtistObject.Companion::of)
-            .map { validatedArtistObject ->
-                val violations = validator.validate(validatedArtistObject)
-                if (violations.isEmpty()) {
-                    return@map validatedArtistObject.toSafe()
-                }
-                val errorMessage = violations.joinToString("; ") { "${it.propertyPath}: ${it.message}" }
-                throw SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
-            }
+            .map(::validateAndMapArtist)
     }
 
     fun fetchUserPublicProfile(userId: String): PublicUserObject {
@@ -161,13 +132,32 @@ class SpotifyService(
             .attributes(RequestAttributePrincipalResolver.principal("display_name"))
             .retrieve()
 
-        return try {
-            responseSpec.body<PublicUserObject>()!!
+        return responseSpec.bodyOrThrow(
+            timeoutMessage = "Timeout while retrieving user profile",
+            failureMessage = "Failed to retrieve user profile"
+        )
+    }
+
+    private fun validateAndMapArtist(artistObject: ArtistObject): SafeArtistObject {
+        val validatedArtistObject = ValidatedArtistObject.of(artistObject)
+        validator.validateOrThrow(validatedArtistObject) { errorMessage ->
+            SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
+        }
+        return validatedArtistObject.toSafe()
+    }
+
+    private inline fun <reified T : Any> RestClient.ResponseSpec.bodyOrThrow(
+        timeoutMessage: String,
+        failureMessage: String
+    ): T =
+        try {
+            body<T>() ?: throw SpotifyClientException("$failureMessage: empty response body")
+        } catch (e: SpotifyClientException) {
+            throw e
         } catch (e: Exception) {
             if (e.hasCause(InterruptedIOException::class.java)) {
-                throw SpotifyTimeoutException("Timeout while retrieving user profile", e)
+                throw SpotifyTimeoutException(timeoutMessage, e)
             }
-            throw SpotifyClientException("Failed to retrieve user profile", e)
+            throw SpotifyClientException(failureMessage, e)
         }
-    }
 }

@@ -28,10 +28,12 @@ class UserArtistLinkService(
             }
 
             val existingGenreNames = artistEntity.genres
+                .asSequence()
                 .map { it.genre }
                 .toSet()
-            genres.filterNot { it in existingGenreNames }
-                .forEach { artistEntity.addGenre(it) }
+            genres.asSequence()
+                .filterNot(existingGenreNames::contains)
+                .forEach(artistEntity::addGenre)
 
             user.addEnrichedArtist(artistEntity)
         }

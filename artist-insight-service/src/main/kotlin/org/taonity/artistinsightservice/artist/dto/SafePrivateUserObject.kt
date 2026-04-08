@@ -23,19 +23,17 @@ data class ValidatedPrivateUserObject(
 
 ) {
     companion object {
-        fun of(privateUserObject: PrivateUserObject) : ValidatedPrivateUserObject {
-            return ValidatedPrivateUserObject(
+        fun of(privateUserObject: PrivateUserObject): ValidatedPrivateUserObject =
+            ValidatedPrivateUserObject(
                 privateUserObject.id,
                 privateUserObject.displayName,
                 privateUserObject.images
             )
-        }
     }
-    fun toSafe(): SafePrivateUserObject {
-        return SafePrivateUserObject(
-            id!!,
-            displayName!!,
-            images!!,
+    fun toSafe(): SafePrivateUserObject =
+        SafePrivateUserObject(
+            id = requireNotNull(id),
+            displayName = requireNotNull(displayName),
+            images = requireNotNull(images),
         )
-    }
 }

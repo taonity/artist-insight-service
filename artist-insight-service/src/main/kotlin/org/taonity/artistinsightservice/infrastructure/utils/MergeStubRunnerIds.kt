@@ -20,19 +20,23 @@ class MergeStubRunnerIds(
     }
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
-        val mergedIds = mutableSetOf<String>()
         val binder = Binder.get(environment)
-
-        environment.propertySources.forEach { propertySource ->
-            if (propertySource is EnumerablePropertySource<*>) {
-                propertySource.propertyNames.forEach { key ->
-                    if (key.contains("-mergeable.$SPRING_CLOUD_CONTRACT_STUBRUNNER_IDS")) {
-                        val ids = binder.bind(key, List::class.java).orElse(emptyList<Any>())
-                        mergedIds.addAll(ids!!.filterIsInstance<String>())
+        val mergedIds = environment.propertySources
+            .asSequence()
+            .filterIsInstance<EnumerablePropertySource<*>>()
+            .flatMap { propertySource ->
+                propertySource.propertyNames
+                    .asSequence()
+                    .filter { it.contains("-mergeable.$SPRING_CLOUD_CONTRACT_STUBRUNNER_IDS") }
+                    .flatMap { key ->
+                        binder.bind(key, List::class.java)
+                            .orElse(emptyList<Any>())
+                            ?.asSequence()
+                            .orEmpty()
+                            .filterIsInstance<String>()
                     }
-                }
             }
-        }
+            .toSet()
 
         if (mergedIds.isNotEmpty()) {
             val mergedIdsString = mergedIds.joinToString(",")

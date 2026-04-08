@@ -40,8 +40,8 @@ data class ValidatedArtistObject(
     val popularity: Int?
 ) {
     companion object {
-        fun of(artistObject: ArtistObject) : ValidatedArtistObject {
-            return ValidatedArtistObject(
+        fun of(artistObject: ArtistObject): ValidatedArtistObject =
+            ValidatedArtistObject(
                 artistObject.id,
                 artistObject.name,
                 artistObject.genres,
@@ -51,18 +51,16 @@ data class ValidatedArtistObject(
                 artistObject.followers,
                 artistObject.popularity
             )
-        }
     }
-    fun toSafe(): SafeArtistObject {
-        return SafeArtistObject(
-            id!!,
-            name!!,
-            genres!!,
-            href!!,
-            images!!,
-            externalUrls!!,
-            followers!!,
-            popularity!!,
+    fun toSafe(): SafeArtistObject =
+        SafeArtistObject(
+            id = requireNotNull(id),
+            name = requireNotNull(name),
+            genres = requireNotNull(genres),
+            href = requireNotNull(href),
+            images = requireNotNull(images),
+            externalUrls = requireNotNull(externalUrls),
+            followers = requireNotNull(followers),
+            popularity = requireNotNull(popularity),
         )
-    }
 }

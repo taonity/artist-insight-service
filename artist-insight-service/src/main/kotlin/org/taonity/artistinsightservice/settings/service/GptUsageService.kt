@@ -33,12 +33,9 @@ class GptUsageService(
     @Transactional
     fun consumeGlobalUsage(): Boolean {
         val settings = appSettingsRepository.findByIdForUpdate(0)
-
-        if (settings == null) {
-            val newSettings = AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages - 1)
-            appSettingsRepository.save(newSettings)
-            return true
-        }
+            ?: return appSettingsRepository.save(
+                AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages - 1)
+            ).let { true }
 
         if (settings.globalGptUsagesLeft <= 0) {
             return false
@@ -56,13 +53,12 @@ class GptUsageService(
             ?: throw IllegalArgumentException("Failed to find spotify user in db by spotifyId $spotifyId")
 
         //TODO: move to db config table
-        val gptUsagesToTopUpDouble = amountDouble / 0.1
-        val gptUsagesToTopUp = gptUsagesToTopUpDouble.toInt()
+        val gptUsagesToTopUp = (amountDouble / 0.1).toInt()
 
+        val before = spotifyUserEntity.gptUsagesLeft
         spotifyUserEntity.gptUsagesLeft += gptUsagesToTopUp
-
-        val before = spotifyUserEntity.gptUsagesLeft - gptUsagesToTopUp
         val after = spotifyUserEntity.gptUsagesLeft
+
         LOGGER.info { "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)" }
     }
 }

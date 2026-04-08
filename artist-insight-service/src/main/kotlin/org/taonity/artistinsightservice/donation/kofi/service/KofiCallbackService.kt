@@ -62,18 +62,17 @@ class KofiCallbackService(
             return null
         }
 
-        val messageWords = message.split(" ")
-        return if (messageWords.size == 1) {
-            messageWords[0]
-        } else {
-            val spotifyIdOpt = messageWords.stream().filter { it.length >= 26 }
-                .findFirst()
-            if (spotifyIdOpt.isEmpty) {
-                LOGGER.warn { "Failed to find spotifyId in kofi callback message: $message" }
-                return null
+        return message.split(" ")
+            .let { messageWords ->
+                when (messageWords.size) {
+                    1 -> messageWords.first()
+                    else -> messageWords.firstOrNull { it.length >= 26 }
+                }
             }
-            spotifyIdOpt.get()
-        }
+            ?: run {
+                LOGGER.warn { "Failed to find spotifyId in kofi callback message: $message" }
+                null
+            }
     }
 
     private fun kofiWebhookAuthenticated(kofiWebhookData: KofiWebhookData): Boolean {

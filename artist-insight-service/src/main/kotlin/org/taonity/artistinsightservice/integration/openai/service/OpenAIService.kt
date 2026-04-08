@@ -61,9 +61,7 @@ class OpenAIService(
         return genres
     }
 
-    fun getModels() : List<Model> {
-        return openAIClient.models().list().data()
-    }
+    fun getModels(): List<Model> = openAIClient.models().list().data()
 
     private fun chatCompletionCreateParams(
         systemPrompt: String,
