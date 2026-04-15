@@ -89,6 +89,13 @@ jobs:
         echo "artifactId=$artifactId" >> "$GITHUB_OUTPUT"
         echo "Successfully extracted artifactId $artifactId"
 
+    - name: Extract back-end maven version
+      id: extract_backend_version
+      run: |
+        backendVersion=$(mvn -pl artist-insight-service help:evaluate "-Dexpression=project.version" -q -DforceStdout)
+        echo "backendVersion=$backendVersion" >> "$GITHUB_OUTPUT"
+        echo "Successfully extracted backendVersion $backendVersion"
+
     - name: Extract front-end npm packageName
       id: extract_frontend_package_name
       run: |
@@ -115,6 +122,15 @@ jobs:
         tag=${raw_tag:1}
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
         echo "Successfully extracted tag $tag"
+
+    - name: Retag back-end docker image
+      run: |
+        username=${{ secrets.DOCKER_USERNAME }}
+        artifactId=${{ steps.extract_backend_artifact_id.outputs.artifactId }}
+        backendVersion=${{ steps.extract_backend_version.outputs.backendVersion }}
+        tag=${{ steps.extract_tag.outputs.tag }}
+        docker tag "generaltao725/$artifactId:$backendVersion" "$username/$artifactId:$tag"
+        docker tag "generaltao725/$artifactId:$backendVersion" "$username/$artifactId:latest"
 
     - name: Build front-end docker image
       run: |
