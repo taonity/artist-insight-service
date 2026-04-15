@@ -18,7 +18,7 @@ import org.taonity.artistinsightservice.share.dto.SharedArtistsResponse
 
 @AutoConfigureStubRunner(
     ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.LOCAL
+    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
 )
 @Sql(scripts = ["classpath:sql/clear-data.sql", "classpath:sql/test-data.sql"])
 @Sql(scripts = ["classpath:sql/clear-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

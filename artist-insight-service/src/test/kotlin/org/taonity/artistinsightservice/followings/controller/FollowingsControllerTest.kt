@@ -18,7 +18,7 @@ import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
         "org.taonity:spotify-contracts:+:stubs:8100",
         "org.taonity:openai-contracts:+:stubs:8101"
     ],
-    stubsMode = StubRunnerProperties.StubsMode.LOCAL
+    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
 )
 @Sql("classpath:sql/test-data.sql")
 @Sql("classpath:sql/clear-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

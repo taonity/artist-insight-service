@@ -17,7 +17,7 @@ import org.taonity.spotify.model.ImageObject
 
 @AutoConfigureStubRunner(
     ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.LOCAL
+    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
 )
 //@Sql(scripts = ["classpath:sql/test-data.sql"])
 //TODO: pay attention

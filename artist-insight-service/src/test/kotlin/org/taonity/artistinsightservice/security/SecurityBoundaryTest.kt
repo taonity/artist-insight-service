@@ -10,7 +10,7 @@ import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
 @AutoConfigureStubRunner(
     ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.LOCAL
+    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
 )
 class SecurityBoundaryTest : ControllerTestsBaseClass() {
 
