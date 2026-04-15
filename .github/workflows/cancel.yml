@@ -22,7 +22,7 @@ jobs:
                 repo: context.repo.repo,
                 workflow_id: workflowId,
                 per_page: 100,
-                event: 'pull_request_target',
+                event: 'pull_request',
                 branch: context.payload.pull_request.head.ref,
               });
               console.log(workflowRuns);
