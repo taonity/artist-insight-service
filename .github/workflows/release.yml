@@ -10,6 +10,12 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip backend tests for this release run'
+        required: false
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -17,8 +23,6 @@ on:
 jobs:
   release:
     permissions: write-all
-    strategy:
-      max-parallel: 1
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: true
@@ -35,12 +39,43 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Set up Node 22
-      uses: actions/setup-node@v5
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: frontend/package-lock.json
+    - name: Determine whether to skip tests
+      id: determine_test_mode
+      env:
+        COMMIT_MESSAGE: ${{ github.event.head_commit.message || '' }}
+        MANUAL_SKIP_TESTS: ${{ inputs.skip_tests || false }}
+      run: |
+        skip_tests=false
+
+        if [[ "$MANUAL_SKIP_TESTS" == "true" || "$COMMIT_MESSAGE" == *"[skip tests]"* ]]; then
+          skip_tests=true
+        fi
+
+        echo "skip_tests=$skip_tests" >> "$GITHUB_OUTPUT"
+        echo "Release skip_tests=$skip_tests"
+
+    - name: Extract back-end maven artifactId
+      id: extract_backend_artifact_id
+      run: |
+        artifactId=$(mvn -pl artist-insight-service help:evaluate "-Dexpression=project.artifactId" -q -DforceStdout)
+        echo "artifactId=$artifactId" >> "$GITHUB_OUTPUT"
+        echo "Successfully extracted artifactId $artifactId"
+
+    - name: Extract front-end npm packageName
+      id: extract_frontend_package_name
+      run: |
+        packageName=$(grep '"name"' frontend/package.json | head -n 1 | sed -E 's/.*"name": "([^"]+)".*/\1/')
+        echo "packageName=$packageName" >> "$GITHUB_OUTPUT"
+        echo "Successfully extracted packageName $packageName"
+
+    - name: Build back-end with Maven and optionally run tests
+      run: |
+        mvn -v
+        if [[ "${{ steps.determine_test_mode.outputs.skip_tests }}" == "true" ]]; then
+          mvn -B -P build-docker-image package -DskipTests
+        else
+          mvn -B -P build-docker-image verify
+        fi
 
     - name: Bump version and push tag
       id: github_tag_action
@@ -56,29 +91,6 @@ jobs:
         tag=${raw_tag:1}
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
         echo "Successfully extracted tag $tag"
-
-    - name: Extract back-end maven artifactId
-      id: extract_backend_artifact_id
-      run: |
-        artifactId=$(mvn -pl artist-insight-service help:evaluate "-Dexpression=project.artifactId" -q -DforceStdout)
-        echo "artifactId=$artifactId" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted artifactId $artifactId"
-
-    - name: Extract front-end npm packageName
-      id: extract_frontend_package_name
-      run: |
-        packageName=$(cut -d "=" -f 2 <<< $(npm run --prefix frontend/ env | grep "npm_package_name"))
-        echo "packageName=$packageName" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted packageName $packageName"
-
-    - name: Build back-end with Maven & build docker image
-      run: |
-        mvn -v
-        mvn -B -P build-docker-image clean package -DskipTests
-
-    - name: Build front-end with npm
-      run: |
-        npm install --prefix frontend/
 
     - name: Build front-end docker image
       run: |
