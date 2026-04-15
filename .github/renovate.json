@@ -78,12 +78,12 @@
       "groupSlug": "npm-major"
     },
     {
-      "matchManagers": ["docker-compose"],
+      "matchManagers": ["docker-compose", "dockerfile"],
       "matchPackagePatterns": [
         "*"
       ],
-      "groupName": "docker-compose dependencies",
-      "groupSlug": "docker-compose-all"
+      "groupName": "docker dependencies",
+      "groupSlug": "docker-all"
     },
     {
       "packageNames": ["com.google.cloud.tools:jib-maven-plugin"],
