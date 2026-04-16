@@ -256,6 +256,11 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/automation/**</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -453,6 +458,30 @@
                         </executions>
                     </plugin>
 
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>smoke-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <excludes combine.self="override" />
+                            <includes>
+                                <include>**/automation/*IT.java</include>
+                                <include>**/automation/*IT.kt</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
