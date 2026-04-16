@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.http.MediaType
-import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestStatus
 import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
+import org.taonity.artistinsightservice.devaccess.service.AppMailSender
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
 @AutoConfigureStubRunner(
@@ -31,7 +31,7 @@ import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 class DevAccessControllerTest : ControllerTestsBaseClass() {
 
     @MockitoBean
-    lateinit var javaMailSender: JavaMailSender
+    lateinit var appMailSender: AppMailSender
 
     @Autowired
     lateinit var devAccessRepository: DevAccessRepository

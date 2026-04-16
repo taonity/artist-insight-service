@@ -38,25 +38,25 @@ The project has all its resources stubbed for the most comfortable local develop
 | postgres     | Postgres    | Regular Postgres configuration for a local or remote instance      |
 | stub-kofi    | Ko-Fi       | Stub Spring MVC endpoint that generates Ko-Fi webhook              |
 | prod-kofi    | Ko-Fi       | Production configuration that requires verification token          |
+| stub-mail    | Email       | Stub mail sender that logs outgoing messages without SMTP delivery |
 | local        | No resource | Common local configurations for development                        |
 
 Only one profile from a resource group can be used. For example, the set for the production environment looks like
-`postgres,prod-spotify,prod-openai`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,local`.
+`postgres,prod-spotify,prod-openai`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local`.
 
 Use IntelliJ to run the backend locally. Add a Run/Debug configuration with Main class `org.taonity.artistinsightservice.MainKt`
-and VM options `-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local` and run the backend.
+and VM options `-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` and run the backend.
 
 To run it from PS use a command like this:
 ```bash
-mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local"'
+mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local"'
 ```
 
 #### Frontend
 I recommend opening /frontend directory in Visual Code. Run `npm insatll`, and then `npm run dev`.
 
 ### Docker Compose deployment
-Docker Compose runs the backend and frontend with all stubs except the Spotify one. The Spotify stub is not workable there yet.
-Therefore, the production configs are used, and credentials should be provided.
+Docker Compose runs the backend and frontend in fully stubbed mode, including Spotify and mail.
 
 Run this. These are some shared networks required for production deployment.
 ```bash
