@@ -30,6 +30,8 @@ spring:
             issuer-uri: http://127.0.0.1:8100
             user-info-uri: http://127.0.0.1:8100/v1/me
             userNameAttribute: display_name
+  profiles:
+    include: stub-mail
 
 openai:
   api-key: "mock-api-key"

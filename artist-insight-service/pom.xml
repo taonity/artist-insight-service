@@ -253,6 +253,9 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>smoke</excludedGroups>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -260,6 +263,7 @@
                     <excludes>
                         <exclude>**/automation/**</exclude>
                     </excludes>
+                    <excludedGroups>smoke</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -433,7 +437,7 @@
                                 <creationTime>${maven.build.timestamp}</creationTime>
                                 <workingDirectory>/${project.artifactId}</workingDirectory>
                                 <args>
-                                    <arg>--spring.profiles.active=postgres,prod-spotify,prod-openai,prod-kofi</arg>
+                                    <arg>--spring.profiles.active=postgres,prod-spotify,prod-openai,prod-kofi,prod-mail</arg>
                                 </args>
                             </container>
                             <extraDirectories>
@@ -476,10 +480,15 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
                             <excludes combine.self="override" />
+                            <excludedGroups combine.self="override" />
                             <includes>
                                 <include>**/automation/*IT.java</include>
                                 <include>**/automation/*IT.kt</include>
                             </includes>
+                            <groups>smoke</groups>
+                            <systemPropertyVariables>
+                                <smoke.tests.enabled>true</smoke.tests.enabled>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>

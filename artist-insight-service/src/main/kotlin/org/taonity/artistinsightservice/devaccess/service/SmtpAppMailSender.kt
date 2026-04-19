@@ -6,7 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("!stub-mail")
+@Profile("prod-mail")
 class SmtpAppMailSender(
     private val mailSender: JavaMailSender
 ) : AppMailSender {

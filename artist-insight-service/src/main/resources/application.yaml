@@ -57,17 +57,6 @@ spring:
       local: plain-log
   application:
     name: artist-insight-service
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${ORGANISATION_EMAIL}
-    password: ${ORGANISATION_EMAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 logging:
   structured:

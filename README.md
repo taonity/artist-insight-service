@@ -20,7 +20,7 @@ A service that allows you to fetch your Spotify followings and share them with o
 - Add more music service integrations
 
 ### Project structure
-- Backend - Java Spring Boot application on Maven
+- Backend - Kotlin Spring Boot 4 application on Maven
 - Frontend - TypeScript Next.js with client and server parts
 - Deployment - Docker Compose template with backend, frontend, Postgres, and Flyway
 
@@ -39,10 +39,11 @@ The project has all its resources stubbed for the most comfortable local develop
 | stub-kofi    | Ko-Fi       | Stub Spring MVC endpoint that generates Ko-Fi webhook              |
 | prod-kofi    | Ko-Fi       | Production configuration that requires verification token          |
 | stub-mail    | Email       | Stub mail sender that logs outgoing messages without SMTP delivery |
+| prod-mail    | Email       | Production SMTP configuration for sending emails                   |
 | local        | No resource | Common local configurations for development                        |
 
 Only one profile from a resource group can be used. For example, the set for the production environment looks like
-`postgres,prod-spotify,prod-openai`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local`.
+`postgres,prod-spotify,prod-openai,prod-kofi,prod-mail`, and for local development - `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local`.
 
 Use IntelliJ to run the backend locally. Add a Run/Debug configuration with Main class `org.taonity.artistinsightservice.MainKt`
 and VM options `-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` and run the backend.
@@ -53,7 +54,7 @@ mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2
 ```
 
 #### Frontend
-I recommend opening /frontend directory in Visual Code. Run `npm insatll`, and then `npm run dev`.
+I recommend opening /frontend directory in Visual Code. Run `npm install`, and then `npm run dev`.
 
 ### Docker Compose deployment
 Docker Compose runs the backend and frontend in fully stubbed mode, including Spotify and mail.
@@ -61,12 +62,12 @@ Docker Compose runs the backend and frontend in fully stubbed mode, including Sp
 Run this. These are some shared networks required for production deployment.
 ```bash
 docker network create prodenv-shared-internal
-docker network artist-insight-shared
+docker network create artist-insight-shared
 ```
 Run this
 ```bash
 # Prepares Docker Compose templates for running. Make sure you are on the last released tag in git.
-mvn clean -P automation compile -DskipTests=true
+mvn clean -P build-automation-docker-compose-project compile -DskipTests=true
 # Runs Docker Compose template with images from Dockerhub. Make sure you placed all required env vars.
 docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
 ```
@@ -74,7 +75,7 @@ docker compose -f artist-insight-service/target/docker/test/docker-compose.yml u
 Or you can build the images yourself by following the instructions. Run this
 ```bash
 # Builds backend Docker image and prepares Docker Compose templates for running
-mvn clean -P docker,automation -pl artist-insight-service install -DskipTests=true
+mvn clean -P build-docker-image,build-automation-docker-compose-project -pl artist-insight-service install -DskipTests=true
 # Installs npm modules for Next.js frontend
 npm install --prefix frontend/
 # Builds the latest image of the frontend app using Dockerfile
@@ -110,6 +111,7 @@ The project requires a set of environment variables to be configured for some se
 | KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings                               |
 | SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                                |
 | PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation                            |
+| LOCAL_BACKEND_URL                    | Frontend | Internal backend URL used by frontend server-side requests          |
 
 ### PostgreSQL database ERD diagram
 
@@ -186,9 +188,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
 - Find a way forward to the login page early
-- update the readme (mvn profiles)
 - kotlinise the code
-- run tests before release
 - consider tests for frontend
 - consider simpliying the other side
 - fix smoke test env vars

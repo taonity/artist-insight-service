@@ -24,7 +24,7 @@ Multi-module Maven monorepo (Spring Boot 4 / Kotlin backend + Next.js 14 TypeScr
 mvn clean install
 
 # Run backend locally (IntelliJ or CLI)
-mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,local"'
+mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local"'
 
 # Run frontend
 cd frontend && npm install && npm run dev
@@ -40,10 +40,11 @@ Backend runs on port **8080**, frontend on **3000**.
 | Spotify  | `stub-spotify`        | `prod-spotify`     |
 | OpenAI   | `stub-openai`         | `prod-openai`      |
 | Ko-Fi    | `stub-kofi`           | `prod-kofi`        |
+| Mail     | `stub-mail`           | `prod-mail`        |
 | Logging  | `plain-log`           | *(not needed)*     |
 | General  | `local`               | *(not needed)*     |
 
-Local set: `h2,stub-spotify,stub-openai,stub-kofi,local` (`local` auto-includes `plain-log`). Stubs use Spring Cloud Contract stub runner (classpath mode).
+Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto-includes `plain-log`). Stubs use Spring Cloud Contract stub runner (classpath mode).
 
 ## Conventions & Patterns
 
@@ -62,6 +63,7 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,local` (`local` auto-includes 
 - **Contract stubs**: tests use `@AutoConfigureStubRunner` with `stubs-mode: CLASSPATH` to wire Spotify/OpenAI stubs.
 - **Test data**: `src/test/resources/sql/test-data.sql` + `clear-data.sql` loaded via `@Sql` annotations.
 - Run tests: `mvn test` from root or from `artist-insight-service/`.
+- **Smoke tests** (`src/test/kotlin/.../automation/SmokeIT.kt`): Docker Compose-based end-to-end tests. Tagged `@Tag("smoke")` and excluded from default surefire/failsafe runs via `<excludedGroups>smoke</excludedGroups>`. Run via Maven profile: `mvn -B -P build-docker-image,smoke-tests verify`. In CI, they run in the `smoke-tests` job after unit/integration tests pass.
 
 ## External Integrations
 

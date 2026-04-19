@@ -4,12 +4,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.exists
 
+@Tag("smoke")
+@EnabledIfSystemProperty(named = "smoke.tests.enabled", matches = "true")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SmokeIT {
 
