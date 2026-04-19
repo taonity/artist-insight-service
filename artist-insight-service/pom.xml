@@ -435,6 +435,7 @@
                             <container>
                                 <creationTime>${maven.build.timestamp}</creationTime>
                                 <workingDirectory>/${project.artifactId}</workingDirectory>
+                                <!-- chick if the arg is effective -->
                                 <args>
                                     <arg>--spring.profiles.active=postgres,prod-spotify,prod-openai,prod-kofi,prod-mail</arg>
                                 </args>

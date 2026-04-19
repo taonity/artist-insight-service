@@ -1,4 +1,6 @@
 ﻿{
+    "scenarioName": "auth-scenario",
+    "requiredScenarioState": "Started",
     "request": {
         "url": "/v1/me",
         "method": "GET"

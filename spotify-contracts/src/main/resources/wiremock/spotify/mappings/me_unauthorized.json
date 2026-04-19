@@ -1,0 +1,20 @@
+{
+    "scenarioName": "auth-scenario",
+    "requiredScenarioState": "unauthorized",
+    "request": {
+        "url": "/v1/me",
+        "method": "GET"
+    },
+    "response": {
+        "status": 403,
+        "jsonBody": {
+            "error": {
+                "status": 403,
+                "message": "Forbidden"
+            }
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+}
