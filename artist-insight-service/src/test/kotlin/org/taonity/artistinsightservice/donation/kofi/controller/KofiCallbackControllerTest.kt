@@ -3,8 +3,6 @@ package org.taonity.artistinsightservice.donation.kofi.controller
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -13,10 +11,6 @@ import org.taonity.artistinsightservice.donation.kofi.KofiPayloadBuilder
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
 
-@AutoConfigureStubRunner(
-    ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
 @Sql(scripts = ["classpath:sql/clear-data.sql", "classpath:sql/test-data.sql"])
 @Sql(scripts = ["classpath:sql/clear-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class KofiCallbackControllerTest : ControllerTestsBaseClass() {

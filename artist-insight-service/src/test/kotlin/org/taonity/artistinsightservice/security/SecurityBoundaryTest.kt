@@ -1,17 +1,11 @@
 package org.taonity.artistinsightservice.security
 
 import org.junit.jupiter.api.Test
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
-@AutoConfigureStubRunner(
-    ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
 class SecurityBoundaryTest : ControllerTestsBaseClass() {
 
     @Test

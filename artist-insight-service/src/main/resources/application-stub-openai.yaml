@@ -2,20 +2,6 @@ openai:
   api-key: "mock-api-key"
   base-url: http://localhost:8101/v1
 
-spring:
-  cloud:
-    contract:
-      stubrunner:
-        stubs-mode: CLASSPATH
-
-stub-openai-mergeable:
-  spring:
-    cloud:
-      contract:
-        stubrunner:
-          ids:
-            - org.taonity:openai-contracts:@project.version@:stubs:8101
-
 logging:
   level:
     WireMock: warn

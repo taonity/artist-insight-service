@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -15,10 +13,6 @@ import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 import org.taonity.artistinsightservice.user.dto.SpotifyUserDto
 import org.taonity.spotify.model.ImageObject
 
-@AutoConfigureStubRunner(
-    ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
 //@Sql(scripts = ["classpath:sql/test-data.sql"])
 //TODO: pay attention
 @DirtiesContext

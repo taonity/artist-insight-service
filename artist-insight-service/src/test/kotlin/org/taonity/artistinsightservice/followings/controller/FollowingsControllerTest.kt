@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -13,13 +11,6 @@ import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
 import org.taonity.artistinsightservice.artist.dto.FollowingsResponse
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
-@AutoConfigureStubRunner(
-    ids = [
-        "org.taonity:spotify-contracts:+:stubs:8100",
-        "org.taonity:openai-contracts:+:stubs:8101"
-    ],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
 @Sql("classpath:sql/test-data.sql")
 @Sql("classpath:sql/clear-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class FollowingsControllerTest: ControllerTestsBaseClass() {

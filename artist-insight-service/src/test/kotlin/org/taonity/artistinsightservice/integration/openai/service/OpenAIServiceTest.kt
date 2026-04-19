@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
+import org.springframework.test.context.ActiveProfiles
 import org.taonity.artistinsightservice.integration.openai.config.OpenAIConfig
 
 @SpringBootTest(classes = [
@@ -16,10 +15,7 @@ import org.taonity.artistinsightservice.integration.openai.config.OpenAIConfig
     OpenAIClientAutoConfiguration::class
 ],)
 @Disabled("Manual only")
-@AutoConfigureStubRunner(
-    ids = ["org.taonity:openai-contracts:+:stubs:8101"],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
+@ActiveProfiles("stub-openai")
 class OpenAIServiceTest {
 
     @Autowired

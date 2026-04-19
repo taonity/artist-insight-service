@@ -1,0 +1,19 @@
+﻿{
+    "request": {
+        "urlPath": "/oauth2/v2/auth",
+        "method": "GET",
+        "queryParameters": {
+            "response_type": { "equalTo": "code" },
+            "client_id": { "equalTo": "1234e12345678fafbd90fdce7540e12e" },
+            "scope": { "equalTo": "user-follow-read user-read-private" },
+            "redirect_uri": { "equalTo": "http://127.0.0.1:8080/login/oauth2/code/spotify-artist-insight-service" }
+        }
+    },
+    "response": {
+        "status": 303,
+        "headers": {
+            "Location": "{{{request.query.redirect_uri.[0]}}}?code=AQDumADm_Lo9NowrjxjTNmSxDHAjBJyAM5SjAqgDJFctaMRqsE7Ygwh7TN4IYfJzg8Q_QAcC_EX9WVXqdoSn0OpV837TodeHH05nbnVZh6Oe701XYy8DVgaNGULoS8x-1543zAW4pfUz4t2XrN8qUaim_23IRwQzAba-a6LdlHYFPrG-E-mBy4m3j4-FQv6toBjnMwqvjwoPFSEw7cQOMeK4MWx0DWizTXgyn8j5wAQzTGtqf76BTHOBb_naWQVKBPT3otyzvhNQflFQEDCn&state={{{request.query.state.[0]}}}"
+        },
+        "transformers": ["response-template"]
+    }
+}

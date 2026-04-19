@@ -6,10 +6,10 @@ import io.github.bucket4j.Bucket
 import io.github.bucket4j.Refill
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.apache.http.entity.ContentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import org.taonity.artistinsightservice.infrastructure.exception.ClientErrorCode
@@ -53,7 +53,7 @@ class RateLimitInterceptor : HandlerInterceptor {
     }
 
     private fun writeResponse(response: HttpServletResponse) {
-        response.contentType = ContentType.APPLICATION_JSON.mimeType
+        response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.status = HttpStatus.TOO_MANY_REQUESTS.value()
         val clientErrorResponse = ClientErrorResponse(
             ClientErrorCode.TOO_MANY_REQUESTS,

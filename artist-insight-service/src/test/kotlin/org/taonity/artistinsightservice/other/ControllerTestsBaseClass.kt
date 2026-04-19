@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("h2")
+@ActiveProfiles("h2", "stub-spotify", "stub-openai")
 class ControllerTestsBaseClass {
 
     @Autowired

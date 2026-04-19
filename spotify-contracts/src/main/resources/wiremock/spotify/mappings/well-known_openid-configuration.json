@@ -1,0 +1,21 @@
+﻿{
+    "request": {
+        "url": "/.well-known/openid-configuration",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "issuer": "http://127.0.0.1:8100",
+            "authorization_endpoint": "http://127.0.0.1:8100/oauth2/v2/auth",
+            "token_endpoint": "http://127.0.0.1:8100/api/token",
+            "userinfo_endpoint": "http://127.0.0.1:8100/v1/me",
+            "response_types_supported": ["code", "none"],
+            "subject_types_supported": ["pairwise"],
+            "jwks_uri": "https://accounts.spotify.com/oidc/certs/v1"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+}

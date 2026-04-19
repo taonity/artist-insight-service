@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.TestPropertySource
@@ -18,10 +16,6 @@ import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
 import org.taonity.artistinsightservice.devaccess.service.AppMailSender
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
-@AutoConfigureStubRunner(
-    ids = ["org.taonity:spotify-contracts:+:stubs:8100"],
-    stubsMode = StubRunnerProperties.StubsMode.CLASSPATH
-)
 @TestPropertySource(properties = [
     "app.dev-access.enabled=true",
     "app.dev-access.rate-limit.send-email.capacity=10",
