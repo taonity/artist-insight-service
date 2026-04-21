@@ -45,7 +45,7 @@ export default function SharePage() {
   const [expired, setExpired] = useState(false)
 
   // Try to get user - will be null for unauthenticated visitors
-  const user = useUser(() => {}, true) // silent mode - don't redirect on 401
+  const user = useUser({ silent: true })
 
   useEffect(() => {
     loadSharedArtists()

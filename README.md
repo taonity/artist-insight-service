@@ -188,7 +188,6 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 ### Tech debts
 - invesitgate auth metris missmatch in dashboard
 - Find a way forward to the login page early
-- kotlinise the code
 - consider tests for frontend
 - consider simpliying the other side
 - fix smoke test env vars

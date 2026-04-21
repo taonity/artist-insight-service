@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Righteous } from 'next/font/google'
 import Image from 'next/image'
 import ErrorNotification from '../../components/ErrorNotification'
 import BackgroundPhrases from '../../components/BackgroundPhrases'
 import DevelopmentAccessNotification from '../../components/DevelopmentAccessNotification'
+import { deleteCookie, getCookie } from '@/lib/cookies'
+import { fetchWithTimeout, DEFAULT_NETWORK_ERROR_MESSAGE, DEFAULT_TIMEOUT_ERROR_MESSAGE } from '@/lib/clientApi'
 import { logError, logDebug } from '@/utils/logger'
 
 const righteous = Righteous({ 
@@ -14,23 +16,8 @@ const righteous = Righteous({
   subsets: ['latin'],
 })
 
-function getCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return null
-  }
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]) : null
-}
-
-function deleteCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return
-  }
-  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-}
-
 function LoginContent() {
-  const searchParams = useSearchParams()
+  const router = useRouter()
   const [livenessLoading, setLivenessLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [showAccessRequestForm, setShowAccessRequestForm] = useState(false)
@@ -53,35 +40,30 @@ function LoginContent() {
       return
     }
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    async function loadCurrentUser() {
+      try {
+        const response = await fetchWithTimeout('/api/user', { timeoutMs: 6000 })
 
-    fetch('/api/user', { credentials: 'include', signal: controller.signal })
-      .then((res) => {
-        if (res.ok) {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/'
-          }
-        } else if (res.status === 504) {
+        if (response.ok) {
+          router.replace('/')
+          return
+        }
+
+        if (response.status === 504) {
           logError('LoginPage', 'User fetch timed out with 504 status')
-          setErrorMessage('Request timed out. Please try again.')
-        } else {
-          logError('LoginPage', 'User fetch failed with status: ' + res.status)
+          setErrorMessage(DEFAULT_TIMEOUT_ERROR_MESSAGE)
+          return
         }
-      })
-      .catch((err) => {
-        if (err.name === 'AbortError') {
-          logError('LoginPage', 'User fetch aborted due to timeout')
-          setErrorMessage('Request timed out. Please try again.')
-        } else {
-          logError('LoginPage', 'User fetch network error', err)
-          setErrorMessage('Unable to connect to the server. Please check your connection.')
-        }
-      })
-      .finally(() => {
-        clearTimeout(timeoutId)
-      })
-  }, [searchParams])
+
+        logError('LoginPage', 'User fetch failed with status: ' + response.status)
+      } catch (error) {
+        logError('LoginPage', 'User fetch network error', error)
+        setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
+      }
+    }
+
+    void loadCurrentUser()
+  }, [router])
 
   const scopes = [
     'Read your private profile information',
@@ -93,28 +75,26 @@ function LoginContent() {
     setLivenessLoading(true)
     setErrorMessage(null)
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000)
     try {
-      const response = await fetch('/api/actuator/health/liveness', { signal: controller.signal })
+      const response = await fetchWithTimeout('/api/actuator/health/liveness', { timeoutMs: 6000 })
+
+      if (response.status === 504) {
+        logError('LoginPage', 'Liveness check timed out')
+        setErrorMessage(DEFAULT_TIMEOUT_ERROR_MESSAGE)
+        return
+      }
+
       const data = await response.json()
       if (!response.ok || data.status !== 'UP') {
         logError('LoginPage', 'Liveness check failed', { status: response.status, data })
         setErrorMessage('Backend server is currently unavailable. Please try again later.')
-        setLivenessLoading(false)
         return
       }
-      window.location.href = '/api/oauth2/authorization/spotify-artist-insight-service'
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        logError('LoginPage', 'Liveness check timed out')
-        setErrorMessage('Request timed out. Please try again.')
-      } else {
-        logError('LoginPage', 'Liveness check network error', err)
-        setErrorMessage('Unable to connect to the server. Please check your connection.')
-      }
+      window.location.assign('/api/oauth2/authorization/spotify-artist-insight-service')
+    } catch (error) {
+      logError('LoginPage', 'Liveness check network error', error)
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
-      clearTimeout(timeoutId)
       setLivenessLoading(false)
     }
   }

@@ -1,9 +1,14 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import { AgGridReact } from 'ag-grid-react'
-import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community'
+import {
+  AllCommunityModule,
+  ColDef,
+  ICellRendererParams,
+  ModuleRegistry,
+} from 'ag-grid-community'
 import Genres from '../components/Genres'
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -27,87 +32,91 @@ interface Props {
   enrichableArtistObjects: EnrichableArtistObject[]
 }
 
-const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
-  const containerStyle = useMemo(() => ({ width: '100%' }), [])
+function AvatarCell({ data }: ICellRendererParams<EnrichableArtistObject>) {
+  if (!data) {
+    return null
+  }
 
-  const columnDefs: ColDef<EnrichableArtistObject>[] = [
-    {
-      headerName: 'Avatar',
-      field: 'artistObject.images',
-      cellRenderer: (params: any) => {
-        const artist = params.data.artistObject
-        const imageUrl =
-          artist.images && artist.images.length > 0
-            ? artist.images[0].url
-            : '/default-artist-pfp.jpeg'
-        const spotifyUrl = artist.externalUrls.spotify
-
-        return (
-          <a
-            href={spotifyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', height: '100%' }}
-          >
-            <Image
-              src={imageUrl}
-              alt={artist.name}
-              width={40}
-              height={40}
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
-            />
-          </a>
-        )
-      },
-      width: 90,
-      sortable: false,
-      filter: false,
-    },
-    {
-      headerName: 'Name',
-      field: 'artistObject.name',
-      sortable: true,
-      filter: true,
-      flex: 1,
-      cellStyle: { display: 'flex', alignItems: 'center' },
-    },
-    {
-      headerName: 'Genres',
-      field: 'artistObject.genres',
-      cellRenderer: (params: any) => {
-        const genres = params.value
-        const enriched = params.data.genreEnriched
-        if (!genres || genres.length === 0) return null
-        return (
-          <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-            <Genres genres={genres} enriched={enriched} />
-          </div>
-        )
-      },
-      flex: 2,
-      sortable: false,
-    },
-    {
-      headerName: 'Followers',
-      field: 'artistObject.followers.total',
-      sortable: true,
-      filter: 'agNumberColumnFilter',
-      width: 120,
-      valueFormatter: (params) => (params.value ? params.value.toLocaleString() : '0'),
-      cellStyle: { display: 'flex', alignItems: 'center' },
-    },
-    {
-      headerName: 'Popularity',
-      field: 'artistObject.popularity',
-      sortable: true,
-      filter: 'agNumberColumnFilter',
-      width: 120,
-      cellStyle: { display: 'flex', alignItems: 'center' },
-    },
-  ]
+  const artist = data.artistObject
+  const imageUrl = artist.images?.[0]?.url ?? '/default-artist-pfp.jpeg'
 
   return (
-    <div style={containerStyle} className="ag-theme-quartz-dark">
+    <a
+      href={artist.externalUrls.spotify}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ display: 'flex', alignItems: 'center', height: '100%' }}
+    >
+      <Image
+        src={imageUrl}
+        alt={artist.name}
+        width={40}
+        height={40}
+        style={{ borderRadius: '50%', objectFit: 'cover' }}
+      />
+    </a>
+  )
+}
+
+function GenresCell({ data, value }: ICellRendererParams<EnrichableArtistObject, string[]>) {
+  if (!data || !value || value.length === 0) {
+    return null
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Genres genres={value} enriched={data.genreEnriched} />
+    </div>
+  )
+}
+
+const columnDefs: ColDef<EnrichableArtistObject>[] = [
+  {
+    headerName: 'Avatar',
+    field: 'artistObject.images',
+    cellRenderer: AvatarCell,
+    width: 90,
+    sortable: false,
+    filter: false,
+  },
+  {
+    headerName: 'Name',
+    field: 'artistObject.name',
+    sortable: true,
+    filter: true,
+    flex: 1,
+    cellStyle: { display: 'flex', alignItems: 'center' },
+  },
+  {
+    headerName: 'Genres',
+    field: 'artistObject.genres',
+    cellRenderer: GenresCell,
+    flex: 2,
+    sortable: false,
+  },
+  {
+    headerName: 'Followers',
+    field: 'artistObject.followers.total',
+    sortable: true,
+    filter: 'agNumberColumnFilter',
+    width: 120,
+    valueFormatter: (params) => (params.value ? params.value.toLocaleString() : '0'),
+    cellStyle: { display: 'flex', alignItems: 'center' },
+  },
+  {
+    headerName: 'Popularity',
+    field: 'artistObject.popularity',
+    sortable: true,
+    filter: 'agNumberColumnFilter',
+    width: 120,
+    cellStyle: { display: 'flex', alignItems: 'center' },
+  },
+]
+
+const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
+
+  return (
+    <div style={{ width: '100%' }} className="ag-theme-quartz-dark">
       <AgGridReact
         rowData={enrichableArtistObjects}
         columnDefs={columnDefs}

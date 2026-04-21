@@ -8,15 +8,64 @@ import GptUsageBlock from '../components/GptUsageBlock'
 import Loading from '../components/Loading'
 import ErrorNotification from '../components/ErrorNotification'
 import Header from '@/components/Header'
-import { useUser } from "../hooks/useUser"
+import { useUser } from '../hooks/useUser'
+import { getCookie } from '@/lib/cookies'
+import {
+  fetchWithTimeout,
+  DEFAULT_NETWORK_ERROR_MESSAGE,
+  DEFAULT_TIMEOUT_ERROR_MESSAGE,
+} from '@/lib/clientApi'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
-function getCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return null
+interface FollowingsResponse {
+  artists: EnrichableArtistObject[]
+  advisories: Advisory[]
+  gptUsagesLeft?: number
+}
+
+interface ErrorData {
+  advisories: Advisory[]
+}
+
+async function parseAdvisoriesOrThrow(res: Response, fallbackErrorMessage: string) {
+  try {
+    const errorBody = (await res.json()) as ErrorData
+    return errorBody.advisories.length > 0
+      ? { advisories: errorBody.advisories }
+      : { errorMessage: fallbackErrorMessage }
+  } catch {
+    return { errorMessage: fallbackErrorMessage }
   }
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]) : null
+}
+
+async function fetchFollowings(path: string, timeoutMs: number) {
+  const response = await fetchWithTimeout(path, { timeoutMs })
+
+  if (response.status === 504) {
+    return {
+      ok: false as const,
+      ...(await parseAdvisoriesOrThrow(response, DEFAULT_TIMEOUT_ERROR_MESSAGE)),
+    }
+  }
+
+  if (response.status === 500) {
+    return {
+      ok: false as const,
+      ...(await parseAdvisoriesOrThrow(response, 'Server error. Please try again later.')),
+    }
+  }
+
+  if (!response.ok) {
+    return {
+      ok: false as const,
+      errorMessage: DEFAULT_NETWORK_ERROR_MESSAGE,
+    }
+  }
+
+  return {
+    ok: true as const,
+    data: (await response.json()) as FollowingsResponse,
+  }
 }
 
 export default function Home() {
@@ -31,97 +80,74 @@ export default function Home() {
   const [hasExistingShareLink, setHasExistingShareLink] = useState(false)
   const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
 
-  const user = useUser(setErrorMessage);
+  const user = useUser({ onError: setErrorMessage })
 
   useEffect(() => {
-    getRuntimeConfig().then(config => setCsrfCookieName(config.csrfCookieName))
+    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
   }, [])
 
   useEffect(() => {
-    if (user) {
-      setGptUsagesLeft(user.gptUsagesLeft);
-      loadUserFollowings()
-      checkExistingShareLink()
+    if (!user) {
+      return
     }
+
+    setGptUsagesLeft(user.gptUsagesLeft)
+    void loadUserFollowings()
+    void checkExistingShareLink()
   }, [user])
 
   const loadUserFollowings = async () => {
     setLoading(true)
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000)
+
     try {
-      const res = await fetch('/api/followings', { credentials: 'include', signal: controller.signal })
-      if (res.status === 504) {
-        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
-      } else if (res.status == 500) {
-        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
-      } else if (res.ok) {
-        const jsonResponse = await res.json()
-        setArtists(jsonResponse.artists)
-        setAdvisories(jsonResponse.advisories)
+      const result = await fetchFollowings('/api/followings', 30000)
+
+      if (!result.ok) {
+        if (result.advisories) {
+          setAdvisories(result.advisories)
+        } else if (result.errorMessage) {
+          setErrorMessage(result.errorMessage)
+        }
+        return
       }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        setErrorMessage('Request timed out. Please try again.')
-      } else {
-        setErrorMessage('Unable to connect to the server. Please check your connection.')
-      }
+
+      setArtists(result.data.artists)
+      setAdvisories(result.data.advisories)
+    } catch {
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
-      clearTimeout(timeoutId)
-      // await new Promise(resolve => setTimeout(resolve, 100000))
       setLoading(false)
     }
   }
 
-  interface ErrorData {
-    advisories: Advisory[];
-  }
-
   const loadEnrichedFollowings = async () => {
     setEnriching(true)
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000)
+
     try {
-      const res = await fetch('/api/followings/enriched', { credentials: 'include', signal: controller.signal })
-      if (res.status === 504) {
-        await setAdvisoriesOrSetErrorMessage(res, 'Request timed out. Please try again.')
-      } else if (res.status == 500) {
-        await setAdvisoriesOrSetErrorMessage(res, 'Server error. Please try again later.')
-      } else if (res.ok) {
-        const jsonResponse = await res.json()
-        setArtists(jsonResponse.artists)
-        setAdvisories(jsonResponse.advisories)
-        setGptUsagesLeft(jsonResponse.gptUsagesLeft)
+      const result = await fetchFollowings('/api/followings/enriched', 60000)
+
+      if (!result.ok) {
+        if (result.advisories) {
+          setAdvisories(result.advisories)
+        } else if (result.errorMessage) {
+          setErrorMessage(result.errorMessage)
+        }
+        return
       }
-      // TODO: test AbortError
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        setErrorMessage('Request timed out. Please try again.')
-      } else {
-        setErrorMessage('Unable to connect to the server. Please check your connection.')
-      }
+
+      setArtists(result.data.artists)
+      setAdvisories(result.data.advisories)
+      setGptUsagesLeft(result.data.gptUsagesLeft ?? 0)
+    } catch {
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
-      clearTimeout(timeoutId)
       setEnriching(false)
     }
   }
 
-    async function setAdvisoriesOrSetErrorMessage(res: Response, errorMessage: string) {
-      try {
-        let errorBody: ErrorData = await res.json()
-        if (errorBody.advisories.length == 0) {
-          setErrorMessage(errorMessage)
-        } else {
-          setAdvisories(errorBody.advisories)
-        }
-      } catch {
-        setErrorMessage(errorMessage)
-      }
-    }
-
   const checkExistingShareLink = async () => {
     try {
-      const res = await fetch('/api/share', { credentials: 'include' })
+      const res = await fetchWithTimeout('/api/share', { timeoutMs: 10000 })
       if (res.ok) {
         setHasExistingShareLink(true)
       }
@@ -139,9 +165,9 @@ export default function Home() {
 
     setShareLoading(true)
     try {
-      const res = await fetch('/api/share', {
+      const res = await fetchWithTimeout('/api/share', {
         method: 'POST',
-        credentials: 'include',
+        timeoutMs: 15000,
         headers: { 'X-XSRF-TOKEN': xsrfToken },
       })
       
@@ -162,30 +188,29 @@ export default function Home() {
         setErrorMessage('Failed to create share link. Please try again.')
       }
     } catch {
-      setErrorMessage('Unable to connect to the server. Please check your connection.')
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
       setShareLoading(false)
     }
   }
 
-  const csvData = [['name', 'genres', 'followers', 'popularity', 'spotify_url']]
-  enrichableArtistObjects.forEach((enrichableArtistObject) => {
-    const artist = enrichableArtistObject.artistObject
-    csvData.push([
-      artist.name,
-      artist.genres ? artist.genres.join(', ') : '',
-      artist.followers?.total?.toString() ?? '0',
-      artist.popularity?.toString() ?? '0',
-      artist.externalUrls?.spotify ?? ''
-    ])
-  })
+  const csvData = [
+    ['name', 'genres', 'followers', 'popularity', 'spotify_url'],
+    ...enrichableArtistObjects.map(({ artistObject }) => [
+      artistObject.name,
+      artistObject.genres?.join(', ') ?? '',
+      artistObject.followers?.total?.toString() ?? '0',
+      artistObject.popularity?.toString() ?? '0',
+      artistObject.externalUrls?.spotify ?? '',
+    ]),
+  ]
 
   return (
     <div>
       {errorMessage && (
         <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
       )}
-      <Header user={user}/>
+      <Header user={user} />
       <div className="main-content">
         {loading ? (
           <Loading items={enrichableArtistObjects.length || 10} />
@@ -200,13 +225,13 @@ export default function Home() {
             )}
             {enrichableArtistObjects.length > 0 && (
               <div className="actions">
-                <button onClick={() => loadEnrichedFollowings()} disabled={enriching}>
+                <button type="button" onClick={loadEnrichedFollowings} disabled={enriching}>
                   {enriching ? 'Enriching…' : 'Enrich followings'}
                 </button>
                 <CSVLink data={csvData} filename={'exported-artists.csv'} className="button">
                   Download CSV
                 </CSVLink>
-                <button onClick={handleShare} disabled={shareLoading || enriching}>
+                <button type="button" onClick={handleShare} disabled={shareLoading || enriching}>
                   {shareLoading ? 'Generating…' : hasExistingShareLink ? 'Update Share Link' : 'Share'}
                 </button>
               </div>

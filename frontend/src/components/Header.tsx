@@ -1,43 +1,28 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import User from "../models/User";
+import Image from "next/image"
+import { usePathname, useRouter } from "next/navigation"
+import User from "../models/User"
 
 interface Props {
-  user: User | null;
-  loading?: boolean;
-  visitorMode?: boolean;
+  user: User | null
+  loading?: boolean
+  visitorMode?: boolean
 }
 
 // TODO: check loading
 const Header: React.FC<Props> = ({ user, loading = false, visitorMode = false }) => {
-  const toSettingsPage = async () => {
-    window.location.href = "/settings";
-  };
-
-  const donate = async () => {
-    window.location.href = "/donate";
-  };
-
-  const toHome = async () => {
-    window.location.href = "/";
-  };
-
-  const login = async () => {
-    window.location.href = "/login";
-  };
-
-  const pathname = usePathname();
-  const isLoading = !visitorMode && (loading || !user);
-  const displayName = visitorMode ? "Visitor" : (user?.privateUserObject.displayName ?? "");
+  const pathname = usePathname()
+  const router = useRouter()
+  const isLoading = !visitorMode && (loading || !user)
+  const displayName = visitorMode ? "Visitor" : user?.privateUserObject.displayName ?? ""
   const avatarUrl = visitorMode 
     ? "/default-user-pfp.png"
     : (user &&
         user.privateUserObject.images &&
         user.privateUserObject.images.length > 0
           ? user.privateUserObject.images[0].url
-          : "/default-user-pfp.png");
+          : "/default-user-pfp.png")
 
   return (
     <div className="header">
@@ -67,22 +52,22 @@ const Header: React.FC<Props> = ({ user, loading = false, visitorMode = false })
       </div>
       <div className="header-actions">
         {visitorMode ? (
-          <button onClick={login}>Log in</button>
+          <button type="button" onClick={() => router.push('/login')}>Log in</button>
         ) : (
           <>
             {pathname === "/" ? (
-              <button onClick={donate}>
+              <button type="button" onClick={() => router.push('/donate')}>
                 Donate <span style={{ fontSize: "13px" }}>❤️</span>
               </button>
             ) : (
-              <button onClick={toHome}>Home</button>
+              <button type="button" onClick={() => router.push('/')}>Home</button>
             )}
-            <button onClick={toSettingsPage}>Settings</button>
+            <button type="button" onClick={() => router.push('/settings')}>Settings</button>
           </>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

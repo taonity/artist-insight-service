@@ -5,7 +5,7 @@ export async function getRuntimeConfig() {
     return configCache
   }
   try {
-    const response = await fetch('/api/config')
+    const response = await fetch('/api/config', { cache: 'no-store' })
     configCache = await response.json()
     return configCache!
   } catch (error) {

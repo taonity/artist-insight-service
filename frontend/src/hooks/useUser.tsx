@@ -1,61 +1,68 @@
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import User from '../models/User'
+import { fetchWithTimeout, DEFAULT_NETWORK_ERROR_MESSAGE, DEFAULT_TIMEOUT_ERROR_MESSAGE } from '@/lib/clientApi'
 import keysToCamel from '../utils/utils'
 
-export function useUser(
-  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
-  silentMode: boolean = false
-) {
-  const [user, setUser] = useState<User | null>(null);
-  
+interface UseUserOptions {
+  onError?: React.Dispatch<React.SetStateAction<string | null>>
+  silent?: boolean
+}
 
-  const fetchUser = async () => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-    try {
-      const res = await fetch("/api/user", {
-        credentials: "include",
-        signal: controller.signal,
-      });
-      if (res.status === 401) {
-        if (!silentMode) {
-          window.location.href = "/login";
-        }
-        return;
-      }
-      if (res.status === 504) {
-        if (!silentMode) {
-          setErrorMessage("Request timed out. Please try again.");
-        }
-        return;
-      }
-      if (res.ok) {
-        const snakeCasedUser = await res.json();
-        const camelCasedUser = keysToCamel(snakeCasedUser);
-        setUser(camelCasedUser);
-      } else {
-        if (!silentMode) {
-          window.location.href = "/login";
-        }
-      }
-    } catch (err) {
-      if (!silentMode) {
-        if (err instanceof Error && err.name === "AbortError") {
-          setErrorMessage("Request timed out. Please try again.");
-        } else {
-          setErrorMessage(
-            "Unable to connect to the server. Please check your connection."
-          );
-        }
-      }
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  };
+export function useUser({ onError, silent = false }: UseUserOptions = {}) {
+  const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    let isActive = true
 
-  return user;
+    async function loadUser() {
+      try {
+        const response = await fetchWithTimeout('/api/user', { timeoutMs: 6000 })
+
+        if (!isActive) {
+          return
+        }
+
+        if (response.status === 401) {
+          if (!silent) {
+            router.replace('/login')
+          }
+          return
+        }
+
+        if (response.status === 504) {
+          if (!silent) {
+            onError?.(DEFAULT_TIMEOUT_ERROR_MESSAGE)
+          }
+          return
+        }
+
+        if (!response.ok) {
+          if (!silent) {
+            router.replace('/login')
+          }
+          return
+        }
+
+        const responseBody = await response.json()
+
+        if (isActive) {
+          setUser(keysToCamel(responseBody) as User)
+        }
+      } catch {
+        if (isActive && !silent) {
+          onError?.(DEFAULT_NETWORK_ERROR_MESSAGE)
+        }
+      }
+    }
+
+    void loadUser()
+
+    return () => {
+      isActive = false
+    }
+  }, [onError, router, silent])
+
+  return user
 }

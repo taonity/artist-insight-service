@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={righteous.variable}>
         <div className="app-wrapper">
           <main className="app-main">{children}</main>
           <Footer />

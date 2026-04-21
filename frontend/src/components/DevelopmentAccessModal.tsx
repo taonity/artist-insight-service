@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getCookie } from '@/lib/cookies'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import './DevelopmentAccessModal.css'
 
@@ -9,14 +10,6 @@ interface DevelopmentAccessModalProps {
   onClose: () => void
   onSuccess?: (message: string) => void
   onError?: (message: string) => void
-}
-
-function getCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return null
-  }
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]) : null
 }
 
 export default function DevelopmentAccessModal({
@@ -32,7 +25,7 @@ export default function DevelopmentAccessModal({
   const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
 
   useEffect(() => {
-    getRuntimeConfig().then(config => setCsrfCookieName(config.csrfCookieName))
+    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
   }, [])
 
   const resetForm = () => {
@@ -80,7 +73,7 @@ export default function DevelopmentAccessModal({
           onError?.('Failed to submit your request. Please try again later.')
         }
       }
-    } catch (err) {
+    } catch {
       onError?.('Network error. Please try again.')
     } finally {
       setIsSubmitting(false)

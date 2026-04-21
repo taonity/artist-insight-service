@@ -11,8 +11,8 @@ import { useEffect, useState } from 'react'
 export default function Donate() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const user = useUser(setErrorMessage);
-  const isLoadingUser = !user;
+  const user = useUser({ onError: setErrorMessage })
+  const isLoadingUser = !user
 
   useEffect(() => {
     if (!copied) return

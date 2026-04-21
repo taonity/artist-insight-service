@@ -1,22 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ErrorNotification from '@/components/ErrorNotification'
 import { useUser } from '@/hooks/useUser'
+import { getCookie } from '@/lib/cookies'
+import { fetchWithTimeout, DEFAULT_NETWORK_ERROR_MESSAGE } from '@/lib/clientApi'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import { logError } from '@/utils/logger'
 
 const csrfErrorMessage = 'Unable to verify your request. Please refresh the page and try again.'
-const networkErrorMessage = 'Unable to connect to the server. Please check your connection.'
-
-function getCookie(name: string) {
-  if (typeof document === 'undefined') {
-    return null
-  }
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]) : null
-}
 
 async function requestLogout(xsrfToken: string) {
   const res = await fetch('/api/logout', {
@@ -31,16 +25,17 @@ async function requestLogout(xsrfToken: string) {
 }
 
 export default function SettingsPage() {
+  const router = useRouter()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
   const [shareLink, setShareLink] = useState<{ shareCode: string; expiresAt: string } | null>(null)
   const [shareLinkLoading, setShareLinkLoading] = useState(true)
-  const user = useUser(setErrorMessage)
+  const user = useUser({ onError: setErrorMessage })
 
   useEffect(() => {
-    getRuntimeConfig().then(config => setCsrfCookieName(config.csrfCookieName))
-    loadShareLinkStatus()
+    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
+    void loadShareLinkStatus()
   }, [])
 
   const handleLogout = async () => {
@@ -54,7 +49,7 @@ export default function SettingsPage() {
     setIsProcessing(true)
     try {
       await requestLogout(xsrfToken)
-      window.location.href = '/login'
+      router.replace('/login')
     } catch (err) {
       logError('SettingsPage', 'Logout failed', err)
       setErrorMessage('Unable to log out. Please try again.')
@@ -84,7 +79,7 @@ export default function SettingsPage() {
       })
 
       if (res.status === 401) {
-        window.location.href = '/login'
+        router.replace('/login')
         return
       }
 
@@ -107,10 +102,10 @@ export default function SettingsPage() {
         // Ignore logout failures here and continue redirecting the user.
       }
 
-      window.location.href = '/login'
+      router.replace('/login')
     } catch (err) {
       logError('SettingsPage', 'Delete account network error', err)
-      setErrorMessage(networkErrorMessage)
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
       setIsProcessing(false)
     }
@@ -118,7 +113,7 @@ export default function SettingsPage() {
 
   const loadShareLinkStatus = async () => {
     try {
-      const res = await fetch('/api/share', { credentials: 'include' })
+      const res = await fetchWithTimeout('/api/share', { timeoutMs: 10000 })
       if (res.status === 404) {
         setShareLink(null)
       } else if (res.ok) {
@@ -153,7 +148,7 @@ export default function SettingsPage() {
       })
 
       if (res.status === 401) {
-        window.location.href = '/login'
+        router.replace('/login')
         return
       }
 
@@ -172,7 +167,7 @@ export default function SettingsPage() {
       setShareLink(null)
     } catch (err) {
       logError('SettingsPage', 'Delete share link network error', err)
-      setErrorMessage(networkErrorMessage)
+      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
       setIsProcessing(false)
     }
