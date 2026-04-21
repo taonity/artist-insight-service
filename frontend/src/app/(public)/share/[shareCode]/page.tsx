@@ -6,7 +6,8 @@ import Image from 'next/image'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Loading from '@/components/feedback/Loading'
 import Header from '@/components/layout/Header'
-import SharedArtistList from '@/features/share/components/SharedArtistList'
+import { fetchSharedArtists } from '@/features/share/api'
+import { SharedArtistList } from '@/features/share/components'
 import { useUser } from '@/hooks/useUser'
 import type { SharedArtistsData } from '@/types/share'
 import { logError } from '@/lib/logger'
@@ -23,38 +24,47 @@ export default function SharePage() {
   const user = useUser({ silent: true })
 
   useEffect(() => {
-    void loadSharedArtists()
-  }, [shareCode])
+    let isActive = true
 
-  const loadSharedArtists = async () => {
-    try {
-      const res = await fetch(`/api/share/${shareCode}`)
+    async function loadSharedArtists() {
+      try {
+        const result = await fetchSharedArtists(shareCode)
 
-      if (res.status === 404) {
-        setNotFound(true)
-        setLoading(false)
-        return
+        if (!isActive) {
+          return
+        }
+
+        if (result.status === 'not-found') {
+          setNotFound(true)
+          setLoading(false)
+          return
+        }
+
+        if (result.status === 'expired') {
+          setExpired(true)
+          setLoading(false)
+          return
+        }
+
+        setShareData(result.data)
+      } catch (error) {
+        if (isActive) {
+          logError('SharePage', 'Failed to load shared artists', error)
+          setErrorMessage('Unable to load shared artists. Please try again.')
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
       }
-
-      if (res.status === 410) {
-        setExpired(true)
-        setLoading(false)
-        return
-      }
-
-      if (!res.ok) {
-        throw new Error(`Failed to load shared artists: ${res.status}`)
-      }
-
-      const data = await res.json()
-      setShareData(data)
-    } catch (error) {
-      logError('SharePage', 'Failed to load shared artists', error)
-      setErrorMessage('Unable to load shared artists. Please try again.')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    void loadSharedArtists()
+
+    return () => {
+      isActive = false
+    }
+  }, [shareCode])
 
   const isVisitor = !user
 

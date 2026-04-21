@@ -4,32 +4,27 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Header from '@/components/layout/Header'
+import {
+  deleteAccount,
+  deleteShareLink,
+  fetchShareLinkStatus,
+  requestLogout,
+} from '@/features/settings/api'
 import { useUser } from '@/hooks/useUser'
 import { getCookie } from '@/lib/cookies'
-import { fetchWithTimeout, DEFAULT_NETWORK_ERROR_MESSAGE } from '@/lib/clientApi'
+import { DEFAULT_NETWORK_ERROR_MESSAGE } from '@/lib/clientApi'
 import { logError } from '@/lib/logger'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
+import type { ShareLink } from '@/types/share'
 
 const csrfErrorMessage = 'Unable to verify your request. Please refresh the page and try again.'
-
-async function requestLogout(xsrfToken: string) {
-  const res = await fetch('/api/logout', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'X-XSRF-TOKEN': xsrfToken },
-  })
-
-  if (!res.ok) {
-    throw new Error('Logout failed')
-  }
-}
 
 export default function SettingsPage() {
   const router = useRouter()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
-  const [shareLink, setShareLink] = useState<{ shareCode: string; expiresAt: string } | null>(null)
+  const [shareLink, setShareLink] = useState<ShareLink | null>(null)
   const [shareLinkLoading, setShareLinkLoading] = useState(true)
   const user = useUser({ onError: setErrorMessage })
 
@@ -72,11 +67,7 @@ export default function SettingsPage() {
 
     setIsProcessing(true)
     try {
-      const res = await fetch('/api/user', {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'X-XSRF-TOKEN': xsrfToken },
-      })
+      const res = await deleteAccount(xsrfToken)
 
       if (res.status === 401) {
         router.replace('/login')
@@ -112,13 +103,7 @@ export default function SettingsPage() {
 
   const loadShareLinkStatus = async () => {
     try {
-      const res = await fetchWithTimeout('/api/share', { timeoutMs: 10000 })
-      if (res.status === 404) {
-        setShareLink(null)
-      } else if (res.ok) {
-        const data = await res.json()
-        setShareLink({ shareCode: data.shareCode, expiresAt: data.expiresAt })
-      }
+      setShareLink(await fetchShareLinkStatus())
     } catch (error) {
       logError('SettingsPage', 'Failed to load share link status', error)
     } finally {
@@ -144,11 +129,7 @@ export default function SettingsPage() {
 
     setIsProcessing(true)
     try {
-      const res = await fetch('/api/share', {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'X-XSRF-TOKEN': xsrfToken },
-      })
+      const res = await deleteShareLink(xsrfToken)
 
       if (res.status === 401) {
         router.replace('/login')

@@ -52,7 +52,7 @@ const KoFiButton: React.FC<Props> = ({
         title={title}
       >
         <figure className="KofiImageContainer">
-          <img className={`KofiImage animation_${animation}`} alt="" />
+          <span className={`KofiImage animation_${animation}`} aria-hidden="true" />
         </figure>
         {label && <span className="KofiText">{label}</span>}
       </a>

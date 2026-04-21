@@ -2,73 +2,22 @@
 
 import { useEffect, useState } from 'react'
 import { CSVLink } from 'react-csv'
-import AdvisoryCards from '@/features/followings/components/AdvisoryCards'
-import ArtistList from '@/features/followings/components/ArtistList'
-import GptUsageBlock from '@/features/followings/components/GptUsageBlock'
+import { AdvisoryCards, ArtistList, GptUsageBlock } from '@/features/followings/components'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Loading from '@/components/feedback/Loading'
 import Header from '@/components/layout/Header'
+import {
+  buildFollowingsCsvData,
+  checkExistingShareLink,
+  createShareLink,
+  fetchFollowings,
+} from '@/features/followings/api'
 import { useUser } from '@/hooks/useUser'
 import { getCookie } from '@/lib/cookies'
-import {
-  fetchWithTimeout,
-  DEFAULT_NETWORK_ERROR_MESSAGE,
-  DEFAULT_TIMEOUT_ERROR_MESSAGE,
-} from '@/lib/clientApi'
+import { DEFAULT_NETWORK_ERROR_MESSAGE } from '@/lib/clientApi'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import type { Advisory } from '@/types/advisory'
 import type { EnrichableArtistObject } from '@/types/followings'
-
-interface FollowingsResponse {
-  artists: EnrichableArtistObject[]
-  advisories: Advisory[]
-  gptUsagesLeft?: number
-}
-
-interface ErrorData {
-  advisories: Advisory[]
-}
-
-async function parseAdvisoriesOrThrow(res: Response, fallbackErrorMessage: string) {
-  try {
-    const errorBody = (await res.json()) as ErrorData
-    return errorBody.advisories.length > 0
-      ? { advisories: errorBody.advisories }
-      : { errorMessage: fallbackErrorMessage }
-  } catch {
-    return { errorMessage: fallbackErrorMessage }
-  }
-}
-
-async function fetchFollowings(path: string, timeoutMs: number) {
-  const response = await fetchWithTimeout(path, { timeoutMs })
-
-  if (response.status === 504) {
-    return {
-      ok: false as const,
-      ...(await parseAdvisoriesOrThrow(response, DEFAULT_TIMEOUT_ERROR_MESSAGE)),
-    }
-  }
-
-  if (response.status === 500) {
-    return {
-      ok: false as const,
-      ...(await parseAdvisoriesOrThrow(response, 'Server error. Please try again later.')),
-    }
-  }
-
-  if (!response.ok) {
-    return {
-      ok: false as const,
-      errorMessage: DEFAULT_NETWORK_ERROR_MESSAGE,
-    }
-  }
-
-  return {
-    ok: true as const,
-    data: (await response.json()) as FollowingsResponse,
-  }
-}
 
 export default function Home() {
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
@@ -95,7 +44,7 @@ export default function Home() {
 
     setGptUsagesLeft(user.gptUsagesLeft)
     void loadUserFollowings()
-    void checkExistingShareLink()
+    void loadExistingShareLinkState()
   }, [user])
 
   const loadUserFollowings = async () => {
@@ -147,15 +96,8 @@ export default function Home() {
     }
   }
 
-  const checkExistingShareLink = async () => {
-    try {
-      const res = await fetchWithTimeout('/api/share', { timeoutMs: 10000 })
-      if (res.ok) {
-        setHasExistingShareLink(true)
-      }
-    } catch {
-      // Ignore errors - just means no existing share link
-    }
+  const loadExistingShareLinkState = async () => {
+    setHasExistingShareLink(await checkExistingShareLink())
   }
 
   const handleShare = async () => {
@@ -166,16 +108,11 @@ export default function Home() {
     }
 
     setShareLoading(true)
-    try {
-      const res = await fetchWithTimeout('/api/share', {
-        method: 'POST',
-        timeoutMs: 15000,
-        headers: { 'X-XSRF-TOKEN': xsrfToken },
-      })
+    const result = await createShareLink(xsrfToken)
 
-      if (res.ok) {
-        const data = await res.json()
-        const fullUrl = `${window.location.origin}/share/${data.shareCode}`
+    try {
+      if (result.ok) {
+        const fullUrl = `${window.location.origin}/share/${result.data.shareCode}`
         setHasExistingShareLink(true)
 
         try {
@@ -186,25 +123,14 @@ export default function Home() {
           setErrorMessage('Failed to copy link to clipboard.')
         }
       } else {
-        setErrorMessage('Failed to create share link. Please try again.')
+        setErrorMessage(result.message)
       }
-    } catch {
-      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
       setShareLoading(false)
     }
   }
 
-  const csvData = [
-    ['name', 'genres', 'followers', 'popularity', 'spotify_url'],
-    ...enrichableArtistObjects.map(({ artistObject }) => [
-      artistObject.name,
-      artistObject.genres?.join(', ') ?? '',
-      artistObject.followers?.total?.toString() ?? '0',
-      artistObject.popularity?.toString() ?? '0',
-      artistObject.externalUrls?.spotify ?? '',
-    ]),
-  ]
+  const csvData = buildFollowingsCsvData(enrichableArtistObjects)
 
   return (
     <div>

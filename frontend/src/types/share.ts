@@ -14,3 +14,8 @@ export interface SharedArtistsData {
   owner: ShareOwner
   artists: SharedArtist[]
 }
+
+export interface ShareLink {
+  shareCode: string
+  expiresAt: string
+}

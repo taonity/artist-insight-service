@@ -7,12 +7,8 @@ import Image from 'next/image'
 import DevelopmentAccessNotification from '@/components/feedback/DevelopmentAccessNotification'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import BackgroundPhrases from '@/components/marketing/BackgroundPhrases'
+import { checkBackendLiveness, fetchAuthenticatedUserStatus } from '@/features/auth/api'
 import { deleteCookie, getCookie } from '@/lib/cookies'
-import {
-  fetchWithTimeout,
-  DEFAULT_NETWORK_ERROR_MESSAGE,
-  DEFAULT_TIMEOUT_ERROR_MESSAGE,
-} from '@/lib/clientApi'
 import { logError, logDebug } from '@/lib/logger'
 
 const righteous = Righteous({
@@ -44,25 +40,20 @@ function LoginContent() {
     }
 
     async function loadCurrentUser() {
-      try {
-        const response = await fetchWithTimeout('/api/user', { timeoutMs: 6000 })
+      const result = await fetchAuthenticatedUserStatus()
 
-        if (response.ok) {
-          router.replace('/')
-          return
-        }
-
-        if (response.status === 504) {
-          logError('LoginPage', 'User fetch timed out with 504 status')
-          setErrorMessage(DEFAULT_TIMEOUT_ERROR_MESSAGE)
-          return
-        }
-
-        logError('LoginPage', `User fetch failed with status: ${response.status}`)
-      } catch (error) {
-        logError('LoginPage', 'User fetch network error', error)
-        setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
+      if (result.status === 'authenticated') {
+        router.replace('/')
+        return
       }
+
+      if (result.status === 'error') {
+        logError('LoginPage', 'User fetch failed', result)
+        setErrorMessage(result.message)
+        return
+      }
+
+      logError('LoginPage', `User fetch failed with status: ${result.httpStatus}`)
     }
 
     void loadCurrentUser()
@@ -74,25 +65,18 @@ function LoginContent() {
     setErrorMessage(null)
 
     try {
-      const response = await fetchWithTimeout('/api/actuator/health/liveness', { timeoutMs: 6000 })
+      const result = await checkBackendLiveness()
 
-      if (response.status === 504) {
-        logError('LoginPage', 'Liveness check timed out')
-        setErrorMessage(DEFAULT_TIMEOUT_ERROR_MESSAGE)
-        return
-      }
-
-      const data = await response.json()
-      if (!response.ok || data.status !== 'UP') {
-        logError('LoginPage', 'Liveness check failed', { status: response.status, data })
-        setErrorMessage('Backend server is currently unavailable. Please try again later.')
+      if (!result.ok) {
+        logError('LoginPage', 'Liveness check failed', result)
+        setErrorMessage(result.message)
         return
       }
 
       window.location.assign('/api/oauth2/authorization/spotify-artist-insight-service')
     } catch (error) {
-      logError('LoginPage', 'Liveness check network error', error)
-      setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
+      logError('LoginPage', 'Unexpected liveness check error', error)
+      setErrorMessage('Unable to connect to the server. Please check your connection.')
     } finally {
       setLivenessLoading(false)
     }
