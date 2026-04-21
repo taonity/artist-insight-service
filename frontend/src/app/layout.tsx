@@ -1,8 +1,8 @@
 import '../styles/globals.css'
 import type { Metadata } from 'next'
 import { Righteous } from 'next/font/google'
-import Footer from '@/components/Footer'
-import CookieBanner from '@/components/CookieBanner'
+import CookieBanner from '@/components/layout/CookieBanner'
+import Footer from '@/components/layout/Footer'
 
 const righteous = Righteous({ 
   weight: '400',

@@ -12,18 +12,15 @@ src/
     (legal)/
     api/
   features/
-    auth/
+    artists/
     followings/
+    donate/
     share/
-    user/
   components/
     layout/
     feedback/
-    ui/
+    marketing/
   lib/
-    api/
-    browser/
-    config/
   types/
   utils/
   styles/
@@ -41,8 +38,6 @@ src/
 
 ## Suggested next moves
 
-- Create route groups: `(app)` for authenticated screens, `(public)` for login, `(legal)` for privacy and terms.
-- Move `ArtistList`, `AdvisoryCards`, and related followings logic into `src/features/followings/`.
-- Move share-page table logic into `src/features/share/`.
-- Split global components into `components/layout`, `components/feedback`, and `components/ui`.
-- Move logger into `src/lib` if it remains application-wide infrastructure.
+- Add feature-local hooks or mappers next to `followings`, `share`, and `donate` as those areas grow.
+- Keep shared components in the grouped subfolders and do not add new files back to the flat `components/` root.
+- Consider moving large route-only view logic from `page.tsx` into feature modules once each route gains more interactions.
