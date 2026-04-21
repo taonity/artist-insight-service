@@ -2,38 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import Header from '@/components/Header'
 import ErrorNotification from '@/components/ErrorNotification'
 import Loading from '@/components/Loading'
 import SharedArtistList from '@/components/SharedArtistList'
 import { useUser } from '@/hooks/useUser'
+import type { SharedArtistsData } from '@/types/share'
 import { logError } from '@/utils/logger'
-import Image from 'next/image'
-
-interface Artist {
-  id: string
-  name: string
-  images?: { url: string }[]
-  genres?: string[]
-  externalUrls: { spotify: string }
-  followers: { total: number }
-  popularity: number
-}
-
-interface SharedArtist {
-  artistObject: Artist
-  enrichedGenres: string[]
-}
-
-interface ShareOwner {
-  displayName: string
-  avatarUrl: string | null
-}
-
-interface SharedArtistsData {
-  owner: ShareOwner
-  artists: SharedArtist[]
-}
 
 export default function SharePage() {
   const params = useParams()

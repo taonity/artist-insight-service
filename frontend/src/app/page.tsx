@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import ArtistList, { EnrichableArtistObject } from '../components/ArtistList'
-import AdvisoryCards, { Advisory } from '../components/AdvisoryCards'
+import ArtistList from '@/components/ArtistList'
+import AdvisoryCards from '@/components/AdvisoryCards'
 import { CSVLink } from 'react-csv'
-import GptUsageBlock from '../components/GptUsageBlock'
-import Loading from '../components/Loading'
-import ErrorNotification from '../components/ErrorNotification'
+import GptUsageBlock from '@/components/GptUsageBlock'
+import Loading from '@/components/Loading'
+import ErrorNotification from '@/components/ErrorNotification'
 import Header from '@/components/Header'
 import { useUser } from '../hooks/useUser'
 import { getCookie } from '@/lib/cookies'
@@ -16,6 +16,8 @@ import {
   DEFAULT_TIMEOUT_ERROR_MESSAGE,
 } from '@/lib/clientApi'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
+import type { Advisory } from '@/types/advisory'
+import type { EnrichableArtistObject } from '@/types/followings'
 
 interface FollowingsResponse {
   artists: EnrichableArtistObject[]

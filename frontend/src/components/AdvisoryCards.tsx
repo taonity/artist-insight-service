@@ -1,15 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-
-type Severity = 'INFO' | 'WARNING' | 'ERROR'
-
-export interface Advisory {
-  code: string
-  title: string
-  detail: string
-  severity: Severity
-}
+import type { Advisory } from '@/types/advisory'
 
 interface Props {
   advisories: Advisory[]

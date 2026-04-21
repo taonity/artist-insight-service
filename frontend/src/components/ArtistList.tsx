@@ -9,24 +9,10 @@ import {
   ICellRendererParams,
   ModuleRegistry,
 } from 'ag-grid-community'
-import Genres from '../components/Genres'
+import Genres from '@/components/Genres'
+import type { EnrichableArtistObject } from '@/types/followings'
 
 ModuleRegistry.registerModules([AllCommunityModule])
-
-interface Artist {
-  id: string
-  name: string
-  images?: { url: string }[]
-  genres?: string[]
-  externalUrls: { spotify: string }
-  followers: { total: number }
-  popularity: number
-}
-
-export interface EnrichableArtistObject {
-  artistObject: Artist
-  genreEnriched: boolean
-}
 
 interface Props {
   enrichableArtistObjects: EnrichableArtistObject[]
@@ -114,7 +100,6 @@ const columnDefs: ColDef<EnrichableArtistObject>[] = [
 ]
 
 const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
-
   return (
     <div style={{ width: '100%' }} className="ag-theme-quartz-dark">
       <AgGridReact

@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import User from "../models/User"
+import type { User } from "@/types/user"
 
 interface Props {
   user: User | null

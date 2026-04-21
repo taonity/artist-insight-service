@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import User from '../models/User'
 import { fetchWithTimeout, DEFAULT_NETWORK_ERROR_MESSAGE, DEFAULT_TIMEOUT_ERROR_MESSAGE } from '@/lib/clientApi'
-import keysToCamel from '../utils/utils'
+import type { User } from '@/types/user'
+import keysToCamel from '@/utils/objectCase'
 
 interface UseUserOptions {
   onError?: React.Dispatch<React.SetStateAction<string | null>>
