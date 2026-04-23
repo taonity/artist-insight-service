@@ -18,6 +18,10 @@ export default function SettingsPage() {
     handleDeleteShareLink,
   } = useSettingsPage()
 
+  const displayName = user?.privateUserObject.displayName ?? 'Unavailable'
+  const spotifyId = user?.privateUserObject.id ?? 'Unavailable'
+  const gptUsagesLeft = user?.gptUsagesLeft ?? 'Unavailable'
+
   return (
     <div>
       {errorMessage && (
@@ -35,7 +39,7 @@ export default function SettingsPage() {
                 style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0 }}
               />
             ) : (
-              user.privateUserObject.displayName
+              displayName
             )}
           </p>
           <p>
@@ -46,7 +50,7 @@ export default function SettingsPage() {
                 style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0 }}
               />
             ) : (
-              user.privateUserObject.id
+              spotifyId
             )}
           </p>
           <p>
@@ -57,7 +61,7 @@ export default function SettingsPage() {
                 style={{ display: 'inline-block', verticalAlign: 'middle', height: '1em', marginTop: 0, width: '3ch' }}
               />
             ) : (
-              user.gptUsagesLeft
+              gptUsagesLeft
             )}
           </p>
         </div>
