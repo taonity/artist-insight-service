@@ -21,43 +21,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  backend-tests:
+  backend-validation:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+    uses: ./.github/workflows/backend-validation.yml
 
-    - name: Run unit and integration tests
-      run: mvn -B verify
-
-  frontend-build:
+  frontend-validation:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Node 22
-      uses: actions/setup-node@v5
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: frontend/package-lock.json
-
-    - name: Install front-end dependencies
-      run: npm ci --prefix frontend
-
-    - name: Build front-end
-      run: npm run build --prefix frontend
+    uses: ./.github/workflows/frontend-validation.yml
 
   smoke-tests:
-    needs: [backend-tests, frontend-build]
+    needs: [backend-validation, frontend-validation]
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: 'Skip backend tests for this release run'
+        description: 'Skip backend and front-end validation jobs for this release run'
         required: false
         type: boolean
         default: false
@@ -46,29 +46,22 @@ jobs:
         echo "skip_tests=$skip_tests" >> "$GITHUB_OUTPUT"
         echo "Release skip_tests=$skip_tests"
 
-  tests:
+  backend-validation:
     needs: prepare
     if: needs.prepare.outputs.skip_tests != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    uses: ./.github/workflows/backend-validation.yml
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-
-    - name: Run unit and integration tests
-      run: mvn -B verify
+  frontend-validation:
+    needs: prepare
+    if: needs.prepare.outputs.skip_tests != 'true'
+    uses: ./.github/workflows/frontend-validation.yml
 
   release:
     needs:
       - prepare
-      - tests
-    if: ${{ always() && (needs.prepare.outputs.skip_tests == 'true' || needs.tests.result == 'success') }}
+      - backend-validation
+      - frontend-validation
+    if: ${{ always() && (needs.prepare.outputs.skip_tests == 'true' || (needs.backend-validation.result == 'success' && needs.frontend-validation.result == 'success')) }}
     permissions: write-all
     runs-on: ubuntu-latest
 
