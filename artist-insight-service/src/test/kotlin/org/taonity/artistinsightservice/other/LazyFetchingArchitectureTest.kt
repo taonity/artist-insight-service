@@ -22,7 +22,8 @@ import java.util.UUID
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-@Sql("classpath:sql/test-data.sql")
+@Sql(scripts = ["classpath:sql/clear-data.sql", "classpath:sql/test-data.sql"])
+@Sql(scripts = ["classpath:sql/clear-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ActiveProfiles("datasource-proxy", "h2")
 class LazyFetchingArchitectureTest {
 

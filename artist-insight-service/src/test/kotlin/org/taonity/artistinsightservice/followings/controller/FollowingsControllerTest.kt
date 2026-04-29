@@ -11,7 +11,7 @@ import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
 import org.taonity.artistinsightservice.artist.dto.FollowingsResponse
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
-@Sql("classpath:sql/test-data.sql")
+@Sql(scripts = ["classpath:sql/clear-data.sql", "classpath:sql/test-data.sql"])
 @Sql("classpath:sql/clear-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class FollowingsControllerTest: ControllerTestsBaseClass() {
 
