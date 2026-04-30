@@ -7,7 +7,7 @@ services:
       - volume-db-backup:/backup
       - ./shared:/shared
     env_file:
-      - ../.env
+      - ../${COMPOSE_ENV_FILE:-.env}
     healthcheck:
       test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
       interval: 5s

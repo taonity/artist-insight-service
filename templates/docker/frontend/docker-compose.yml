@@ -2,7 +2,7 @@ services:
   frontend:
     image: generaltao725/artist-insight-frontend:latest
     env_file:
-      - ../.env
+      - ../${COMPOSE_ENV_FILE:-.env}
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/actuator/health"]
       interval: 10s
