@@ -17,8 +17,9 @@
         "minor",
         "patch"
       ],
-      "groupName": "github-actions non-major dependencies",
-      "groupSlug": "github-actions-non-major"
+      "groupName": "[GitHub Actions] minor and patch",
+      "groupSlug": "github-actions-non-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["github-actions"],
@@ -28,8 +29,9 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "groupName": "github-actions major dependencies",
-      "groupSlug": "github-actions-major"
+      "groupName": "[GitHub Actions] MAJOR",
+      "groupSlug": "github-actions-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["maven"],
@@ -40,8 +42,9 @@
         "minor",
         "patch"
       ],
-      "groupName": "maven non-major dependencies",
-      "groupSlug": "maven-non-major"
+      "groupName": "[Maven] minor and patch",
+      "groupSlug": "maven-non-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["maven"],
@@ -51,8 +54,9 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "groupName": "maven major dependencies",
-      "groupSlug": "maven-major"
+      "groupName": "[Maven] MAJOR",
+      "groupSlug": "maven-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["npm"],
@@ -63,8 +67,9 @@
         "minor",
         "patch"
       ],
-      "groupName": "npm non-major dependencies",
-      "groupSlug": "npm-non-major"
+      "groupName": "[npm] minor and patch",
+      "groupSlug": "npm-non-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["npm"],
@@ -74,16 +79,18 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "groupName": "npm major dependencies",
-      "groupSlug": "npm-major"
+      "groupName": "[npm] MAJOR",
+      "groupSlug": "npm-major",
+      "prTitleStrict": true
     },
     {
       "matchManagers": ["docker-compose", "dockerfile"],
       "matchPackagePatterns": [
         "*"
       ],
-      "groupName": "docker dependencies",
-      "groupSlug": "docker-all"
+      "groupName": "[Docker] all",
+      "groupSlug": "docker-all",
+      "prTitleStrict": true
     },
     {
       "packageNames": ["com.google.cloud.tools:jib-maven-plugin"],
