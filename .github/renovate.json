@@ -10,84 +10,48 @@
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[GitHub Actions] minor and patch",
       "groupSlug": "github-actions-non-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["github-actions"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "groupName": "[GitHub Actions] MAJOR",
       "groupSlug": "github-actions-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["maven"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[Maven] minor and patch",
       "groupSlug": "maven-non-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["maven"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "groupName": "[Maven] MAJOR",
       "groupSlug": "maven-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["npm"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[npm] minor and patch",
       "groupSlug": "npm-non-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["npm"],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "groupName": "[npm] MAJOR",
       "groupSlug": "npm-major",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["docker-compose", "dockerfile"],
-      "matchPackagePatterns": [
-        "*"
-      ],
       "groupName": "[Docker] all",
       "groupSlug": "docker-all",
       "prTitleStrict": true
