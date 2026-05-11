@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestStatus
+import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity
 import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
 import org.taonity.artistinsightservice.devaccess.service.AppMailSender
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
@@ -34,6 +35,22 @@ class DevAccessControllerTest : ControllerTestsBaseClass() {
         private val OBJECT_MAPPER = jacksonObjectMapper()
     }
 
+    private fun awaitSentRequest(): DevAccessRequestEntity {
+        repeat(40) {
+            val savedRequests = devAccessRepository.findAll().toList()
+            if (savedRequests.size == 1 && savedRequests[0].status == DevAccessRequestStatus.SENT) {
+                return savedRequests[0]
+            }
+            Thread.sleep(50)
+        }
+
+        val savedRequests = devAccessRepository.findAll().toList()
+        assertThat(savedRequests).hasSize(1)
+        return savedRequests[0].also {
+            assertThat(it.status).isEqualTo(DevAccessRequestStatus.SENT)
+        }
+    }
+
     @Test
     fun `submit development access request`() {
         val requestBody = OBJECT_MAPPER.writeValueAsString(
@@ -48,11 +65,10 @@ class DevAccessControllerTest : ControllerTestsBaseClass() {
         )
             .andExpect(status().isOk)
 
-        val savedRequests = devAccessRepository.findAll().toList()
-        assertThat(savedRequests).hasSize(1)
-        assertThat(savedRequests[0].email).isEqualTo("test@example.com")
-        assertThat(savedRequests[0].message).isEqualTo("I would like access")
-        assertThat(savedRequests[0].status).isEqualTo(DevAccessRequestStatus.PENDING)
+        val savedRequest = awaitSentRequest()
+        assertThat(savedRequest.email).isEqualTo("test@example.com")
+        assertThat(savedRequest.message).isEqualTo("I would like access")
+        assertThat(savedRequest.status).isEqualTo(DevAccessRequestStatus.SENT)
     }
 
     @Test
