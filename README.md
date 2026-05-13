@@ -186,6 +186,7 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
+- fix renoavate branch names
 - invesitgate auth metris missmatch in dashboard
 - Find a way forward to the login page early
 - consider tests for frontend
