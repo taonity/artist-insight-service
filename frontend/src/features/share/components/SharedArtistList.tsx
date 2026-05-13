@@ -69,6 +69,7 @@ const columnDefs: ColDef<SharedArtist>[] = [
     headerName: 'Avatar',
     field: 'artistObject.images',
     cellRenderer: AvatarCell,
+    valueFormatter: () => '',
     width: 90,
     sortable: false,
     filter: false,

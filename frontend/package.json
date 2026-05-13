@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@fontsource/quicksand": "^5.2.10",
     "@react-pdf/renderer": "^4.3.0",
     "@types/lodash": "^4.17.20",
     "ag-grid-community": "^35.0.0",
@@ -22,7 +23,6 @@
     "react": "19.2.6",
     "react-csv": "^2.2.2",
     "react-dom": "19.2.6",
-    "react-kofi-button": "^0.7.1",
     "sass": "^1.92.1",
     "sharp": "^0.34.3"
   },
@@ -30,7 +30,7 @@
     "@types/node": "24.12.4",
     "@types/react": "19.2.14",
     "@types/react-csv": "^1.1.10",
-    "eslint": "10.3.0",
+    "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "typescript": "6.0.3",
     "vitest": "^4.0.0"
