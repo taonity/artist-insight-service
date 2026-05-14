@@ -2,8 +2,6 @@ package org.taonity.artistinsightservice.followings.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.interceptor.TransactionAspectSupport
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.settings.service.GptUsageService
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
@@ -22,7 +20,6 @@ class NewArtistEnricherFactory(
     private val userArtistLinkService: UserArtistLinkService,
     private val responseAttachments: ResponseAttachments
 ) {
-    @Transactional
     fun createAndEnrich(spotifyId: String, rawArtist: SafeArtistObject): EnrichableArtists {
         return NewArtistEnricher(
             spotifyId, rawArtist,
@@ -109,7 +106,9 @@ class NewArtistEnricher(
         val userUsagesConsumed = gptUsageService.consumeUserUsage(spotifyId)
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
+            // refund whichever side did succeed so we don't leak usages
+            if (userUsagesConsumed) gptUsageService.refundUserUsage(spotifyId)
+            if (globalUsageConsumed) gptUsageService.refundGlobalUsage()
             LOGGER.warn { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }
             if (!globalUsageConsumed) {
                 responseAttachments.advisories.add(Advisory.GLOBAL_GPT_USAGES_DEPLETED)
@@ -127,7 +126,8 @@ class NewArtistEnricher(
         val openAIProvidedGenres = try {
             openAIService.provideGenres(rawArtist.name)
         } catch (e: OpenAIClientException) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
+            gptUsageService.refundUserUsage(spotifyId)
+            gptUsageService.refundGlobalUsage()
             LOGGER.error(e) { "Failed to enrich artist $artistName with id $artistId via OpenAI" }
             responseAttachments.advisories.add(Advisory.OPENAI_PROBLEM)
             return EnrichableArtists(rawArtist.copy(), false)

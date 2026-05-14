@@ -3,6 +3,7 @@ package org.taonity.artistinsightservice.settings.service
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.settings.entity.AppSettingsEntity
 import org.taonity.artistinsightservice.settings.repository.AppSettingsRepository
@@ -19,7 +20,7 @@ class GptUsageService(
         private val LOGGER = KotlinLogging.logger {}
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun consumeUserUsage(spotifyId: String): Boolean {
         val user = spotifyUserRepository.findByIdForUpdate(spotifyId)
             ?: throw IllegalArgumentException("User with id $spotifyId not found")
@@ -30,7 +31,14 @@ class GptUsageService(
         return true
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun refundUserUsage(spotifyId: String) {
+        val user = spotifyUserRepository.findByIdForUpdate(spotifyId)
+            ?: throw IllegalArgumentException("User with id $spotifyId not found")
+        user.gptUsagesLeft++
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun consumeGlobalUsage(): Boolean {
         val settings = appSettingsRepository.findByIdForUpdate(0)
             ?: return appSettingsRepository.save(
@@ -42,6 +50,12 @@ class GptUsageService(
         }
         settings.globalGptUsagesLeft--
         return true
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun refundGlobalUsage() {
+        val settings = appSettingsRepository.findByIdForUpdate(0) ?: return
+        settings.globalGptUsagesLeft++
     }
 
     @Transactional
