@@ -1,6 +1,5 @@
 package org.taonity.artistinsightservice.share.service
 
-import jakarta.persistence.EntityManager
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,6 +10,7 @@ import org.taonity.artistinsightservice.share.dto.SharedArtistsResponse
 import org.taonity.artistinsightservice.share.entity.SharedLinkEntity
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
+import org.taonity.artistinsightservice.share.repository.SharedLinkArtistRepository
 import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
 import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository
@@ -21,10 +21,10 @@ import java.time.OffsetDateTime
 @Service
 class ShareService(
     private val sharedLinkRepository: SharedLinkRepository,
+    private val sharedLinkArtistRepository: SharedLinkArtistRepository,
     private val spotifyUserService: SpotifyUserService,
     private val spotifyService: SpotifyService,
-    private val artistRepository: ArtistRepository,
-    private val entityManager: EntityManager
+    private val artistRepository: ArtistRepository
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -42,9 +42,10 @@ class ShareService(
         
         val sharedLink = if (existingLink != null) {
             existingLink.expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
-            // TODO: investigate tons of queires
+            // Bulk delete previous artist associations in a single JPQL DELETE
+            // instead of iterating + orphan removal (N queries).
+            sharedLinkArtistRepository.deleteAllBySharedLinkId(existingLink.id)
             existingLink.artists.clear()
-            entityManager.flush()
             existingLink.addArtists(artistIds)
             sharedLinkRepository.save(existingLink)
         } else {
