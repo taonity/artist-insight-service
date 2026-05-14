@@ -1,6 +1,5 @@
 package org.taonity.artistinsightservice.integration.spotify.service
 
-import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver
@@ -13,9 +12,7 @@ import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
 import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.dto.SpotifyResponse
-import org.taonity.artistinsightservice.artist.dto.ValidatedArtistObject
 import org.taonity.artistinsightservice.infrastructure.utils.hasCause
-import org.taonity.artistinsightservice.infrastructure.utils.validateOrThrow
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
 import org.taonity.spotify.model.ArtistObject
@@ -28,7 +25,6 @@ import java.io.InterruptedIOException
 class SpotifyService(
     private val spotifyAuthorisationCodeRestClient: RestClient,
     private val spotifyClientCredentialsRestClient: RestClient,
-    private val validator: Validator,
     @Value("\${spotify.api-base-url}")
     private val spotifyApiBaseUrl: String,
     @Value("\${spotify.healthcheck-user-id}")
@@ -138,12 +134,10 @@ class SpotifyService(
         )
     }
 
-    private fun validateAndMapArtist(artistObject: ArtistObject): SafeArtistObject {
-        val validatedArtistObject = ValidatedArtistObject.of(artistObject)
-        validator.validateOrThrow(validatedArtistObject) { errorMessage ->
-            SpotifyClientException("Validation failed for artist $validatedArtistObject with error: $errorMessage")
-        }
-        return validatedArtistObject.toSafe()
+    private fun validateAndMapArtist(artistObject: ArtistObject): SafeArtistObject = try {
+        SafeArtistObject.fromApi(artistObject)
+    } catch (e: IllegalArgumentException) {
+        throw SpotifyClientException("Validation failed for artist $artistObject: ${e.message}", e)
     }
 
     private inline fun <reified T : Any> RestClient.ResponseSpec.bodyOrThrow(

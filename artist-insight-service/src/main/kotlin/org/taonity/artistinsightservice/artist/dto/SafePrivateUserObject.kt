@@ -1,7 +1,5 @@
 package org.taonity.artistinsightservice.artist.dto
 
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import org.taonity.spotify.model.ImageObject
 import org.taonity.spotify.model.PrivateUserObject
 
@@ -9,31 +7,17 @@ data class SafePrivateUserObject(
     val id: String,
     val displayName: String,
     val images: MutableList<ImageObject>
-)
-
-data class ValidatedPrivateUserObject(
-    @field:NotBlank
-    @field:NotNull
-    val id: String?,
-    @field:NotBlank
-    @field:NotNull
-    val displayName: String?,
-    @field:NotNull
-    val images: MutableList<ImageObject>?
-
 ) {
     companion object {
-        fun of(privateUserObject: PrivateUserObject): ValidatedPrivateUserObject =
-            ValidatedPrivateUserObject(
-                privateUserObject.id,
-                privateUserObject.displayName,
-                privateUserObject.images
-            )
-    }
-    fun toSafe(): SafePrivateUserObject =
-        SafePrivateUserObject(
-            id = requireNotNull(id),
-            displayName = requireNotNull(displayName),
-            images = requireNotNull(images),
+        fun fromApi(api: PrivateUserObject): SafePrivateUserObject = SafePrivateUserObject(
+            id = requireNotBlank(api.id, "id"),
+            displayName = requireNotBlank(api.displayName, "displayName"),
+            images = requireNotNull(api.images) { "images must not be null" }
         )
+
+        private fun requireNotBlank(value: String?, field: String): String {
+            require(!value.isNullOrBlank()) { "$field must not be null or blank" }
+            return value
+        }
+    }
 }
