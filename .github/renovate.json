@@ -12,13 +12,13 @@
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[GitHub Actions] minor and patch",
-      "groupSlug": "github-actions-non-major",
+      "groupSlug": "github-actions-minor-patch",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["major"],
-      "groupName": "[GitHub Actions] MAJOR",
+      "groupName": "[GitHub Actions] major",
       "groupSlug": "github-actions-major",
       "prTitleStrict": true
     },
@@ -26,13 +26,13 @@
       "matchManagers": ["maven"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[Maven] minor and patch",
-      "groupSlug": "maven-non-major",
+      "groupSlug": "maven-minor-patch",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["maven"],
       "matchUpdateTypes": ["major"],
-      "groupName": "[Maven] MAJOR",
+      "groupName": "[Maven] major",
       "groupSlug": "maven-major",
       "prTitleStrict": true
     },
@@ -40,13 +40,13 @@
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "[npm] minor and patch",
-      "groupSlug": "npm-non-major",
+      "groupSlug": "npm-minor-patch",
       "prTitleStrict": true
     },
     {
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["major"],
-      "groupName": "[npm] MAJOR",
+      "groupName": "[npm] major",
       "groupSlug": "npm-major",
       "prTitleStrict": true
     },
