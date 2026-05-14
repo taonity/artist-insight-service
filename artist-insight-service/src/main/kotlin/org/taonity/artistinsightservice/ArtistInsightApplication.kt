@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-class Main
+class ArtistInsightApplication
 
 fun main(args: Array<String>) {
-    runApplication<Main>(*args)
+    runApplication<ArtistInsightApplication>(*args)
 }
