@@ -37,6 +37,9 @@ spring:
 
 app:
   csrf-cookie-name: XSRF-TOKEN-LOCAL
+  cookie:
+    secure: false
+    same-site: Lax
   dev-access:
     enabled: true
     admin-email: ${ADMIN_EMAIL:local-admin@example.com}

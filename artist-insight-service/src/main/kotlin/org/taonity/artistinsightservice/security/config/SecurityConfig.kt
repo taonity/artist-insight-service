@@ -25,7 +25,9 @@ class SecurityConfig(
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
     @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
     private val userMdcFilter: UserMdcFilter,
-    @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String
+    @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String,
+    @Value("\${app.cookie.secure:false}") private val cookieSecure: Boolean,
+    @Value("\${app.cookie.same-site:Lax}") private val cookieSameSite: String
 ) {
 
     @Bean
@@ -58,6 +60,9 @@ class SecurityConfig(
             .csrf { c ->
                 val csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse()
                 csrfTokenRepository.setCookieName(csrfCookieName)
+                csrfTokenRepository.setCookieCustomizer { builder ->
+                    builder.secure(cookieSecure).sameSite(cookieSameSite)
+                }
                 c.csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
                     .ignoringRequestMatchers("/callback/kofi")

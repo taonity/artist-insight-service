@@ -13,6 +13,9 @@ app:
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
   csrf-cookie-name: ${CSRF_COOKIE_NAME}
+  cookie:
+    secure: ${COOKIE_SECURE:true}
+    same-site: ${COOKIE_SAME_SITE:Lax}
   dev-access:
     enabled: true
     admin-email: ${ADMIN_EMAIL}
