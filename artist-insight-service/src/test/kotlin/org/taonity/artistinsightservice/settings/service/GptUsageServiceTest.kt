@@ -21,7 +21,7 @@ class GptUsageServiceTest {
 
     @Test
     fun `consumeUserUsage returns true and decrements when user has usages`() {
-        val user = SpotifyUserEntity("user-1", "Test", "token", 5)
+        val user = SpotifyUserEntity("user-1", "Test", 5)
         `when`(spotifyUserRepository.findByIdForUpdate("user-1")).thenReturn(user)
 
         val result = service.consumeUserUsage("user-1")
@@ -32,7 +32,7 @@ class GptUsageServiceTest {
 
     @Test
     fun `consumeUserUsage returns false when user has zero usages`() {
-        val user = SpotifyUserEntity("user-1", "Test", "token", 0)
+        val user = SpotifyUserEntity("user-1", "Test", 0)
         `when`(spotifyUserRepository.findByIdForUpdate("user-1")).thenReturn(user)
 
         val result = service.consumeUserUsage("user-1")
@@ -89,7 +89,7 @@ class GptUsageServiceTest {
 
     @Test
     fun `topUpUserUsage adds correct amount`() {
-        val user = SpotifyUserEntity("user-1", "Test", "token", 5)
+        val user = SpotifyUserEntity("user-1", "Test", 5)
         `when`(spotifyUserRepository.findByIdForUpdate("user-1")).thenReturn(user)
 
         service.topUpUserUsage(3.0, "user-1")
@@ -100,7 +100,7 @@ class GptUsageServiceTest {
 
     @Test
     fun `topUpUserUsage truncates fractional usages`() {
-        val user = SpotifyUserEntity("user-1", "Test", "token", 0)
+        val user = SpotifyUserEntity("user-1", "Test", 0)
         `when`(spotifyUserRepository.findByIdForUpdate("user-1")).thenReturn(user)
 
         service.topUpUserUsage(0.15, "user-1")
@@ -111,7 +111,7 @@ class GptUsageServiceTest {
 
     @Test
     fun `topUpUserUsage with zero amount adds nothing`() {
-        val user = SpotifyUserEntity("user-1", "Test", "token", 10)
+        val user = SpotifyUserEntity("user-1", "Test", 10)
         `when`(spotifyUserRepository.findByIdForUpdate("user-1")).thenReturn(user)
 
         service.topUpUserUsage(0.0, "user-1")

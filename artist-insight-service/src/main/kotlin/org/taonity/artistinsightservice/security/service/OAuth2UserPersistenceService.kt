@@ -45,7 +45,7 @@ class OAuth2UserPersistenceService(
         }
 
         val spotifyUserPrincipal: SpotifyUserPrincipal = SpotifyUserPrincipal.of(safePrivateUserObject, oAuth2User)
-        spotifyUserService.createOrUpdateUser(spotifyUserPrincipal, validatedUserRequest.accessToken.tokenValue)
+        spotifyUserService.createOrUpdateUser(spotifyUserPrincipal)
         return spotifyUserPrincipal
     }
 

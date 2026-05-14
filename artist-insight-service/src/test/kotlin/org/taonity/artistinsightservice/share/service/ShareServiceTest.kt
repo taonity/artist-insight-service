@@ -1,6 +1,5 @@
 package org.taonity.artistinsightservice.share.service
 
-import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -14,6 +13,7 @@ import org.taonity.artistinsightservice.share.entity.SharedLinkArtistEntity
 import org.taonity.artistinsightservice.share.entity.SharedLinkEntity
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
+import org.taonity.artistinsightservice.share.repository.SharedLinkArtistRepository
 import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
 import org.taonity.artistinsightservice.user.entity.SpotifyUserEntity
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
@@ -25,16 +25,16 @@ import java.time.OffsetDateTime
 class ShareServiceTest {
 
     private val sharedLinkRepository: SharedLinkRepository = mock()
+    private val sharedLinkArtistRepository: SharedLinkArtistRepository = mock()
     private val spotifyUserService: SpotifyUserService = mock()
     private val spotifyService: SpotifyService = mock()
     private val artistRepository: ArtistRepository = mock()
-    private val entityManager: EntityManager = mock()
 
     private val service = ShareService(
-        sharedLinkRepository, spotifyUserService, spotifyService, artistRepository, entityManager
+        sharedLinkRepository, sharedLinkArtistRepository, spotifyUserService, spotifyService, artistRepository
     )
 
-    private val testUser = SpotifyUserEntity("spotify-123", "TestUser", "token", 10)
+    private val testUser = SpotifyUserEntity("spotify-123", "TestUser", 10)
 
     private fun safeArtist(id: String, name: String, genres: List<String> = emptyList()) = SafeArtistObject(
         id = id, name = name, genres = genres, href = "https://api.spotify.com/v1/artists/$id",
@@ -77,7 +77,7 @@ class ShareServiceTest {
 
         assertThat(result.shareCode).isEqualTo("oldCode1")
         assertThat(result.expiresAt).isAfter(OffsetDateTime.now().plusDays(29))
-        verify(entityManager).flush()
+        verify(sharedLinkArtistRepository).deleteAllBySharedLinkId(existingLink.id)
     }
 
     // --- getShareLinkStatus ---

@@ -14,7 +14,6 @@ class SpotifyUserEntity(
     @Id
     val spotifyId: String,
     var displayName: String,
-    var tokenValue: String,
     var gptUsagesLeft: Int,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE], orphanRemoval = true)
@@ -42,9 +41,8 @@ class SpotifyUserEntity(
         return "SpotifyUser(spotifyId='$spotifyId', displayName='$displayName', gptUsagesLeft=$gptUsagesLeft)"
     }
 
-    fun updateDetails(displayName: String, tokenValue: String): SpotifyUserEntity {
+    fun updateDetails(displayName: String): SpotifyUserEntity {
         this.displayName = displayName
-        this.tokenValue = tokenValue
         return this
     }
 }

@@ -28,17 +28,15 @@ class SpotifyUserService(
     fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? = spotifyUserRepository.findById(spotifyId).orElse(null)
 
     @Transactional
-    fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal, tokenValue: String) {
-        val maskedTokenValue = maskSecret(tokenValue)
+    fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal) {
         findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
             ?.also { foundSpotifyUser ->
-                foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName(), maskedTokenValue)
+                foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName())
             }
             ?: spotifyUserRepository.save(
                 SpotifyUserEntity(
                     spotifyUserPrincipal.getSpotifyId(),
                     spotifyUserPrincipal.getDisplayName(),
-                    maskedTokenValue,
                     initialUserGptUsages
                 )
             )
@@ -54,7 +52,4 @@ class SpotifyUserService(
         userArtistLinkRepository.deleteAllByUserSpotifyId(spotifyId)
         spotifyUserRepository.deleteById(spotifyId)
     }
-
-    private fun maskSecret(secret: String): String =
-        if (secret.length <= 4) "*".repeat(8) else secret.take(2) + "*".repeat(4) + secret.takeLast(2)
 }
