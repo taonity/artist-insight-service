@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.user.entity.SpotifyUserEntity
+import org.taonity.artistinsightservice.user.exception.UserNotFoundException
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
 import org.taonity.artistinsightservice.user.repository.UserArtistLinkRepository
 
@@ -21,7 +22,7 @@ class SpotifyUserService(
 
     fun findBySpotifyIdOrThrow(spotifyId: String): SpotifyUserEntity {
         return spotifyUserRepository.findById(spotifyId)
-            .orElseThrow { RuntimeException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB") }
+            .orElseThrow { UserNotFoundException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB") }
     }
 
     fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? = spotifyUserRepository.findById(spotifyId).orElse(null)

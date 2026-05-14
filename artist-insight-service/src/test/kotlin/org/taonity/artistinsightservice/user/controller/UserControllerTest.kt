@@ -74,10 +74,10 @@ class UserControllerTest: ControllerTestsBaseClass() {
                 .with(csrf()))
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
-        // Verify user is gone — findBySpotifyIdOrThrow will throw, resulting in 500
+        // Verify user is gone — findBySpotifyIdOrThrow throws UserNotFoundException → 404
         mockMvc.perform(
             MockMvcRequestBuilders.get("/user")
                 .session(mockHttpSession))
-            .andExpect(MockMvcResultMatchers.status().isInternalServerError)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 }

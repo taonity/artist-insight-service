@@ -18,6 +18,7 @@ import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyCli
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
+import org.taonity.artistinsightservice.user.exception.UserNotFoundException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -93,5 +94,12 @@ class GlobalExceptionHandler {
         LOGGER.debug(e) {}
         return ResponseEntity.status(HttpStatus.GONE)
             .body(ClientErrorResponse(ClientErrorCode.SHARE_LINK_EXPIRED, e.message ?: "Share link has expired"))
+    }
+
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFoundException(e: UserNotFoundException): ResponseEntity<ClientErrorResponse> {
+        LOGGER.debug(e) {}
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ClientErrorResponse(ClientErrorCode.USER_NOT_FOUND, e.message ?: "User not found"))
     }
 }
