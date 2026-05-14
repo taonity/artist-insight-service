@@ -17,4 +17,22 @@ class ArtistEnrichmentService(
         val isLinkedToUser = userArtistLinkRepository.existsByUserSpotifyIdAndArtistArtistId(spotifyId, artistId)
         return ArtistEnrichmentInfo(genres, isLinkedToUser)
     }
+
+    @Transactional(readOnly = true)
+    fun getEnrichmentInfoBatch(artistIds: List<String>, spotifyId: String): Map<String, ArtistEnrichmentInfo> {
+        if (artistIds.isEmpty()) return emptyMap()
+        val genresByArtist: Map<String, List<String>> = artistGenreRepository
+            .findGenresByArtistIdIn(artistIds)
+            .groupBy({ it.artistId }, { it.genre })
+        val linkedArtistIds: Set<String> = userArtistLinkRepository
+            .findAllByUserSpotifyIdAndArtistArtistIdIn(spotifyId, artistIds)
+            .map { it.artist.artistId }
+            .toSet()
+        return artistIds.associateWith { id ->
+            ArtistEnrichmentInfo(
+                genres = genresByArtist[id] ?: emptyList(),
+                isLinkedToUser = id in linkedArtistIds
+            )
+        }
+    }
 }

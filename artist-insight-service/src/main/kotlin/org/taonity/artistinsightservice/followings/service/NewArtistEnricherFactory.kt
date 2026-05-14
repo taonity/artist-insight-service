@@ -20,10 +20,16 @@ class NewArtistEnricherFactory(
     private val userArtistLinkService: UserArtistLinkService,
     private val responseAttachments: ResponseAttachments
 ) {
-    fun createAndEnrich(spotifyId: String, rawArtist: SafeArtistObject): EnrichableArtists {
+    fun createAndEnrich(
+        spotifyId: String,
+        rawArtist: SafeArtistObject,
+        enrichmentInfo: org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo? = null
+    ): EnrichableArtists {
+        val resolvedInfo = enrichmentInfo
+            ?: artistEnrichmentService.getArtistEnrichmentInfo(rawArtist.id, spotifyId)
         return NewArtistEnricher(
-            spotifyId, rawArtist,
-            artistEnrichmentService, gptUsageService, openAIService,
+            spotifyId, rawArtist, resolvedInfo,
+            gptUsageService, openAIService,
             userArtistLinkService, responseAttachments
         ).enrichWithGenresIfPossible()
     }
@@ -39,7 +45,7 @@ sealed class EnrichmentPath {
 class NewArtistEnricher(
     private val spotifyId: String,
     private val rawArtist: SafeArtistObject,
-    private val artistEnrichmentService: ArtistEnrichmentService,
+    private val enrichmentInfo: org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val userArtistLinkService: UserArtistLinkService,
@@ -62,7 +68,6 @@ class NewArtistEnricher(
             return EnrichmentPath.AlreadyHasGenres
         }
 
-        val enrichmentInfo = artistEnrichmentService.getArtistEnrichmentInfo(artistId, spotifyId)
         val dbArtistGenres = enrichmentInfo.genres
         val isLinkedToUser = enrichmentInfo.isLinkedToUser
 

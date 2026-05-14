@@ -12,4 +12,13 @@ interface ArtistGenreRepository : CrudRepository<ArtistGenreEntity, ArtistGenreI
 
     @Query("SELECT ag.genre FROM ArtistGenreEntity ag WHERE ag.artist.artistId = :artistId")
     fun findGenresByArtistId(@Param("artistId") artistId: String): List<String>
+
+    @Query("SELECT ag.artist.artistId AS artistId, ag.genre AS genre FROM ArtistGenreEntity ag WHERE ag.artist.artistId IN :artistIds")
+    fun findGenresByArtistIdIn(@Param("artistIds") artistIds: Collection<String>): List<ArtistGenreProjection>
 }
+
+interface ArtistGenreProjection {
+    val artistId: String
+    val genre: String
+}
+
