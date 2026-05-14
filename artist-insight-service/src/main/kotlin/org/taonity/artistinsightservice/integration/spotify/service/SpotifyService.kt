@@ -1,5 +1,6 @@
 package org.taonity.artistinsightservice.integration.spotify.service
 
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver
@@ -20,6 +21,7 @@ import org.taonity.spotify.model.GetMultipleArtists200Response
 import org.taonity.spotify.model.PagingArtistObject
 import org.taonity.spotify.model.PublicUserObject
 import java.io.InterruptedIOException
+import java.time.Duration
 
 @Service
 class SpotifyService(
@@ -31,6 +33,12 @@ class SpotifyService(
     private val heathCheckUserId: String,
     private val responseAttachments: ResponseAttachments
 ) {
+
+    companion object {
+        private val LOGGER = KotlinLogging.logger {}
+        private val FETCH_ALL_PAGES_BUDGET: Duration = Duration.ofSeconds(30)
+    }
+
 
     fun fetchFollowings(): List<SafeArtistObject> = safeFetchFollowing()
 
@@ -46,10 +54,15 @@ class SpotifyService(
             .build()
             .toUriString()
 
-        // TODO: implement timeout fo whole page series retrieval
+        val deadlineNanos = System.nanoTime() + FETCH_ALL_PAGES_BUDGET.toNanos()
         while (url != null) {
             if (allItems.size >= 1000) {
                 responseAttachments.advisories.add(Advisory.TOO_MANY_FOLLOWINGS)
+                break
+            }
+            if (System.nanoTime() >= deadlineNanos) {
+                LOGGER.warn { "Spotify followings pagination exceeded ${FETCH_ALL_PAGES_BUDGET.seconds}s budget after ${allItems.size} items" }
+                responseAttachments.advisories.add(Advisory.SPOTIFY_TIMEOUT)
                 break
             }
             val page: PagingArtistObject = fetchPageWithAuthentication(url)
