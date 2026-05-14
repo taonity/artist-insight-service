@@ -186,17 +186,9 @@ The project supports Grafana [dashboard](https://github.com/taonity/prodenv/blob
 <img src="images/dashboard.png" width="600" />
 
 ### Tech debts
-- fix renoavate branch names
 - invesitgate auth metris missmatch in dashboard
 - Find a way forward to the login page early
-- consider tests for frontend
-- consider simpliying the other side
-- fix smoke test env vars
-- add mechanism to send dev access request in mock env
-- add db table visualiser
 - think about alternative for branch-name-like snapshot version
-- Create PR to disable logging https://github.com/spring-cloud/spring-cloud-contract/blob/44c634d0e9e82515d2fba66343530eb7d2ba8223/spring-cloud-contract-stub-runner/src/main/java/org/springframework/cloud/contract/stubrunner/provider/wiremock/WireMockHttpServerStub.java#L130
-- Wait for https://github.com/spring-cloud/spring-cloud-contract/pull/2092
 
 #### Notes
 Servlet filters order:
