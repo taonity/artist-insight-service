@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.integration.spotify.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver

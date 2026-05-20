@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.observability.logging
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.hibernate.event.spi.PostDeleteEvent
 import org.hibernate.event.spi.PostDeleteEventListener
 import org.hibernate.event.spi.PostInsertEvent

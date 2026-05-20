@@ -1,7 +1,7 @@
 package org.taonity.artistinsightservice.web.filter
 
 import jakarta.servlet.ServletContext
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 

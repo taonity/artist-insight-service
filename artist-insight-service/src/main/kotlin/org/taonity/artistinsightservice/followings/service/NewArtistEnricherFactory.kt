@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.followings.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.settings.service.GptUsageService

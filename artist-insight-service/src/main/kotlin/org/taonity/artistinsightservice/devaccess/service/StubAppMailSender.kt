@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.devaccess.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.annotation.Profile
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.stereotype.Service
