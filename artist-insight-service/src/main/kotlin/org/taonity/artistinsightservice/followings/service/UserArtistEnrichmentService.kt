@@ -1,6 +1,5 @@
 package org.taonity.artistinsightservice.followings.service
 
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
@@ -16,9 +15,6 @@ class UserArtistEnrichmentService(
     private val spotifyUserService: SpotifyUserService,
     private val responseAttachments: ResponseAttachments
 ) {
-    companion object {
-        private val LOGGER = KotlinLogging.logger {}
-    }
 
     fun enrichUserArtists(spotifyId: String, rawArtists: List<SafeArtistObject>): List<EnrichableArtists> {
         val artistIds = rawArtists.map { it.id }

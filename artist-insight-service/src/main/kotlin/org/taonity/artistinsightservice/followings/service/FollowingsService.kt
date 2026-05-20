@@ -1,6 +1,5 @@
 package org.taonity.artistinsightservice.followings.service
 
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
 import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
@@ -19,9 +18,6 @@ class FollowingsService(
     private val spotifyService: SpotifyService,
     private val responseAttachments: ResponseAttachments
 ) {
-    companion object {
-        private val LOGGER = KotlinLogging.logger {}
-    }
 
     fun fetchRawFollowings(spotifyId: String): FollowingsResponse {
         val safeFollowings = spotifyService.fetchFollowings()
