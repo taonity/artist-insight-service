@@ -68,25 +68,11 @@ private class DockerComposeProject(
     fun start() {
         ensureSharedNetworks()
         compose("down", "-v", "--remove-orphans", allowFailure = true)
-        compose("up", "-d")
+        // `--wait` blocks until every service satisfies its declared healthcheck or
+        // `depends_on.condition` (service_healthy / service_completed_successfully), so we
+        // delegate readiness gating to compose itself instead of polling docker inspect.
+        compose("up", "-d", "--wait", "--wait-timeout", startupTimeout.seconds.toString())
         startLogStreaming()
-
-        waitFor("db to become healthy") {
-            val state = inspectService("db")
-            state.status == "running" && state.healthStatus == "healthy"
-        }
-        waitFor("flyway to finish successfully") {
-            val state = inspectService("flyway")
-            state.status == "exited" && state.exitCode == 0
-        }
-        waitFor("app to become healthy") {
-            val state = inspectService("app")
-            state.status == "running" && state.healthStatus == "healthy"
-        }
-        waitFor("frontend to become healthy") {
-            val state = inspectService("frontend")
-            state.status == "running" && state.healthStatus == "healthy"
-        }
     }
 
     fun stop() {
@@ -112,35 +98,6 @@ private class DockerComposeProject(
         assertThat(state.exitCode)
             .describedAs("Expected %s container to exit successfully", serviceName)
             .isEqualTo(0)
-    }
-
-    private fun waitFor(description: String, condition: () -> Boolean) {
-        val deadline = System.nanoTime() + startupTimeout.toNanos()
-        var lastFailure: Throwable? = null
-
-        while (System.nanoTime() < deadline) {
-            try {
-                if (condition()) {
-                    return
-                }
-                lastFailure = null
-            } catch (exception: Throwable) {
-                lastFailure = exception
-            }
-            Thread.sleep(2_000)
-        }
-
-        val details = buildString {
-            appendLine("Timed out waiting for $description.")
-            lastFailure?.let {
-                appendLine("Last failure: ${it.message}")
-            }
-            appendLine("Compose status:")
-            appendLine(compose("ps", "--all", allowFailure = true))
-            appendLine("Compose logs:")
-            appendLine(compose("logs", "--no-color", allowFailure = true))
-        }
-        throw AssertionError(details, lastFailure)
     }
 
     private fun ensureSharedNetworks() {
