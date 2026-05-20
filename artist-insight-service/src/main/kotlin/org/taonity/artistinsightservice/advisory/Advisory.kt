@@ -2,11 +2,10 @@ package org.taonity.artistinsightservice.advisory
 
 import java.lang.String.format
 
-enum class Advisory (
+enum class Advisory(
     private val title: String,
     private val detailTemplate: String,
-    private val severity: Severity,
-    private val args: MutableList<String> = mutableListOf()
+    private val severity: Severity
 ) {
     TOO_MANY_FOLLOWINGS(
         "Too many followings",
@@ -49,22 +48,13 @@ enum class Advisory (
         Severity.WARNING
     ),;
 
-    fun withDetailArgs(vararg args: String): Advisory {
-        this.args.addAll(args.toList())
-        return this
-    }
-
-    fun toDto(): AdvisoryDto {
+    fun toDto(args: List<String> = emptyList()): AdvisoryDto {
         return AdvisoryDto(
             code = this.name,
             title = this.title,
-            detail = getDetail(),
+            detail = format(detailTemplate, *args.toTypedArray()),
             severity = this.severity
         )
-    }
-
-    private fun getDetail(): String {
-        return format(detailTemplate, *args.toTypedArray())
     }
 }
 

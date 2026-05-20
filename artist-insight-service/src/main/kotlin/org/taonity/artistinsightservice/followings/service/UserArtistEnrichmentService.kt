@@ -29,7 +29,7 @@ class UserArtistEnrichmentService(
             val gptUsagesLeft = spotifyUserService.findBySpotifyIdOrThrow(spotifyId).gptUsagesLeft
             if (gptUsagesLeft > 0) {
                 val artistsAvailableToEnrichCount = min(artistsWithNoGenresCount, gptUsagesLeft)
-                responseAttachments.advisories.add(Advisory.GPT_ENRICHMENT_AVAILABLE.withDetailArgs(artistsAvailableToEnrichCount.toString()))
+                responseAttachments.add(Advisory.GPT_ENRICHMENT_AVAILABLE, artistsAvailableToEnrichCount.toString())
             }
         }
         return enrichedUserArtists
