@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
-import org.taonity.artistinsightservice.infrastructure.exception.ClientErrorCode
-import org.taonity.artistinsightservice.infrastructure.exception.ClientErrorResponse
+import org.taonity.artistinsightservice.web.exception.ClientErrorCode
+import org.taonity.artistinsightservice.web.exception.ClientErrorResponse
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 

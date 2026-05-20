@@ -1,2 +1,2 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-org.taonity.artistinsightservice.infrastructure.utils.AdditionalProfileActivator
+org.taonity.artistinsightservice.common.util.AdditionalProfileActivator

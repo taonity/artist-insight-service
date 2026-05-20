@@ -13,7 +13,7 @@ import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
 import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.integration.spotify.dto.SpotifyResponse
-import org.taonity.artistinsightservice.infrastructure.utils.hasCause
+import org.taonity.artistinsightservice.common.util.hasCause
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
 import org.taonity.spotify.model.ArtistObject

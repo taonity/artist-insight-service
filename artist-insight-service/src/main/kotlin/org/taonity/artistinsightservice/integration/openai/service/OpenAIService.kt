@@ -10,7 +10,7 @@ import com.openai.models.chat.completions.ChatCompletionSystemMessageParam
 import com.openai.models.chat.completions.ChatCompletionUserMessageParam
 import com.openai.models.models.Model
 import org.springframework.stereotype.Service
-import org.taonity.artistinsightservice.infrastructure.utils.hasCause
+import org.taonity.artistinsightservice.common.util.hasCause
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAIClientException
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAITimeoutException
 import java.io.InterruptedIOException

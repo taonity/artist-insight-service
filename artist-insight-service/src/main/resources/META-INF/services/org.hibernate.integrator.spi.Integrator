@@ -1,2 +1,2 @@
-org.taonity.artistinsightservice.infrastructure.logging.EntityChangeLoggingIntegrator
+org.taonity.artistinsightservice.observability.logging.EntityChangeLoggingIntegrator
 
