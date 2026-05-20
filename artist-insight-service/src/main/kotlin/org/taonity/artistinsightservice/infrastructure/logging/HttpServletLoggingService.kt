@@ -19,7 +19,7 @@ class HttpServletLoggingService(
     companion object {
         private val objectMapper = jacksonObjectMapper()
         private val LOGGER = KotlinLogging.logger {}
-        private val headerLoggingBackList = listOf(
+        private val headerLoggingBlocklist = listOf(
             "host",
             "user-agent",
             "accept",
@@ -40,8 +40,8 @@ class HttpServletLoggingService(
             "sec-ch-ua-mobile",
             "origin"
         )
-        private val cookiesLoggingBackList = emptyList<String>()
-        private val endpointBlacklist = listOf(
+        private val cookiesLoggingBlocklist = emptyList<String>()
+        private val endpointBlocklist = listOf(
             "/actuator/health"
         )
     }
@@ -50,9 +50,9 @@ class HttpServletLoggingService(
     private fun logMinimisedLoggingModeIfEnabled() {
         if (minimisedHttpServletLogging) {
             LOGGER.info { "Minimised logging mode enabled - app.minimised-http-servlet-logging=true" }
-            LOGGER.info { "Following endpoints will be ignored: $endpointBlacklist" }
-            LOGGER.info { "Following headers will be ignored: $headerLoggingBackList" }
-            LOGGER.info { "Following cookies will be ignored: $cookiesLoggingBackList" }
+            LOGGER.info { "Following endpoints will be ignored: $endpointBlocklist" }
+            LOGGER.info { "Following headers will be ignored: $headerLoggingBlocklist" }
+            LOGGER.info { "Following cookies will be ignored: $cookiesLoggingBlocklist" }
         }
     }
 
@@ -84,7 +84,7 @@ class HttpServletLoggingService(
     }
 
     private fun shouldSkipEndpointLogging(request: HttpServletRequest) =
-        minimisedHttpServletLogging && request.requestURI in endpointBlacklist
+        minimisedHttpServletLogging && request.requestURI in endpointBlocklist
 
     private fun getInterestedCookies(request: HttpServletRequest): String = objectMapper.writeValueAsString(
         request.cookies
@@ -96,7 +96,7 @@ class HttpServletLoggingService(
     )
 
     private fun filterCookieIfEnabled(cookie: Cookie) =
-        cookie.name !in cookiesLoggingBackList || !minimisedHttpServletLogging
+        cookie.name !in cookiesLoggingBlocklist || !minimisedHttpServletLogging
 
     private fun getInterestedHeaders(request: HttpServletRequest): String = objectMapper.writeValueAsString(
         request.headerNames
@@ -107,7 +107,7 @@ class HttpServletLoggingService(
     )
 
     private fun filterHeaderIfEnabled(headerName: String) =
-        headerName !in headerLoggingBackList || !minimisedHttpServletLogging
+        headerName !in headerLoggingBlocklist || !minimisedHttpServletLogging
 
     private fun <T> Enumeration<T>.asSequence(): Sequence<T> = sequence {
         while (hasMoreElements()) {
