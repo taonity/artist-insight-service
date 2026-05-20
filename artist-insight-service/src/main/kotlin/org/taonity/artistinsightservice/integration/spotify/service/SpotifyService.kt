@@ -30,7 +30,7 @@ class SpotifyService(
     @Value("\${spotify.api-base-url}")
     private val spotifyApiBaseUrl: String,
     @Value("\${spotify.healthcheck-user-id}")
-    private val heathCheckUserId: String,
+    private val healthCheckUserId: String,
     private val responseAttachments: ResponseAttachments
 ) {
 
@@ -86,7 +86,7 @@ class SpotifyService(
         ).artists
     }
 
-    fun getHealthCheckUserUrl(): String = "$spotifyApiBaseUrl/users/$heathCheckUserId"
+    fun getHealthCheckUserUrl(): String = "$spotifyApiBaseUrl/users/$healthCheckUserId"
 
     fun getHealthCheckUser(): ResponseEntity<String> {
         val url = getHealthCheckUserUrl()
