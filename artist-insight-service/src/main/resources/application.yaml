@@ -34,6 +34,12 @@ management:
       show-details: always
       probes:
         enabled: true
+      cache:
+        time-to-live: 60s
+      group:
+        external:
+          include: spotify,openai,kofi
+          show-details: always
     prometheus:
       enabled: true
   info:
@@ -45,11 +51,6 @@ management:
   metrics:
     tags:
       application: artist-insight-service
-health:
-  enabled: true
-  external:
-    refresh-interval-ms: 60000
-    initial-delay-ms: 0
 
 spotify:
   healthcheck-user-id: 3126nx54y24ryqyza3qxcchi4wry

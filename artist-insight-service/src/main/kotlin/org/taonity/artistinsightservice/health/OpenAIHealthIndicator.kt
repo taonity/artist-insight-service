@@ -2,53 +2,49 @@ package org.taonity.artistinsightservice.health
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.health.contributor.Status
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.HealthIndicator
 import org.springframework.stereotype.Component
 import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
 import java.time.Duration
 import java.time.Instant
 
-@Component
-class OpenAIHealthPinger(
+@Component("openai")
+class OpenAIHealthIndicator(
     private val openAIService: OpenAIService,
     @Value("\${openai.base-url}")
     private val openAiBaseUrl: String,
-) : ExternalServiceHealthPinger {
+) : HealthIndicator {
 
     companion object {
         private val LOGGER = KotlinLogging.logger {}
     }
 
-    override val name: String = "openai"
-
-    override fun ping(): HealthCheckResult {
+    override fun health(): Health {
         val url = "$openAiBaseUrl/models"
         val start = Instant.now()
         return try {
             val models = openAIService.getModels()
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
-            val details = LinkedHashMap<String, Any?>()
-            details["url"] = url
-            details["responseTimeMs"] = elapsedMs
-
+            val builder = Health.up()
+                .withDetail("url", url)
+                .withDetail("responseTimeMs", elapsedMs)
             try {
-                details["modelCount"] = models.size
-                details["firstModel"] = models.firstOrNull()
+                builder.withDetail("modelCount", models.size)
+                models.firstOrNull()?.let { builder.withDetail("firstModel", it) }
             } catch (exception: Exception) {
                 LOGGER.warn(exception) { "Failed to parse OpenAI models response" }
-                details["parsingError"] = exception.message
+                builder.withDetail("parsingError", exception.message ?: "unknown")
             }
-
-            HealthCheckResult(status = Status.UP, details = details)
+            builder.build()
         } catch (exception: Exception) {
             val elapsedMs = Duration.between(start, Instant.now()).toMillis()
             LOGGER.warn { "OpenAI availability check failed for $url" }
-            val details = mapOf(
-                "url" to url,
-                "responseTimeMs" to elapsedMs,
-                "error" to (exception.message ?: exception::class.simpleName)
-            )
-            HealthCheckResult(Status.DOWN, details)
+            Health.down()
+                .withDetail("url", url)
+                .withDetail("responseTimeMs", elapsedMs)
+                .withDetail("error", exception.message ?: exception::class.simpleName ?: "unknown")
+                .build()
         }
     }
 }
