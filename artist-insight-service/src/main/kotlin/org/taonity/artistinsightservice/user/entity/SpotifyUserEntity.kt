@@ -16,7 +16,7 @@ class SpotifyUserEntity(
     var displayName: String,
     var gptUsagesLeft: Int,
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE], orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf()
 ) {
     fun addEnrichedArtist(artist: ArtistEntity) {
