@@ -123,7 +123,7 @@ export default function BackgroundPhrases({ onGenreHover }: BackgroundPhrasesPro
             const offsetY = (Math.random() - 0.5) * cellSize * 0.8
             const x = baseX + cellSize / 2 + offsetX
             const y = baseY + cellSize / 2 + offsetY
-            const genre = GENRES[genreIndex % GENRES.length]
+            const genre = GENRES[genreIndex % GENRES.length]!
             const phraseWidth = genre.name.length * charWidth
             const phraseBBox: BoundingBox = {
               x: x - phraseWidth / 2,

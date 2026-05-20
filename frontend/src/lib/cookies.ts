@@ -11,7 +11,7 @@ export function getCookie(name: string) {
     new RegExp(`(?:^|; )${escapeCookieName(name)}=([^;]*)`),
   )
 
-  return match ? decodeURIComponent(match[1]) : null
+  return match && match[1] !== undefined ? decodeURIComponent(match[1]) : null
 }
 
 export function deleteCookie(name: string) {
