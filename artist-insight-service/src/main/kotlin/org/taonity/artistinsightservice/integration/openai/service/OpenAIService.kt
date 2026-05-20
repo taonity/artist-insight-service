@@ -24,8 +24,6 @@ class OpenAIService(
         private val objectMapper = jacksonObjectMapper()
         private const val MAX_ARTIST_NAME_LENGTH = 80
 
-        // Strip control chars / quotes / backslashes and collapse whitespace to
-        // reduce prompt-injection surface in the user message.
         internal fun sanitizeArtistName(raw: String): String {
             val stripped = raw
                 .replace(Regex("[\\p{Cntrl}\\\"\\\\`]"), " ")

@@ -9,6 +9,7 @@ import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.dto.EnrichableArtists
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAIClientException
 import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
+import org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo
 import org.taonity.artistinsightservice.artist.service.ArtistEnrichmentService
 import org.taonity.artistinsightservice.user.service.UserArtistLinkService
 
@@ -23,7 +24,7 @@ class NewArtistEnricherFactory(
     fun createAndEnrich(
         spotifyId: String,
         rawArtist: SafeArtistObject,
-        enrichmentInfo: org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo? = null
+        enrichmentInfo: ArtistEnrichmentInfo? = null
     ): EnrichableArtists {
         val resolvedInfo = enrichmentInfo
             ?: artistEnrichmentService.getArtistEnrichmentInfo(rawArtist.id, spotifyId)
@@ -45,7 +46,7 @@ sealed class EnrichmentPath {
 class NewArtistEnricher(
     private val spotifyId: String,
     private val rawArtist: SafeArtistObject,
-    private val enrichmentInfo: org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo,
+    private val enrichmentInfo: ArtistEnrichmentInfo,
     private val gptUsageService: GptUsageService,
     private val openAIService: OpenAIService,
     private val userArtistLinkService: UserArtistLinkService,
@@ -111,7 +112,6 @@ class NewArtistEnricher(
         val userUsagesConsumed = gptUsageService.consumeUserUsage(spotifyId)
         val globalUsageConsumed = gptUsageService.consumeGlobalUsage()
         if (!globalUsageConsumed || !userUsagesConsumed) {
-            // refund whichever side did succeed so we don't leak usages
             if (userUsagesConsumed) gptUsageService.refundUserUsage(spotifyId)
             if (globalUsageConsumed) gptUsageService.refundGlobalUsage()
             LOGGER.warn { "Cannot enrich artist $artistName with id $artistId due to GPT usage limits: userUsagesConsumed=$userUsagesConsumed, globalUsageConsumed=$globalUsageConsumed" }

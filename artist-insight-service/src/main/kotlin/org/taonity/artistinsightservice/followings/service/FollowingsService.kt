@@ -32,7 +32,6 @@ class FollowingsService(
     fun fetchGenreEnrichedFollowings(spotifyId: String): EnrichedFollowingsResponse {
         val safeFollowings: List<SafeArtistObject> = spotifyService.fetchFollowings()
 
-        // Batch-fetch all DB enrichment info up front instead of per-artist queries
         val enrichmentInfoByArtistId = artistEnrichmentService.getEnrichmentInfoBatch(
             safeFollowings.map { it.id }, spotifyId
         )

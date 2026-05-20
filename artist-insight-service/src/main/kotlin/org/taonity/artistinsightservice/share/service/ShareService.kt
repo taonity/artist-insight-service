@@ -42,8 +42,6 @@ class ShareService(
         
         val sharedLink = if (existingLink != null) {
             existingLink.expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
-            // Bulk delete previous artist associations in a single JPQL DELETE
-            // instead of iterating + orphan removal (N queries).
             sharedLinkArtistRepository.deleteAllBySharedLinkId(existingLink.id)
             existingLink.artists.clear()
             existingLink.addArtists(artistIds)
