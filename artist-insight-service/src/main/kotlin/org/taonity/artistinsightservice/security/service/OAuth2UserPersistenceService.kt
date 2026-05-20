@@ -1,7 +1,7 @@
 package org.taonity.artistinsightservice.security.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -16,10 +16,10 @@ import org.taonity.spotify.model.PrivateUserObject
 @Service
 class OAuth2UserPersistenceService(
     private val spotifyUserService: SpotifyUserService,
+    private val objectMapper: ObjectMapper
 ) : DefaultOAuth2UserService() {
 
     companion object {
-        private val objectMapper = jacksonObjectMapper()
         private val LOGGER = KotlinLogging.logger {}
     }
 

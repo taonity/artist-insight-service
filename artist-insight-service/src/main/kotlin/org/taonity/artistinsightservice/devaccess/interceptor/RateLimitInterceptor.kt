@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.devaccess.interceptor
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.Refill
@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentHashMap
     havingValue = "true",
     matchIfMissing = false)
 @Component
-class RateLimitInterceptor : HandlerInterceptor {
+class RateLimitInterceptor(
+    private val objectMapper: ObjectMapper
+) : HandlerInterceptor {
     @Value("\${app.dev-access.rate-limit.send-email.capacity}")
     private var capacity: Int = 1
 
@@ -30,10 +32,6 @@ class RateLimitInterceptor : HandlerInterceptor {
     private lateinit var refillDuration: String
 
     private val buckets = ConcurrentHashMap<String, Bucket>()
-
-    companion object {
-        private val objectMapper = jacksonObjectMapper()
-    }
 
     private fun getLimit(): Bandwidth {
         val duration = Duration.parse(refillDuration)

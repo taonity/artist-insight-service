@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.infrastructure.logging
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.annotation.PostConstruct
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
@@ -14,10 +14,10 @@ import java.util.Enumeration
 
 @Service
 class HttpServletLoggingService(
-    @Value("\${app.minimised-http-servlet-logging}") private val minimisedHttpServletLogging: Boolean
+    @Value("\${app.minimised-http-servlet-logging}") private val minimisedHttpServletLogging: Boolean,
+    private val objectMapper: ObjectMapper
 ) {
     companion object {
-        private val objectMapper = jacksonObjectMapper()
         private val LOGGER = KotlinLogging.logger {}
         private val headerLoggingBlocklist = listOf(
             "host",

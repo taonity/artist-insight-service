@@ -1,10 +1,9 @@
 package org.taonity.artistinsightservice.donation.kofi.service
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.donation.kofi.dto.KofiWebhookData
@@ -15,13 +14,11 @@ import org.taonity.artistinsightservice.settings.service.GptUsageService
 class KofiCallbackService(
     private val gptUsageService: GptUsageService,
     @Value("\${kofi.verification-token}")
-    private val kofiVerificationToken: String
+    private val kofiVerificationToken: String,
+    @Qualifier("snakeCaseObjectMapper") private val objectMapper: ObjectMapper
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
-        private val objectMapper = jacksonObjectMapper()
-            .registerKotlinModule()
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
     }
 
     fun topUpChatGptUsages(kofiWebhookDataJson: String) {

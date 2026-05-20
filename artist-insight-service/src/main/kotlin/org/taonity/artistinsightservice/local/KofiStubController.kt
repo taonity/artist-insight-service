@@ -1,8 +1,6 @@
 package org.taonity.artistinsightservice.local
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
@@ -19,13 +17,11 @@ import java.nio.charset.StandardCharsets
 @RestController
 @Profile("stub-kofi")
 class KofiStubController(
-    @Qualifier("kofiRestClient") private val kofiRestClient: RestClient
+    @Qualifier("kofiRestClient") private val kofiRestClient: RestClient,
+    @Qualifier("snakeCaseObjectMapper") private val objectMapper: ObjectMapper
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
-        private val objectMapper = jacksonObjectMapper()
-            .registerKotlinModule()
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
     }
 
     @GetMapping("/N4N11KVW3E")

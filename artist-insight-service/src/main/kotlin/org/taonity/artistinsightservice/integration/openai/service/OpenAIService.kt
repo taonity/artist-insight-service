@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.integration.openai.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
@@ -17,11 +17,11 @@ import java.io.InterruptedIOException
 
 @Service
 class OpenAIService(
-    private val openAIClient: OpenAIClient
+    private val openAIClient: OpenAIClient,
+    private val objectMapper: ObjectMapper
 ) {
 
     companion object {
-        private val objectMapper = jacksonObjectMapper()
         private const val MAX_ARTIST_NAME_LENGTH = 80
 
         internal fun sanitizeArtistName(raw: String): String {

@@ -1,5 +1,7 @@
 package org.taonity.artistinsightservice.donation.kofi.service
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
@@ -11,7 +13,9 @@ class KofiCallbackServiceTest {
 
     private val gptUsageService: GptUsageService = mock()
     private val verificationToken = "valid-token"
-    private val service = KofiCallbackService(gptUsageService, verificationToken)
+    private val objectMapper = jacksonObjectMapper()
+        .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+    private val service = KofiCallbackService(gptUsageService, verificationToken, objectMapper)
 
     @Test
     fun `valid webhook tops up usages`() {
