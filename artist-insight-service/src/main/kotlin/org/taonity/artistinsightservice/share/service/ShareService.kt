@@ -131,19 +131,12 @@ class ShareService(
     }
 
     private fun generateUniqueShareCode(): String {
+        // 62^8 ≈ 2.18e14 combinations: collision probability is negligible for our scale,
+        // so we rely on the `share_code` UNIQUE constraint to surface the (astronomically
+        // rare) duplicate instead of pre-checking with a SELECT on every insert.
         val random = SecureRandom()
-        var code: String
-        var attempts = 0
-        do {
-            code = (1..SHARE_CODE_LENGTH)
-                .map { SHARE_CODE_CHARS[random.nextInt(SHARE_CODE_CHARS.length)] }
-                .joinToString("")
-            attempts++
-            if (attempts > 10) {
-                throw IllegalStateException("Failed to generate unique share code after $attempts attempts")
-            }
-        } while (sharedLinkRepository.findByShareCodeWithArtists(code) != null)
-        
-        return code
+        return (1..SHARE_CODE_LENGTH)
+            .map { SHARE_CODE_CHARS[random.nextInt(SHARE_CODE_CHARS.length)] }
+            .joinToString("")
     }
 }
