@@ -1,7 +1,6 @@
 package org.taonity.artistinsightservice.share.entity
 
 import jakarta.persistence.*
-import org.taonity.artistinsightservice.artist.entity.ArtistEntity
 import java.io.Serializable
 import java.util.*
 
@@ -18,10 +17,6 @@ class SharedLinkArtistEntity(
     @Column(name = "artist_id", nullable = false)
     var artistId: String,
 ) {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id", insertable = false, updatable = false)
-    var artist: ArtistEntity? = null
-
     override fun hashCode(): Int = Objects.hash(sharedLink.id, artistId)
 
     override fun equals(other: Any?): Boolean {

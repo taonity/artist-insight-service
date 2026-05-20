@@ -2,7 +2,7 @@ package org.taonity.artistinsightservice.user.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.entity.ArtistEntity
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.user.entity.SpotifyUserEntity

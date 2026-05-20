@@ -11,8 +11,8 @@ import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
-import org.taonity.artistinsightservice.artist.dto.SpotifyResponse
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
+import org.taonity.artistinsightservice.integration.spotify.dto.SpotifyResponse
 import org.taonity.artistinsightservice.infrastructure.utils.hasCause
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException

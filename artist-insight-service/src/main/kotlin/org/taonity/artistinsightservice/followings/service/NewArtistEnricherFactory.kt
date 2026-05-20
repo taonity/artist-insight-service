@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.settings.service.GptUsageService
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
-import org.taonity.artistinsightservice.artist.dto.EnrichableArtists
+import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAIClientException
 import org.taonity.artistinsightservice.integration.openai.service.OpenAIService
 import org.taonity.artistinsightservice.artist.service.ArtistEnrichmentInfo

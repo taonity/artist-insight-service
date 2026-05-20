@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.entity.ArtistEntity
 import org.taonity.artistinsightservice.artist.entity.ArtistGenreEntity
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository

@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.artist.dto
+package org.taonity.artistinsightservice.integration.spotify.dto
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

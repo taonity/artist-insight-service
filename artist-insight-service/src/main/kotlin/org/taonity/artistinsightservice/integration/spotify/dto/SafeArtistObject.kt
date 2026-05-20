@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.artist.dto
+package org.taonity.artistinsightservice.integration.spotify.dto
 
 import org.taonity.spotify.model.ArtistObject
 import org.taonity.spotify.model.ExternalUrlObject

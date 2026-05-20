@@ -1,4 +1,4 @@
-package org.taonity.artistinsightservice.artist.dto
+package org.taonity.artistinsightservice.followings.dto
 
 import org.taonity.artistinsightservice.advisory.AdvisoryDto
 

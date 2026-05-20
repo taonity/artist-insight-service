@@ -2,9 +2,9 @@ package org.taonity.artistinsightservice.followings.service
 
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
-import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
-import org.taonity.artistinsightservice.artist.dto.FollowingsResponse
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
+import org.taonity.artistinsightservice.followings.dto.EnrichedFollowingsResponse
+import org.taonity.artistinsightservice.followings.dto.FollowingsResponse
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.service.ArtistEnrichmentService
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
 import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService

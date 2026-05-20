@@ -1,6 +1,6 @@
 package org.taonity.artistinsightservice.share.dto
 
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 
 data class SharedArtist(
     val artistObject: SafeArtistObject,

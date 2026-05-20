@@ -3,8 +3,8 @@ package org.taonity.artistinsightservice.followings.service
 import org.springframework.stereotype.Service
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.ResponseAttachments
-import org.taonity.artistinsightservice.artist.dto.SafeArtistObject
-import org.taonity.artistinsightservice.artist.dto.EnrichableArtists
+import org.taonity.artistinsightservice.followings.dto.EnrichableArtists
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
 import kotlin.math.min

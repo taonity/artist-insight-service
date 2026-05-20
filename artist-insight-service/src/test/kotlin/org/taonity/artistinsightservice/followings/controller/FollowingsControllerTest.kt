@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.taonity.artistinsightservice.artist.dto.EnrichedFollowingsResponse
-import org.taonity.artistinsightservice.artist.dto.FollowingsResponse
+import org.taonity.artistinsightservice.followings.dto.EnrichedFollowingsResponse
+import org.taonity.artistinsightservice.followings.dto.FollowingsResponse
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 
 @Sql(scripts = ["classpath:sql/clear-data.sql", "classpath:sql/test-data.sql"])
