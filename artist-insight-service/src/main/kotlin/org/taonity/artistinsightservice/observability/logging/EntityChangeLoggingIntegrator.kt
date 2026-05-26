@@ -14,12 +14,6 @@ class EntityChangeLoggingIntegrator : Integrator {
         bootstrapContext: org.hibernate.boot.spi.BootstrapContext,
         sessionFactory: SessionFactoryImplementor
     ) {
-        // Verbose per-entity change logging is dev-only — gate on the `local` profile so
-        // production sessions don't pay the listener overhead or leak entity state to logs.
-        if (!isLocalProfileActive()) {
-            return
-        }
-
         val registry = sessionFactory.serviceRegistry.getService(EventListenerRegistry::class.java)
             ?: return
 
@@ -32,13 +26,6 @@ class EntityChangeLoggingIntegrator : Integrator {
 
     override fun disintegrate(sessionFactory: SessionFactoryImplementor, serviceRegistry: SessionFactoryServiceRegistry) {
         // nothing to clean up
-    }
-
-    private fun isLocalProfileActive(): Boolean {
-        val raw = System.getProperty("spring.profiles.active")
-            ?: System.getenv("SPRING_PROFILES_ACTIVE")
-            ?: return false
-        return raw.split(',').any { it.trim().equals("local", ignoreCase = true) }
     }
 }
 
