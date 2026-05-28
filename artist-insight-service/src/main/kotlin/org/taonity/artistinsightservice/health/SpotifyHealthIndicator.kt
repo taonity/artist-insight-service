@@ -8,13 +8,7 @@ import org.taonity.artistinsightservice.integration.spotify.service.SpotifyServi
 import java.time.Duration
 import java.time.Instant
 
-/**
- * Native Spring Boot [HealthIndicator] for the Spotify API. The Actuator framework
- * auto-discovers this bean and exposes it under `/actuator/health/spotify` and inside any
- * health group that includes "spotify". Endpoint-level response caching is configured via
- * `management.endpoint.health.cache.time-to-live` so we no longer need a background
- * scheduler to throttle external calls.
- */
+
 @Component("spotify")
 class SpotifyHealthIndicator(
     private val spotifyService: SpotifyService,

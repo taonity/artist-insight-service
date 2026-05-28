@@ -8,15 +8,6 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.HandlerMapping
 
-/**
- * Logs entry and exit for every `@RestController` method invocation.
- *
- * Replaces the previous AspectJ-based [ControllerLoggingAspect] which relied on a
- * `@Pointcut`/`@Around` advice and reflective annotation scans to recover the HTTP method
- * and URI template. Spring MVC already resolves both of those before reaching the
- * interceptor chain, so we can read them directly from the request attributes and
- * [HandlerMethod] without any reflection or AOP proxying overhead.
- */
 @Component
 class ControllerLoggingInterceptor : HandlerInterceptor {
 
