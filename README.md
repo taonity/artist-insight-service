@@ -117,62 +117,43 @@ The project requires a set of environment variables to be configured for some se
 
 <!-- mermerd-start -->
 ```mermaid
-erDiagram
-    app_settings {
-        integer global_gpt_usages_left "{NOT_NULL}"
-        integer id PK "{NOT_NULL}"
-    }
-
-    artist {
-        character_varying artist_id PK "{NOT_NULL}"
-        character_varying artist_name "{NOT_NULL}"
-    }
-
-    artist_genres {
-        character_varying artist_id PK,FK "{NOT_NULL}"
-        character_varying genre PK "{NOT_NULL}"
-    }
-
-    development_access_requests {
-        timestamp_with_time_zone created_at 
-        character_varying email "{NOT_NULL}"
-        uuid id PK "{NOT_NULL}"
-        character_varying ip_address 
-        text message 
-        character_varying status 
-        text user_agent 
-    }
-
-    shared_link {
-        timestamp_with_time_zone created_at "{NOT_NULL}"
-        timestamp_with_time_zone expires_at "{NOT_NULL}"
-        uuid id PK "{NOT_NULL}"
-        character_varying share_code UK "{NOT_NULL}"
-        character_varying user_id FK,UK "{NOT_NULL}"
-    }
-
-    shared_link_artist {
-        character_varying artist_id UK "{NOT_NULL}"
-        uuid shared_link_id FK,UK "{NOT_NULL}"
-    }
-
-    spotify_user {
-        character_varying display_name "{NOT_NULL}"
-        integer gpt_usages_left "{NOT_NULL}"
-        character_varying spotify_id PK "{NOT_NULL}"
-        character_varying token_value "{NOT_NULL}"
-    }
-
-    spotify_user_enriched_artists {
-        character_varying artist_id PK,FK "{NOT_NULL}"
-        character_varying spotify_id PK,FK "{NOT_NULL}"
-    }
-
-    artist_genres }o--|| artist : "artist_id"
-    spotify_user_enriched_artists }o--|| artist : "artist_id"
-    shared_link }o--|| spotify_user : "user_id"
-    shared_link_artist }o--|| shared_link : "shared_link_id"
-    spotify_user_enriched_artists }o--|| spotify_user : "spotify_id"
+%%{init: {"theme":"base","look":"classic","htmlLabels":true,"fontFamily":"Verdana, sans-serif","layout":"dagre","themeVariables":{"fontSize":"12px","primaryColor":"#ffffff","primaryBorderColor":"#bcc9d8","primaryTextColor":"#20344d","lineColor":"#7196bd","edgeLabelBackground":"transparent"},"themeCSS":".schema-table{border-collapse:collapse;white-space:nowrap;font:12px/1.3 Verdana,sans-serif;color:light-dark(rgb(32 52 77),rgb(220 229 241));background-color:light-dark(rgb(255 255 255),rgb(24 32 43));border:1px solid light-dark(rgb(188 201 216),rgb(82 97 116));}.schema-table th,.schema-table td{font:12px/1.3 Verdana,sans-serif;}.schema-table th{padding:3px 6px;text-align:center;font-weight:600;background-color:light-dark(rgb(232 238 245),rgb(42 53 68));}.schema-table td{padding:2px 6px;text-align:left;border-top:1px solid light-dark(rgb(229 235 242),rgb(52 65 83));}.schema-table .typeText{background-color:light-dark(rgb(220 245 239),rgb(23 61 56));color:light-dark(rgb(15 118 110),rgb(167 223 210));}.schema-table .typeNumber{background-color:light-dark(rgb(225 237 255),rgb(31 53 87));color:light-dark(rgb(29 78 216),rgb(182 206 255));}.schema-table .typeDateTime{background-color:light-dark(rgb(238 229 255),rgb(56 42 80));color:light-dark(rgb(126 34 206),rgb(217 186 243));}.schema-table .typeBoolean{background-color:light-dark(rgb(255 240 207),rgb(68 54 30));color:light-dark(rgb(146 64 14),rgb(242 208 140));}.schema-table .typeBinary{background-color:light-dark(rgb(252 229 239),rgb(72 38 55));color:light-dark(rgb(190 24 93),rgb(240 186 208));}.schema-table .typeStructured{background-color:light-dark(rgb(232 231 255),rgb(44 43 80));color:light-dark(rgb(67 56 202),rgb(198 195 250));}.schema-table .typeOther{background-color:light-dark(rgb(224 243 252),rgb(34 60 73));color:light-dark(rgb(20 100 126),rgb(176 221 235));}.schema-table .primaryKey{background-color:light-dark(rgb(255 240 207),rgb(68 54 30));color:light-dark(rgb(146 64 14),rgb(242 208 140));}.schema-table .foreignKey{background-color:light-dark(rgb(225 237 255),rgb(31 53 87));color:light-dark(rgb(29 78 216),rgb(182 206 255));}.schema-table .uniqueKey{background-color:light-dark(rgb(238 229 255),rgb(56 42 80));color:light-dark(rgb(126 34 206),rgb(217 186 243));}.schema-edge{display:inline-block;padding:2px 4px;text-align:left;font:12px/1.3 Verdana,sans-serif;color:light-dark(rgb(32 52 77),rgb(220 229 241));background:light-dark(rgb(232 238 245),rgb(42 53 68));}.schema-table,.schema-edge{color-scheme:light dark;}@scope ([data-color-mode=dark],.vscode-dark,.vscode-high-contrast,[data-theme=dark]){.schema-table,.schema-edge{color-scheme:dark;}}@scope ([data-color-mode=light],.vscode-light,.vscode-high-contrast-light,[data-theme=light]){.schema-table,.schema-edge{color-scheme:light;}}","flowchart":{"padding":0.01,"wrappingWidth":100000,"rankSpacing":24,"nodeSpacing":18,"curve":"linear","subGraphTitleMargin":{"top":0,"bottom":0}}}}%%
+flowchart TB
+subgraph row_0[" "]
+direction LR
+table_0["<table class='schema-table'><thead><tr><th colspan='3'>app_settings</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>id</td><td class='typeNumber'>int</td><td class='primaryKey'>PK</td></tr><tr><td>global_gpt_usages_left</td><td class='typeNumber'>int</td><td class='plainConstraint'>NOT NULL</td></tr></tbody></table>"]
+end
+style row_0 fill:transparent,stroke:transparent
+subgraph row_1[" "]
+direction LR
+table_1["<table class='schema-table'><thead><tr><th colspan='3'>artist</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>artist_id</td><td class='typeText'>varchar</td><td class='primaryKey'>PK</td></tr><tr><td>artist_name</td><td class='typeText'>varchar</td><td class='plainConstraint'>NOT NULL</td></tr></tbody></table>"]
+table_2["<table class='schema-table'><thead><tr><th colspan='3'>artist_genres</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>artist_id</td><td class='typeText'>varchar</td><td class='primaryKey'>PK, FK</td></tr><tr><td>genre</td><td class='typeText'>varchar</td><td class='primaryKey'>PK</td></tr></tbody></table>"]
+table_7["<table class='schema-table'><thead><tr><th colspan='3'>spotify_user_enriched_artists</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>spotify_id</td><td class='typeText'>varchar</td><td class='primaryKey'>PK, FK</td></tr><tr><td>artist_id</td><td class='typeText'>varchar</td><td class='primaryKey'>PK, FK</td></tr></tbody></table>"]
+table_2 ~~~ table_7
+end
+style row_1 fill:transparent,stroke:transparent
+row_0 ~~~ row_1
+subgraph row_2[" "]
+direction LR
+table_6["<table class='schema-table'><thead><tr><th colspan='3'>spotify_user</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>spotify_id</td><td class='typeText'>varchar</td><td class='primaryKey'>PK</td></tr><tr><td>display_name</td><td class='typeText'>varchar</td><td class='plainConstraint'>NOT NULL</td></tr><tr><td>gpt_usages_left</td><td class='typeNumber'>int</td><td class='plainConstraint'>NOT NULL</td></tr></tbody></table>"]
+table_4["<table class='schema-table'><thead><tr><th colspan='3'>shared_link</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>id</td><td class='typeText'>uuid</td><td class='primaryKey'>PK</td></tr><tr><td>user_id</td><td class='typeText'>varchar</td><td class='foreignKey'>FK, UK · NOT NULL</td></tr><tr><td>share_code</td><td class='typeText'>varchar(12)</td><td class='uniqueKey'>UK · NOT NULL</td></tr><tr><td>created_at</td><td class='typeDateTime'>timestamptz</td><td class='plainConstraint'>NOT NULL</td></tr><tr><td>expires_at</td><td class='typeDateTime'>timestamptz</td><td class='plainConstraint'>NOT NULL</td></tr></tbody></table>"]
+table_5["<table class='schema-table'><thead><tr><th colspan='3'>shared_link_artist</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>shared_link_id</td><td class='typeText'>uuid</td><td class='foreignKey'>FK, UK · NOT NULL</td></tr><tr><td>artist_id</td><td class='typeText'>varchar</td><td class='uniqueKey'>UK · NOT NULL</td></tr></tbody></table>"]
+end
+style row_2 fill:transparent,stroke:transparent
+row_1 ~~~ row_2
+subgraph row_3[" "]
+direction LR
+table_3["<table class='schema-table'><thead><tr><th colspan='3'>development_access_requests</th></tr><tr><th>Column name</th><th>Data type</th><th>Constraints</th></tr></thead><tbody><tr><td>id</td><td class='typeText'>uuid</td><td class='primaryKey'>PK</td></tr><tr><td>email</td><td class='typeText'>varchar(255)</td><td class='plainConstraint'>NOT NULL</td></tr><tr><td>message</td><td class='typeText'>text</td><td class='plainConstraint'>—</td></tr><tr><td>ip_address</td><td class='typeText'>varchar(45)</td><td class='plainConstraint'>—</td></tr><tr><td>user_agent</td><td class='typeText'>text</td><td class='plainConstraint'>—</td></tr><tr><td>created_at</td><td class='typeDateTime'>timestamptz</td><td class='plainConstraint'>—</td></tr><tr><td>status</td><td class='typeText'>varchar(50)</td><td class='plainConstraint'>—</td></tr></tbody></table>"]
+end
+style row_3 fill:transparent,stroke:transparent
+row_2 ~~~ row_3
+table_2 -->|"<span class='schema-edge'>artist_id<br/>0..* → 1</span>"| table_1
+table_7 -->|"<span class='schema-edge'>spotify_id<br/>0..* → 1</span>"| table_6
+table_7 -->|"<span class='schema-edge'>artist_id<br/>0..* → 1</span>"| table_1
+table_4 -.->|"<span class='schema-edge'>user_id<br/>0..1 → 1</span>"| table_6
+table_5 -.->|"<span class='schema-edge'>shared_link_id<br/>0..* → 1</span>"| table_4
+classDef schemaNode fill:transparent,stroke:transparent
+class table_0,table_1,table_2,table_3,table_4,table_5,table_6,table_7 schemaNode
 ```
 <!-- mermerd-end -->
 
