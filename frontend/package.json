@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "prod": "next build && next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -33,5 +33,6 @@
     "eslint-config-next": "16.2.6",
     "typescript": "6.0.3",
     "vitest": "^4.0.0"
-  }
+  },
+  "repository": "https://github.com/taonity/artist-insight-service"
 }

@@ -27,6 +27,11 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG GIT_COMMIT_SHA=unknown
+ARG GIT_COMMIT_SHORT=unknown
+ARG GIT_BRANCH=unknown
+ARG APP_VERSION=
+ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA GIT_COMMIT_SHORT=$GIT_COMMIT_SHORT GIT_BRANCH=$GIT_BRANCH APP_VERSION=$APP_VERSION
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

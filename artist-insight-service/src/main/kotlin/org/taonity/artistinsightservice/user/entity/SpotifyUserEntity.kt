@@ -15,6 +15,9 @@ class SpotifyUserEntity(
     val spotifyId: String,
     var displayName: String,
     var gptUsagesLeft: Int,
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @jakarta.persistence.Column(nullable = false)
+    var consoleRole: org.taonity.artistinsightservice.console.entity.ConsoleRole = org.taonity.artistinsightservice.console.entity.ConsoleRole.NONE,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf()

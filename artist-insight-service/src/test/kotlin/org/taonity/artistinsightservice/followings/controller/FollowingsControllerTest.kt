@@ -23,7 +23,7 @@ class FollowingsControllerTest: ControllerTestsBaseClass() {
     fun `followings raw`() {
         val session = authorizeOAuth2()
 
-        val mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/followings").session(session))
+        val mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/followings").cookie(session))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 
@@ -46,7 +46,7 @@ class FollowingsControllerTest: ControllerTestsBaseClass() {
     fun `followings enriched`() {
         val session = authorizeOAuth2()
 
-        val mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/followings/enriched").session(session))
+        val mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/followings/enriched").cookie(session))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 

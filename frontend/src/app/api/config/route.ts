@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server'
-
-// Ensure this route is always dynamically rendered
+import { getServerEnv } from '@/lib/env'
 export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
-
-export async function GET() {
-  return NextResponse.json({
-    csrfCookieName: process.env.CSRF_COOKIE_NAME || '',
-    publicBackendUrl: process.env.PUBLIC_BACKEND_URL || '',
-  })
+export function GET() {
+  const { profile, publicBackendUrl, csrfCookieName, kofiUrl } = getServerEnv()
+  return NextResponse.json({ profile, publicBackendUrl, csrfCookieName, kofiUrl })
 }

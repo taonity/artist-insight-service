@@ -15,18 +15,52 @@ spring:
             client-secret: 12b123b7c2ea4cf28abc83f3e12345de
             authorization-grant-type: client_credentials
             scope: user-follow-read, user-read-private
+          stub-owner:
+            provider: stub-owner
+            client-id: 1234e12345678fafbd90fdce7540e12e
+            client-secret: 12b123b7c2ea4cf28abc83f3e12345de
+            authorization-grant-type: authorization_code
+            scope: user-follow-read, user-read-private
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          stub-admin:
+            provider: stub-admin
+            client-id: 1234e12345678fafbd90fdce7540e12e
+            client-secret: 12b123b7c2ea4cf28abc83f3e12345de
+            authorization-grant-type: authorization_code
+            scope: user-follow-read, user-read-private
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          stub-user:
+            provider: stub-user
+            client-id: 1234e12345678fafbd90fdce7540e12e
+            client-secret: 12b123b7c2ea4cf28abc83f3e12345de
+            authorization-grant-type: authorization_code
+            scope: user-follow-read, user-read-private
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           spotify:
             issuer-uri: http://127.0.0.1:8100
             user-info-uri: http://127.0.0.1:8100/v1/me
-            userNameAttribute: display_name
+            user-name-attribute: id
+          stub-owner:
+            authorization-uri: http://127.0.0.1:8100/oauth2/v2/auth
+            token-uri: http://127.0.0.1:8100/api/token
+            user-info-uri: http://127.0.0.1:8100/v1/me-owner
+            user-name-attribute: id
+          stub-admin:
+            authorization-uri: http://127.0.0.1:8100/oauth2/v2/auth
+            token-uri: http://127.0.0.1:8100/api/token
+            user-info-uri: http://127.0.0.1:8100/v1/me-admin
+            user-name-attribute: id
+          stub-user:
+            authorization-uri: http://127.0.0.1:8100/oauth2/v2/auth
+            token-uri: http://127.0.0.1:8100/api/token
+            user-info-uri: http://127.0.0.1:8100/v1/me-user
+            user-name-attribute: id
 app:
   default-success-url: http://127.0.0.1:3000
   login-url: http://127.0.0.1:3000/login
-
 spotify:
   api-base-url: http://127.0.0.1:8100/v1
-
 logging:
   level:
     WireMock: warn

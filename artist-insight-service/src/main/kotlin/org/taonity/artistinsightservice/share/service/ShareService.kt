@@ -24,13 +24,13 @@ class ShareService(
     private val sharedLinkArtistRepository: SharedLinkArtistRepository,
     private val spotifyUserService: SpotifyUserService,
     private val spotifyService: SpotifyService,
+    private val settings: org.taonity.artistinsightservice.settings.service.RuntimeSettings,
     private val artistRepository: ArtistRepository
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
         private const val SHARE_CODE_LENGTH = 8
         private const val SHARE_CODE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        private const val EXPIRATION_DAYS = 30L
     }
 
     @Transactional
@@ -41,7 +41,7 @@ class ShareService(
         val existingLink = sharedLinkRepository.findByUserId(spotifyId)
         
         val sharedLink = if (existingLink != null) {
-            existingLink.expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
+            existingLink.expiresAt = OffsetDateTime.now().plusDays(settings.effective().shareLifetimeDays.toLong())
             sharedLinkArtistRepository.deleteAllBySharedLinkId(existingLink.id)
             existingLink.artists.clear()
             existingLink.addArtists(artistIds)
@@ -52,7 +52,7 @@ class ShareService(
             val newLink = SharedLinkEntity(
                 user = user,
                 shareCode = shareCode,
-                expiresAt = OffsetDateTime.now().plusDays(EXPIRATION_DAYS)
+                expiresAt = OffsetDateTime.now().plusDays(settings.effective().shareLifetimeDays.toLong())
             )
             newLink.addArtists(artistIds)
             sharedLinkRepository.save(newLink)

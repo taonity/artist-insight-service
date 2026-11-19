@@ -1,167 +1,136 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Release
-
 on:
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: 'Skip backend and front-end validation jobs for this release run'
-        required: false
+        description: Skip validation for this release
         type: boolean
         default: false
   push:
-    branches:
-      - main
-
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   prepare:
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
     runs-on: ubuntu-latest
-
     outputs:
-      skip_tests: ${{ steps.determine_test_mode.outputs.skip_tests }}
-
+      skip_tests: ${{ steps.mode.outputs.skip_tests }}
     steps:
-    - name: Determine whether to skip tests
-      id: determine_test_mode
-      env:
-        COMMIT_MESSAGE: ${{ github.event.head_commit.message || '' }}
-        MANUAL_SKIP_TESTS: ${{ inputs.skip_tests || false }}
-      run: |
-        skip_tests=false
-
-        if [[ "$MANUAL_SKIP_TESTS" == "true" || "$COMMIT_MESSAGE" == *"[skip tests]"* ]]; then
-          skip_tests=true
-        fi
-
-        echo "skip_tests=$skip_tests" >> "$GITHUB_OUTPUT"
-        echo "Release skip_tests=$skip_tests"
-
+      - id: mode
+        env:
+          MANUAL_SKIP: ${{ inputs.skip_tests || false }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || '' }}
+        run: |
+          skip_tests=false
+          if [[ "$MANUAL_SKIP" == "true" || "$COMMIT_MESSAGE" == *"[skip tests]"* ]]; then skip_tests=true; fi
+          echo "skip_tests=$skip_tests" >> "$GITHUB_OUTPUT"
   backend-validation:
     needs: prepare
     if: needs.prepare.outputs.skip_tests != 'true'
     uses: ./.github/workflows/backend-validation.yml
-
   frontend-validation:
     needs: prepare
     if: needs.prepare.outputs.skip_tests != 'true'
     uses: ./.github/workflows/frontend-validation.yml
-
-  release:
-    needs:
-      - prepare
-      - backend-validation
-      - frontend-validation
-    if: ${{ always() && (needs.prepare.outputs.skip_tests == 'true' || (needs.backend-validation.result == 'success' && needs.frontend-validation.result == 'success')) }}
-    permissions: write-all
+  release-prepare:
+    needs: [prepare, backend-validation, frontend-validation]
+    if: ${{ !cancelled() && needs.prepare.result == 'success' && (needs.prepare.outputs.skip_tests == 'true' || (needs.backend-validation.result == 'success' && needs.frontend-validation.result == 'success')) }}
     runs-on: ubuntu-latest
-
+    outputs:
+      raw_tag: ${{ steps.version.outputs.new_tag }}
+      version: ${{ steps.number.outputs.version }}
     steps:
-    - uses: actions/checkout@v6
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-
-    - name: Extract back-end maven artifactId
-      id: extract_backend_artifact_id
-      run: |
-        artifactId=$(mvn -pl artist-insight-service help:evaluate "-Dexpression=project.artifactId" -q -DforceStdout)
-        echo "artifactId=$artifactId" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted artifactId $artifactId"
-
-    - name: Extract back-end maven version
-      id: extract_backend_version
-      run: |
-        backendVersion=$(mvn -pl artist-insight-service help:evaluate "-Dexpression=project.version" -q -DforceStdout)
-        echo "backendVersion=$backendVersion" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted backendVersion $backendVersion"
-
-    - name: Extract front-end npm packageName
-      id: extract_frontend_package_name
-      run: |
-        packageName=$(grep '"name"' frontend/package.json | head -n 1 | sed -E 's/.*"name": "([^"]+)".*/\1/')
-        echo "packageName=$packageName" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted packageName $packageName"
-
-    - name: Build back-end with Maven and optionally run tests
-      run: |
-        mvn -v
-        mvn -B -P build-docker-image package -DskipTests
-
-    - name: Bump version and push tag
-      id: github_tag_action
-      uses: anothrNick/github-tag-action@1.70.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.TAGGING_GITHUB_TOKEN }}
-        WITH_V: true
-
-    - name: Extract tag
-      id: extract_tag
-      run: |
-        raw_tag=${{ steps.github_tag_action.outputs.new_tag  }}
-        tag=${raw_tag:1}
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
-        echo "Successfully extracted tag $tag"
-
-    - name: Retag back-end docker image
-      run: |
-        username=${{ secrets.DOCKER_USERNAME }}
-        artifactId=${{ steps.extract_backend_artifact_id.outputs.artifactId }}
-        backendVersion=${{ steps.extract_backend_version.outputs.backendVersion }}
-        tag=${{ steps.extract_tag.outputs.tag }}
-        docker tag "generaltao725/$artifactId:$backendVersion" "$username/$artifactId:$tag"
-        docker tag "generaltao725/$artifactId:$backendVersion" "$username/$artifactId:latest"
-
-    - name: Build front-end docker image
-      run: |
-        tag=${{ steps.extract_tag.outputs.tag }}
-        docker build -t generaltao725/artist-insight-frontend -t generaltao725/artist-insight-frontend:$tag frontend/
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v4
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Push front-end image to DockerHub
-      run: |
-        username=${{ secrets.DOCKER_USERNAME }}
-        packageName=${{ steps.extract_frontend_package_name.outputs.packageName }}
-        tag=${{ steps.extract_tag.outputs.tag }}
-        docker push "$username/$packageName:$tag"
-        docker push "$username/$packageName:latest"
-
-    - name: Push back-end image to DockerHub
-      run: |
-        username=${{ secrets.DOCKER_USERNAME }}
-        artifactId=${{ steps.extract_backend_artifact_id.outputs.artifactId }}
-        tag=${{ steps.extract_tag.outputs.tag }}
-        docker push "$username/$artifactId:$tag"
-        docker push "$username/$artifactId:latest"
-
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - id: version
+        uses: anothrNick/github-tag-action@1.70.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.TAGGING_GITHUB_TOKEN }}
+          WITH_V: true
+          DRY_RUN: true
+      - id: number
+        env:
+          RAW_TAG: ${{ steps.version.outputs.new_tag }}
+        run: echo "version=${RAW_TAG#v}" >> "$GITHUB_OUTPUT"
+  release-backend:
+    needs: release-prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      - name: Build release image
+        env:
+          RAW_TAG: ${{ needs.release-prepare.outputs.raw_tag }}
+        run: mvn -B -P build-docker-image package -DskipTests "-Dgit.tag=$RAW_TAG"
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Publish backend image
+        env:
+          REGISTRY: ${{ secrets.DOCKER_USERNAME }}
+          VERSION: ${{ needs.release-prepare.outputs.version }}
+        run: |
+          docker tag "generaltao725/artist-insight-service:$VERSION" "$REGISTRY/artist-insight-service:$VERSION"
+          docker tag "generaltao725/artist-insight-service:$VERSION" "$REGISTRY/artist-insight-service:latest"
+          docker push "$REGISTRY/artist-insight-service:$VERSION"
+          docker push "$REGISTRY/artist-insight-service:latest"
+  release-frontend:
+    needs: release-prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build frontend image
+        env:
+          REGISTRY: ${{ secrets.DOCKER_USERNAME }}
+          VERSION: ${{ needs.release-prepare.outputs.version }}
+        run: |
+          docker build --build-arg GIT_COMMIT_SHA="$GITHUB_SHA" --build-arg GIT_COMMIT_SHORT="${GITHUB_SHA:0:7}" --build-arg GIT_BRANCH="$GITHUB_REF_NAME" --build-arg APP_VERSION="$VERSION" -t "$REGISTRY/artist-insight-frontend:$VERSION" -t "$REGISTRY/artist-insight-frontend:latest" frontend/
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Publish frontend image
+        env:
+          REGISTRY: ${{ secrets.DOCKER_USERNAME }}
+          VERSION: ${{ needs.release-prepare.outputs.version }}
+        run: |
+          docker push "$REGISTRY/artist-insight-frontend:$VERSION"
+          docker push "$REGISTRY/artist-insight-frontend:latest"
+  release-finalize:
+    needs: [release-prepare, release-backend, release-frontend]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.TAGGING_GITHUB_TOKEN }}
+      - name: Publish completed release tag
+        env:
+          RAW_TAG: ${{ needs.release-prepare.outputs.raw_tag }}
+        run: |
+          git tag "$RAW_TAG"
+          git push origin "$RAW_TAG"
   update-erd:
-    needs: release
+    needs: release-finalize
     uses: ./.github/workflows/update-erd.yml
     with:
       force_generate: false
     permissions:
       contents: write
-
   deploy-stage:
-    needs: release
+    needs: release-finalize
     uses: taonity/docker-webhook/.github/workflows/deploy.yml@main
     with:
       project_name: artist-insight-service
@@ -169,15 +138,12 @@ jobs:
     secrets:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-
   approve-prod:
     needs: deploy-stage
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Approved for production
-        run: echo "Production deployment approved"
-
+      - run: echo "Production deployment approved"
   deploy-prod:
     needs: approve-prod
     uses: taonity/docker-webhook/.github/workflows/deploy.yml@main
@@ -187,4 +153,25 @@ jobs:
     secrets:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-
+  notify-stage:
+    needs: deploy-stage
+    if: ${{ always() && vars.ENABLE_DEPLOY_NOTIFICATIONS == 'true' && (needs.deploy-stage.result == 'success' || needs.deploy-stage.result == 'failure') }}
+    uses: ./.github/workflows/notify.yml
+    with:
+      environment: stage
+      status: ${{ needs.deploy-stage.result }}
+    secrets:
+      NTFY_URL: ${{ secrets.NTFY_URL }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+  notify-prod:
+    needs: deploy-prod
+    if: ${{ always() && vars.ENABLE_DEPLOY_NOTIFICATIONS == 'true' && (needs.deploy-prod.result == 'success' || needs.deploy-prod.result == 'failure') }}
+    uses: ./.github/workflows/notify.yml
+    with:
+      environment: prod
+      status: ${{ needs.deploy-prod.result }}
+    secrets:
+      NTFY_URL: ${{ secrets.NTFY_URL }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}

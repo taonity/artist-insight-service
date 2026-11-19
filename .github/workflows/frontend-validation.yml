@@ -19,6 +19,9 @@ jobs:
     - name: Install front-end dependencies
       run: npm ci --prefix frontend
 
+    - name: Lint front-end
+      run: npm run lint --prefix frontend
+
     - name: Build front-end
       run: npm run build --prefix frontend
 

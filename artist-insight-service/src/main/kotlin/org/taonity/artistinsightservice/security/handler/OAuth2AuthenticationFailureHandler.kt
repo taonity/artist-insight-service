@@ -17,7 +17,7 @@ enum class AuthenticationErrorCode {
 
 @Component
 class OAuth2AuthenticationFailureHandler(
-    @Value("\${app.login-url}") private val loginUrl: String,
+    private val properties: org.taonity.artistinsightservice.common.config.AppProperties,
     @Value("\${server.servlet.session.cookie.domain}") private val cookieDomain: String
 ) : SimpleUrlAuthenticationFailureHandler() {
 
@@ -46,12 +46,12 @@ class OAuth2AuthenticationFailureHandler(
             .path("/")
             .maxAge(60)
             .httpOnly(false)
-            .secure(loginUrl.startsWith("https"))
-            .sameSite(if (loginUrl.startsWith("https")) "None" else "Lax")
+            .secure(properties.loginUrl.startsWith("https"))
+            .sameSite(if (properties.loginUrl.startsWith("https")) "None" else "Lax")
             .domain(cookieDomain)
             .build()
         response.addHeader("Set-Cookie", cookie.toString())
 
-        redirectStrategy.sendRedirect(request, response, loginUrl)
+        redirectStrategy.sendRedirect(request, response, properties.loginUrl)
     }
 }

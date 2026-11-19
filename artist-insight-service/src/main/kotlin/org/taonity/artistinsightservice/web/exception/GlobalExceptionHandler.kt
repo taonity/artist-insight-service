@@ -34,6 +34,15 @@ class GlobalExceptionHandler {
             .body(ServerErrorResponse(ServerErrorCode.UNKNOWN))
     }
 
+    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleForbiddenException::class)
+    fun consoleForbidden(e: RuntimeException) = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ClientErrorResponse(ClientErrorCode.FORBIDDEN, e.message ?: "Forbidden"))
+
+    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleNotFoundException::class)
+    fun consoleNotFound(e: RuntimeException) = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ClientErrorResponse(ClientErrorCode.NOT_FOUND, e.message ?: "Not found"))
+
+    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleValidationException::class, org.springframework.web.method.annotation.MethodArgumentTypeMismatchException::class)
+    fun consoleValidation(e: Exception) = ResponseEntity.badRequest().body(ClientErrorResponse(ClientErrorCode.VALIDATION_ERROR, if (e is org.taonity.artistinsightservice.console.exception.ConsoleValidationException) e.message ?: "Invalid value" else "Invalid query parameter"))
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException::class)
     fun handleException(e: NoResourceFoundException) {

@@ -5,6 +5,7 @@ import org.springframework.boot.runApplication
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
 
+@org.springframework.boot.context.properties.ConfigurationPropertiesScan
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync

@@ -6,6 +6,7 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Component
 
 @Component
+@org.springframework.boot.autoconfigure.condition.ConditionalOnBean(BuildProperties::class)
 class BuildPropertiesLogging(
     private val buildProperties: BuildProperties
 

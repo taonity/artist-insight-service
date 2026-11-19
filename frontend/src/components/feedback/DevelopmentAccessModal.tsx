@@ -22,11 +22,13 @@ export default function DevelopmentAccessModal({
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
+  const [csrfCookieName, setCsrfCookieName] = useState('')
 
   useEffect(() => {
-    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
-  }, [])
+    void getRuntimeConfig()
+      .then((config) => setCsrfCookieName(config.csrfCookieName))
+      .catch(() => onError?.('Unable to load application configuration. Please refresh.'))
+  }, [onError])
 
   const resetForm = () => {
     setEmail('')
@@ -96,8 +98,8 @@ export default function DevelopmentAccessModal({
 
         <div className="modal-body">
           <p>
-            Your Spotify account is not currently authorized for this application. Please provide your contact
-            information to request development access.
+            Your Spotify account is not currently authorized for this application. Please provide
+            your contact information to request development access.
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -134,7 +136,12 @@ export default function DevelopmentAccessModal({
             </div>
 
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={handleClose} disabled={isSubmitting}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleClose}
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
               <button

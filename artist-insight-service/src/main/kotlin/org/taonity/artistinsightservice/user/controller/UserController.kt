@@ -21,8 +21,9 @@ class UserController(
     }
 
     @DeleteMapping("/user")
-    fun deleteUser(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<Void> {
+    fun deleteUser(@AuthenticationPrincipal principal: SpotifyUserPrincipal, request: jakarta.servlet.http.HttpServletRequest, response: jakarta.servlet.http.HttpServletResponse): ResponseEntity<Void> {
         spotifyUserService.deleteUserBySpotifyId(principal.getSpotifyId())
+        org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler().logout(request, response, org.springframework.security.core.context.SecurityContextHolder.getContext().authentication)
         return ResponseEntity.noContent().build()
     }
 }

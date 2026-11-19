@@ -1,8 +1,13 @@
 services:
   frontend:
-    image: generaltao725/artist-insight-frontend:latest
-    env_file:
-      - ../${COMPOSE_ENV_FILE:-.env}
+    image: ${DOCKER_REGISTRY:-generaltao725}/artist-insight-frontend:${IMAGE_TAG:-latest}
+    environment:
+      FRONTEND_PROFILE: ${FRONTEND_PROFILE:?FRONTEND_PROFILE must be set}
+      LOCAL_BACKEND_URL: http://app:8080
+      PUBLIC_BACKEND_URL: ${PUBLIC_BACKEND_URL:?PUBLIC_BACKEND_URL must be set}
+      CSRF_COOKIE_NAME: ${CSRF_COOKIE_NAME:?CSRF_COOKIE_NAME must be set}
+      KOFI_URL: ${KOFI_URL:-https://ko-fi.com}
+      BACKEND_REQUEST_TIMEOUT_MS: ${BACKEND_REQUEST_TIMEOUT_MS:-60000}
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/actuator/health"]
       interval: 10s

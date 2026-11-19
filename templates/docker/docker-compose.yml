@@ -3,55 +3,32 @@ services:
     extends:
       file: db/docker-compose.yml
       service: db
-    networks:
-      backend:
-
+    networks: [backend]
   flyway:
     extends:
       file: flyway/docker-compose.yml
       service: flyway
-    networks:
-      backend:
+    networks: [backend]
     depends_on:
       db:
         condition: service_healthy
-
   app:
     extends:
       file: app/docker-compose.yml
       service: app
-    networks:
-      backend:
-      prodenv-shared-internal:
-        aliases:
-          - ${COMPOSE_PROJECT_NAME}-app
-      artist-insight-shared:
-        aliases:
-          - ${COMPOSE_PROJECT_NAME}-app
+    networks: [backend]
     depends_on:
       flyway:
         condition: service_completed_successfully
-
   frontend:
     extends:
       file: frontend/docker-compose.yml
       service: frontend
-    networks:
-      prodenv-shared-internal:
-        aliases:
-          - ${COMPOSE_PROJECT_NAME}-frontend
+    networks: [backend]
     depends_on:
       app:
         condition: service_healthy
-
 volumes:
   volume-db:
-  volume-db-backup:
-
 networks:
   backend:
-# TODO: rename that network
-  prodenv-shared-internal:
-    external: true
-  artist-insight-shared:
-    external: true

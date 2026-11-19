@@ -21,20 +21,35 @@ export function useSettingsPage() {
   const router = useRouter()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
+  const [csrfCookieName, setCsrfCookieName] = useState('')
   const [shareLink, setShareLink] = useState<ShareLink | null>(null)
   const [shareLinkLoading, setShareLinkLoading] = useState(true)
   const user = useUser({ onError: setErrorMessage })
 
+  async function loadShareLinkStatus() {
+    try {
+      setShareLink(await fetchShareLinkStatus())
+    } catch (error) {
+      logError('SettingsPage', 'Failed to load share link status', error)
+    } finally {
+      setShareLinkLoading(false)
+    }
+  }
+
   useEffect(() => {
-    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
+    void getRuntimeConfig()
+      .then((config) => setCsrfCookieName(config.csrfCookieName))
+      .catch(() => setErrorMessage('Unable to load application configuration. Please refresh.'))
     void loadShareLinkStatus()
   }, [])
 
   const handleLogout = async () => {
     const xsrfToken = getCookie(csrfCookieName)
     if (!xsrfToken) {
-      logError('SettingsPage', `CSRF token not found for logout with CSRF_COOKIE_NAME=${csrfCookieName}`)
+      logError(
+        'SettingsPage',
+        `CSRF token not found for logout with CSRF_COOKIE_NAME=${csrfCookieName}`,
+      )
       setErrorMessage(csrfErrorMessage)
       return
     }
@@ -52,13 +67,18 @@ export function useSettingsPage() {
   }
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    if (
+      !window.confirm('Are you sure you want to delete your account? This action cannot be undone.')
+    ) {
       return
     }
 
     const xsrfToken = getCookie(csrfCookieName)
     if (!xsrfToken) {
-      logError('SettingsPage', `CSRF token not found for delete account with CSRF_COOKIE_NAME=${csrfCookieName}`)
+      logError(
+        'SettingsPage',
+        `CSRF token not found for delete account with CSRF_COOKIE_NAME=${csrfCookieName}`,
+      )
       setErrorMessage(csrfErrorMessage)
       return
     }
@@ -96,16 +116,6 @@ export function useSettingsPage() {
       setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
       setIsProcessing(false)
-    }
-  }
-
-  const loadShareLinkStatus = async () => {
-    try {
-      setShareLink(await fetchShareLinkStatus())
-    } catch (error) {
-      logError('SettingsPage', 'Failed to load share link status', error)
-    } finally {
-      setShareLinkLoading(false)
     }
   }
 

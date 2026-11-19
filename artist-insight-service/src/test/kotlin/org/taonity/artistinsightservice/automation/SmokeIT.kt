@@ -61,7 +61,7 @@ private class DockerComposeProject(
 
     private val isWindows = System.getProperty("os.name").startsWith("Windows", ignoreCase = true)
     private val objectMapper = jacksonObjectMapper()
-    private val sharedNetworks = listOf("prodenv-shared-internal", "artist-insight-shared")
+    private val sharedNetworks = emptyList<String>()
     private var logFollower: Process? = null
     private var logFollowerThread: Thread? = null
 

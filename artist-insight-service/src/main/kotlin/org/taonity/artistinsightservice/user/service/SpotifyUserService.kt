@@ -14,7 +14,9 @@ import org.taonity.artistinsightservice.user.repository.UserArtistLinkRepository
 class SpotifyUserService(
     private val spotifyUserRepository: SpotifyUserRepository,
     private val userArtistLinkRepository: UserArtistLinkRepository,
-    @Value("\${app.initial-user-gpt-usages}") private val initialUserGptUsages: Int
+    private val runtimeSettings: org.taonity.artistinsightservice.settings.service.RuntimeSettings,
+    private val sessionCleanup: org.taonity.artistinsightservice.security.service.SessionCleanup,
+    private val properties: org.taonity.artistinsightservice.common.config.AppProperties
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -37,9 +39,12 @@ class SpotifyUserService(
                 SpotifyUserEntity(
                     spotifyUserPrincipal.getSpotifyId(),
                     spotifyUserPrincipal.getDisplayName(),
-                    initialUserGptUsages
+                    runtimeSettings.effective().initialUserGptUsages
                 )
             )
+        if (spotifyUserPrincipal.getSpotifyId() in properties.console.ownerSpotifyIds) {
+            findBySpotifyIdOrThrow(spotifyUserPrincipal.getSpotifyId()).consoleRole = org.taonity.artistinsightservice.console.entity.ConsoleRole.OWNER
+        }
     }
 
     @Transactional
@@ -49,6 +54,7 @@ class SpotifyUserService(
             return
         }
 
+        sessionCleanup.deleteUserSessionsAndCredentials(spotifyId)
         userArtistLinkRepository.deleteAllByUserSpotifyId(spotifyId)
         spotifyUserRepository.deleteById(spotifyId)
     }

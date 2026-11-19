@@ -48,7 +48,7 @@ class UserControllerTest: ControllerTestsBaseClass() {
 
         val userMvcResult = mockMvc.perform(
             MockMvcRequestBuilders.get("/user")
-                .session(mockHttpSession))
+                .cookie(mockHttpSession))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 
@@ -64,19 +64,19 @@ class UserControllerTest: ControllerTestsBaseClass() {
         // Verify user exists
         mockMvc.perform(
             MockMvcRequestBuilders.get("/user")
-                .session(mockHttpSession))
+                .cookie(mockHttpSession))
             .andExpect(MockMvcResultMatchers.status().isOk)
 
         // Delete user
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/user")
-                .session(mockHttpSession)
+                .cookie(mockHttpSession)
                 .with(csrf()))
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/user")
-                .session(mockHttpSession))
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
+                .cookie(mockHttpSession))
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
     }
 }

@@ -30,8 +30,11 @@ class ShareServiceTest {
     private val spotifyService: SpotifyService = mock()
     private val artistRepository: ArtistRepository = mock()
 
+    private val settings = mock<org.taonity.artistinsightservice.settings.service.RuntimeSettings>().also {
+        `when`(it.effective()).thenReturn(org.taonity.artistinsightservice.settings.service.EffectiveSettings(10, java.math.BigDecimal("0.1"), 30, 90, "0 30 3 * * *", 100))
+    }
     private val service = ShareService(
-        sharedLinkRepository, sharedLinkArtistRepository, spotifyUserService, spotifyService, artistRepository
+        sharedLinkRepository, sharedLinkArtistRepository, spotifyUserService, spotifyService, settings, artistRepository
     )
 
     private val testUser = SpotifyUserEntity("spotify-123", "TestUser", 10)

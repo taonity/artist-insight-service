@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.web.exception
 
 enum class ClientErrorCode {
+    FORBIDDEN, NOT_FOUND,
     MISSING_FIELD,
     VALIDATION_ERROR,
     TOO_MANY_REQUESTS,

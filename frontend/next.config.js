@@ -1,3 +1,4 @@
+const packageJson = require('./package.json')
 const { execSync } = require('child_process')
 
 function git(command) {
@@ -15,16 +16,17 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'i.scdn.co'
-      }
-    ]
+        hostname: 'i.scdn.co',
+      },
+    ],
   },
   output: 'standalone',
   env: {
+    APP_VERSION: process.env.APP_VERSION || packageJson.version,
     BUILD_TIME: new Date().toISOString(),
-    GIT_COMMIT_SHA: git('rev-parse HEAD'),
-    GIT_COMMIT_SHORT: git('rev-parse --short HEAD'),
-    GIT_BRANCH: git('rev-parse --abbrev-ref HEAD'),
+    GIT_COMMIT_SHA: process.env.GIT_COMMIT_SHA || git('rev-parse HEAD'),
+    GIT_COMMIT_SHORT: process.env.GIT_COMMIT_SHORT || git('rev-parse --short HEAD'),
+    GIT_BRANCH: process.env.GIT_BRANCH || git('rev-parse --abbrev-ref HEAD'),
   },
 }
 module.exports = nextConfig

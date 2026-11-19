@@ -1,0 +1,17 @@
+{
+  "request": {
+    "url": "/v1/me-admin",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": "stub-admin",
+      "display_name": "Local Admin",
+      "images": []
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -10,7 +10,7 @@ import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestStatus
 import java.util.UUID
 
 @Repository
-interface DevAccessRepository : JpaRepository<DevAccessRequestEntity, UUID> {
+interface DevAccessRepository : JpaRepository<DevAccessRequestEntity, UUID>, org.springframework.data.jpa.repository.JpaSpecificationExecutor<DevAccessRequestEntity> {
 
     @Transactional
     @Modifying

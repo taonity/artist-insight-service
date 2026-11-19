@@ -6,7 +6,7 @@ import org.taonity.artistinsightservice.artist.repository.ArtistGenreRepository
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.settings.repository.AppSettingsRepository
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Component
 class AppMetricsComponent(
@@ -27,7 +27,7 @@ class AppMetricsComponent(
     fun init() {
         meterRegistry.gauge(APP_USERS_COUNT, spotifyUserRepository) { it.count().toDouble() }
         meterRegistry.gauge(APP_GLOBAL_GPT_USAGES_COUNT, appSettingsRepository) {
-            it.findById(0).get().globalGptUsagesLeft.toDouble()
+            it.findById(0).orElse(null)?.globalGptUsagesLeft?.toDouble() ?: 0.0
         }
         meterRegistry.gauge(APP_ARTISTS_COUNT, artistRepository) { it.count().toDouble() }
         meterRegistry.gauge(APP_GENRES_COUNT, artistGenreRepository) { it.count().toDouble() }

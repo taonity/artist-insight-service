@@ -3,41 +3,30 @@ package org.taonity.artistinsightservice.security.principal
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.taonity.artistinsightservice.artist.dto.SafePrivateUserObject
+import org.taonity.spotify.model.ImageObject
+import java.io.Serializable
 
-class SpotifyUserPrincipal(
-    private val authorities: Collection<GrantedAuthority>,
-    private val attributes: Map<String, Any>,
-    val privateUserObject: SafePrivateUserObject,
-    private val nameAttributeKey: String
-) : OAuth2User {
-    override fun getName(): String {
-        return nameAttributeKey
+/** Persist only application-owned values, never generated Spotify model objects. */
+class SpotifyUserPrincipal private constructor(
+    private val grantedAuthorities: Collection<GrantedAuthority>,
+    private val spotifyId: String,
+    private val displayName: String,
+    private val images: List<SessionImage>,
+) : OAuth2User, Serializable {
+    private data class SessionImage(val url: String, val height: Int?, val width: Int?) : Serializable {
+        companion object { private const val serialVersionUID = 1L }
     }
-
-    override fun getAttributes(): Map<String, Any> {
-        return attributes
-    }
-
-    override fun getAuthorities(): Collection<GrantedAuthority> {
-        return authorities
-    }
-
-    fun getSpotifyId(): String {
-        return privateUserObject.id
-    }
-
-    fun getDisplayName(): String {
-        return privateUserObject.displayName
-    }
-
+    val privateUserObject: SafePrivateUserObject get() = SafePrivateUserObject(spotifyId, displayName,
+        images.map { image -> ImageObject().apply { url = image.url; height = image.height; width = image.width } }.toMutableList())
+    override fun getName(): String = spotifyId
+    override fun getAuthorities(): Collection<GrantedAuthority> = grantedAuthorities
+    override fun getAttributes(): Map<String, Any> = mapOf("id" to spotifyId, "display_name" to displayName)
+    fun getSpotifyId() = spotifyId
+    fun getDisplayName() = displayName
     companion object {
-        fun of(privateUserObject: SafePrivateUserObject, oAuth2User: OAuth2User): SpotifyUserPrincipal {
-            return SpotifyUserPrincipal(
-                oAuth2User.authorities,
-                oAuth2User.attributes,
-                privateUserObject,
-                privateUserObject.displayName
-            )
-        }
+        private const val serialVersionUID = 1L
+        fun of(user: SafePrivateUserObject, oauthUser: OAuth2User) = SpotifyUserPrincipal(
+            oauthUser.authorities.map { org.springframework.security.core.authority.SimpleGrantedAuthority(requireNotNull(it.authority)) },
+            user.id, user.displayName, user.images.map { SessionImage(requireNotNull(it.url), it.height, it.width) })
     }
 }

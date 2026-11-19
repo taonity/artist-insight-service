@@ -1,6 +1,8 @@
 'use client'
 
 import '@/styles/kofi-button.scss'
+import { useEffect, useState } from 'react'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 interface Props {
   username: string
@@ -29,8 +31,6 @@ function getKofiColor(color: ColorName): string {
   return colors[color]
 }
 
-const KOFI_URL = process.env.KOFI_URL
-
 const KoFiButton: React.FC<Props> = ({
   username,
   label = 'Support Me on Ko-fi',
@@ -40,7 +40,20 @@ const KoFiButton: React.FC<Props> = ({
   animation = true,
 }) => {
   const normalizedPreset = preset && knownPresets.includes(preset) ? preset : ''
-  const profileUrl = `${KOFI_URL}/${username}`
+  const [kofiUrl, setKofiUrl] = useState<string | null>(null)
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    void getRuntimeConfig()
+      .then((c) => setKofiUrl(c.kofiUrl))
+      .catch(() => setFailed(true))
+  }, [])
+  if (!kofiUrl)
+    return (
+      <span role={failed ? 'alert' : 'status'}>
+        {failed ? 'Donation link unavailable. Please refresh.' : 'Loading donation link...'}
+      </span>
+    )
+  const profileUrl = `${kofiUrl}/${encodeURIComponent(username)}`
 
   return (
     <div className="KofiContainer" style={{ backgroundColor: getKofiColor(backgroundColor) }}>

@@ -1,0 +1,17 @@
+{
+  "request": {
+    "url": "/v1/me-owner",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": "stub-owner",
+      "display_name": "Local Owner",
+      "images": []
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

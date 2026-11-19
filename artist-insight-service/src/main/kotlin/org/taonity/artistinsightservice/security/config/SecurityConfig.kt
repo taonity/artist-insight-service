@@ -23,11 +23,10 @@ class SecurityConfig(
     private val oAuth2UserPersistenceService: OAuth2UserPersistenceService,
     private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     private val spaCsrfTokenRequestHandler: SpaCsrfTokenRequestHandler,
-    @Value("\${app.default-success-url}") private val defaultSuccessUrl: String,
+    private val properties: org.taonity.artistinsightservice.common.config.AppProperties,
+    private val authorizedClients: org.springframework.security.oauth2.client.OAuth2AuthorizedClientService,
     private val userMdcFilter: UserMdcFilter,
-    @Value("\${app.csrf-cookie-name}") private val csrfCookieName: String,
-    @Value("\${app.cookie.secure:false}") private val cookieSecure: Boolean,
-    @Value("\${app.cookie.same-site:Lax}") private val cookieSameSite: String
+
 ) {
 
     @Bean
@@ -38,6 +37,7 @@ class SecurityConfig(
             .authorizeHttpRequests { requests ->
                 requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                     .requestMatchers(
+                        "/dev/stub-users",
                         "/callback/kofi",
                         "/actuator/**",
                         "/development-access-request",
@@ -50,6 +50,11 @@ class SecurityConfig(
             }
             // TODO: do I need this?
             .logout { l ->
+                l.addLogoutHandler { _, _, authentication ->
+                    if (authentication is org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken) {
+                        authorizedClients.removeAuthorizedClient(authentication.authorizedClientRegistrationId, authentication.name)
+                    }
+                }
                 l.logoutSuccessHandler { _, response, _ ->
                     response.status = 200
                 }.permitAll()
@@ -59,9 +64,9 @@ class SecurityConfig(
             }
             .csrf { c ->
                 val csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse()
-                csrfTokenRepository.setCookieName(csrfCookieName)
+                csrfTokenRepository.setCookieName(properties.csrfCookieName)
                 csrfTokenRepository.setCookieCustomizer { builder ->
-                    builder.secure(cookieSecure).sameSite(cookieSameSite)
+                    builder.secure(properties.cookie.secure).sameSite(properties.cookie.sameSite)
                 }
                 c.csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
@@ -71,7 +76,7 @@ class SecurityConfig(
                 o.userInfoEndpoint { u ->
                     u.userService(oAuth2UserPersistenceService)
                 }
-                    .defaultSuccessUrl(defaultSuccessUrl, true)
+                    .defaultSuccessUrl(properties.defaultSuccessUrl, true)
                     .failureHandler(oAuth2AuthenticationFailureHandler)
             }
             .oauth2Client(Customizer.withDefaults())

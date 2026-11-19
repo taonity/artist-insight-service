@@ -74,10 +74,12 @@ class SpotifyService(
     }
 
     private fun fetchPageWithAuthentication(uri: String): PagingArtistObject {
+        val authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().authentication
+        val registrationId = (authentication as? org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken)
+            ?.authorizedClientRegistrationId ?: "spotify-artist-insight-service"
         val responseSpec: RestClient.ResponseSpec = spotifyAuthorisationCodeRestClient.get()
             .uri(uri)
-            .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-artist-insight-service"))
-            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId(registrationId))
             .retrieve()
 
         return responseSpec.bodyOrThrow<SpotifyResponse<PagingArtistObject>>(
@@ -93,7 +95,7 @@ class SpotifyService(
         val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
             .uri(url)
             .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-client-credentials"))
-            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .attributes(RequestAttributePrincipalResolver.principal("spotify-client-credentials"))
             .retrieve()
         return responseSpec.toEntity(String::class.java)
     }
@@ -119,7 +121,7 @@ class SpotifyService(
         val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
             .uri(url)
             .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-client-credentials"))
-            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .attributes(RequestAttributePrincipalResolver.principal("spotify-client-credentials"))
             .retrieve()
 
         val response = responseSpec.bodyOrThrow<GetMultipleArtists200Response>(
@@ -138,7 +140,7 @@ class SpotifyService(
         val responseSpec: RestClient.ResponseSpec = spotifyClientCredentialsRestClient.get()
             .uri(url)
             .attributes(RequestAttributeClientRegistrationIdResolver.clientRegistrationId("spotify-client-credentials"))
-            .attributes(RequestAttributePrincipalResolver.principal("display_name"))
+            .attributes(RequestAttributePrincipalResolver.principal("spotify-client-credentials"))
             .retrieve()
 
         return responseSpec.bodyOrThrow(

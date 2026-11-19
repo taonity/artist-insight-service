@@ -4,6 +4,7 @@ server:
   forward-headers-strategy: native
   servlet:
     session:
+      timeout: 12h
       cookie:
         domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN}
         name: ${SERVER_SERVLET_SESSION_COOKIE_NAME}
@@ -11,6 +12,14 @@ server:
 app:
   minimised-http-servlet-logging: true
   initial-user-gpt-usages: 10
+  donation-credit-price: 0.1
+  share-lifetime-days: 30
+  console:
+    owner-spotify-ids: ${CONSOLE_OWNER_SPOTIFY_IDS:}
+    max-page-size: 100
+  retention:
+    audit-days: 90
+    audit-cron: "0 30 3 * * *"
   initial-global-gpt-usages: 50
   csrf-cookie-name: ${CSRF_COOKIE_NAME}
   cookie:
@@ -59,6 +68,11 @@ spring:
   profiles:
     group:
       local: plain-log
+      stage: postgres,prod-spotify,prod-openai,prod-kofi,prod-mail
+      prod: postgres,prod-spotify,prod-openai,prod-kofi,prod-mail
+  session:
+    jdbc:
+      initialize-schema: never
   application:
     name: artist-insight-service
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { LOCAL_BACKEND_URL } from '@/lib/backend'
+import { getServerEnv } from '@/lib/env'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000)
-    const res = await fetch(`${LOCAL_BACKEND_URL}/actuator/health/liveness`, {
+    const res = await fetch(`${getServerEnv().localBackendUrl}/actuator/health/liveness`, {
       signal: controller.signal,
     })
     clearTimeout(timeoutId)
@@ -22,9 +22,7 @@ export async function GET() {
     }
   }
 
-  const overallStatus = Object.values(components).every(c => c.status === 'UP')
-    ? 'UP'
-    : 'DOWN'
+  const overallStatus = Object.values(components).every((c) => c.status === 'UP') ? 'UP' : 'DOWN'
 
   return NextResponse.json(
     { status: overallStatus, components },

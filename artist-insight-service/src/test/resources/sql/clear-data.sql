@@ -1,3 +1,7 @@
+DELETE FROM config_override;
+DELETE FROM audit_log;
+DELETE FROM oauth2_authorized_client;
+DELETE FROM spring_session;
 DELETE FROM shared_link_artist;
 DELETE FROM shared_link;
 DELETE FROM development_access_requests;

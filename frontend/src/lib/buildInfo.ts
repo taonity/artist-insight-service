@@ -1,6 +1,7 @@
 export interface BuildInfo {
   app: {
     name: string
+    version: string
   }
   git: {
     commit: string
@@ -21,6 +22,7 @@ export function getBuildInfo(): BuildInfo {
   return {
     app: {
       name: 'artist-insight-frontend',
+      version: process.env.APP_VERSION || 'unknown',
     },
     git: {
       commit: process.env.GIT_COMMIT_SHA || 'unknown',

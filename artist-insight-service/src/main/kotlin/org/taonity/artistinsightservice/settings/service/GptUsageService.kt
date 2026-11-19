@@ -14,6 +14,7 @@ import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
 class GptUsageService(
     private val spotifyUserRepository: SpotifyUserRepository,
     private val appSettingsRepository: AppSettingsRepository,
+    private val runtimeSettings: RuntimeSettings,
     @Value("\${app.initial-global-gpt-usages}") private val initialGlobalGptUsages: Int
 ) {
     companion object {
@@ -66,11 +67,12 @@ class GptUsageService(
         val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findByIdForUpdate(spotifyId)
             ?: throw IllegalArgumentException("Failed to find spotify user in db by spotifyId $spotifyId")
 
-        //TODO: move to db config table
-        val gptUsagesToTopUp = (amountDouble / 0.1).toInt()
+        require(amountDouble.isFinite() && amountDouble >= 0) { "Donation must be positive and finite" }
+        val gptUsagesToTopUp = java.math.BigDecimal.valueOf(amountDouble)
+            .divide(runtimeSettings.effective().donationCreditPrice, 0, java.math.RoundingMode.DOWN).intValueExact()
 
         val before = spotifyUserEntity.gptUsagesLeft
-        spotifyUserEntity.gptUsagesLeft += gptUsagesToTopUp
+        spotifyUserEntity.gptUsagesLeft = Math.addExact(spotifyUserEntity.gptUsagesLeft, gptUsagesToTopUp)
         val after = spotifyUserEntity.gptUsagesLeft
 
         LOGGER.info { "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)" }

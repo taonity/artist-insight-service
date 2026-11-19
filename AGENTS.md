@@ -2,11 +2,11 @@
 
 ## Architecture
 
-Multi-module Maven monorepo (Spring Boot 4 / Kotlin backend + Next.js 14 TypeScript frontend).
+Multi-module Maven monorepo (Spring Boot 4 / Kotlin backend + Next.js 16 TypeScript frontend).
 
 - **`artist-insight-service/`** — Main backend. Kotlin, Spring Boot 4, JPA/Hibernate, Spring Security OAuth2 (Spotify login). Package-per-feature layout under `org.taonity.artistinsightservice`: `followings/`, `artist/`, `share/`, `user/`, `donation/kofi/`, `devaccess/`, `settings/`, `integration/{spotify,openai}/`, `security/`, `infrastructure/`, `health/`, `advisory/`, `local/`.
 - **`spotify-client/`** — OpenAPI-generated Java models from the Spotify Web API spec (generated via `openapi-generator-maven-plugin`, not hand-written).
-- **`spotify-contracts/`** / **`openai-contracts/`** — Spring Cloud Contract stubs (Groovy DSL in `src/test/resources/contracts/`). These produce `-stubs.jar` artifacts consumed by `artist-insight-service` for local and test stub runners.
+- **`spotify-contracts/`** / **`openai-contracts/`** — WireMock resource modules with JSON mappings under `src/main/resources/wiremock/`.
 - **`frontend/`** — Next.js app (`src/app/` App Router). All backend calls go through Next.js API routes (`src/app/api/`) which proxy to the backend via `src/lib/backend.ts` using `fetchFromBackend()`.
 - **`templates/docker/`** — Docker Compose templates with Flyway migrations in `flyway/sql/tables/`.
 
@@ -44,13 +44,13 @@ Backend runs on port **8080**, frontend on **3000**.
 | Logging  | `plain-log`           | *(not needed)*     |
 | General  | `local`               | *(not needed)*     |
 
-Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto-includes `plain-log`). Stubs use Spring Cloud Contract stub runner (classpath mode).
+Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto-includes `plain-log`). Stubs use WireMock with classpath resources.
 
 ## Conventions & Patterns
 
 - **Package-per-feature**: each feature has `controller/`, `service/`, `dto/`, `entity/`, `repository/`, `exception/` sub-packages. Follow this layout when adding features.
 - **Logging**: use `io.github.oshai.kotlinlogging.KotlinLogging` (`private val LOGGER = KotlinLogging.logger {}`), placed in a `companion object`.
-- **Controller pattern**: `@RestController`, inject services, use `@AuthenticationPrincipal principal: SpotifyUserPrincipal` for auth. **Do NOT add manual entry-point logging** — `ControllerLoggingAspect` (AOP) automatically logs every `@RestController` method invocation with HTTP method, path, class, method name, and execution time.
+- **Controller pattern**: `@RestController`, inject services, use `@AuthenticationPrincipal principal: SpotifyUserPrincipal` for auth. **Do NOT add manual entry-point logging** — `ControllerLoggingInterceptor` automatically logs every `@RestController` method invocation with HTTP method, path, class, method name, and execution time.
 - **Advisory system**: backend attaches `Advisory` enums to responses (via `ResponseAttachments`) to surface warnings/errors to the frontend (e.g., rate limits, timeouts).
 - **CSRF**: SPA pattern with `CookieCsrfTokenRepository` + `SpaCsrfTokenRequestHandler`. Frontend reads CSRF cookie and sends `X-XSRF-TOKEN` header on mutating requests.
 - **Frontend API proxy**: every backend call is proxied through Next.js API routes in `src/app/api/`. Never call the backend directly from client components.
@@ -59,8 +59,8 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto
 
 ## Testing
 
-- **MVC integration tests**: extend `ControllerTestsBaseClass` (in `src/test/kotlin/.../mvc/`), which provides `authorizeOAuth2()` for simulating full OAuth2 flow via MockMvc. Uses `@SpringBootTest` + `@AutoConfigureMockMvc` + `@ActiveProfiles("h2")`.
-- **Contract stubs**: tests use `@AutoConfigureStubRunner` with `stubs-mode: CLASSPATH` to wire Spotify/OpenAI stubs.
+- **MVC integration tests**: extend `ControllerTestsBaseClass` (in `src/test/kotlin/.../other/`), which provides `authorizeOAuth2()` for simulating full OAuth2 flow via MockMvc and returning the persisted session cookie. Uses `@SpringBootTest` + `@AutoConfigureMockMvc` + `@ActiveProfiles("h2")`.
+- **Contract stubs**: tests use WireMock configured by the stub profiles for Spotify/OpenAI.
 - **Test data**: `src/test/resources/sql/test-data.sql` + `clear-data.sql` loaded via `@Sql` annotations.
 - Run tests: `mvn test` from root or from `artist-insight-service/`.
 - **Smoke tests** (`src/test/kotlin/.../automation/SmokeIT.kt`): Docker Compose-based end-to-end tests. Tagged `@Tag("smoke")` and excluded from default surefire/failsafe runs via `<excludedGroups>smoke</excludedGroups>`. Run via Maven profile: `mvn -B -P build-docker-image,smoke-tests verify`. In CI, they run in the `smoke-tests` job after unit/integration tests pass.
@@ -71,3 +71,9 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto
 - **OpenAI**: GPT-4 for genre inference. Service in `integration/openai/`. Stub contract in `openai-contracts/`.
 - **Ko-Fi**: Webhook at `/callback/kofi` (CSRF-exempt). Parses donation data, extracts Spotify ID from message, tops up GPT usages. Local stub at `/N4N11KVW3E` (profile `stub-kofi`).
 
+
+## Operations and admin conventions
+
+See `docs/OPERATIONS.md`. Console roles are NONE/ADMIN/OWNER and are separate from ordinary Spotify application access. Bootstrap owners by Spotify ID. Backend service guards enforce every admin permission; changing runtime policy must never reset credit balances. Runtime settings are explicitly registered and read from committed database state. Preserve the primary Jackson 2 mapper and existing advisory exception responses.
+
+Sessions and Spotify authorized clients use JDBC; principal identity is the stable Spotify ID. Changes must preserve credential refresh after repository reload, CSRF/logout and account-deletion cleanup. Local developer logins and demo data must be unavailable in stage/prod. Do not trigger paid enrichment from refresh or navigation effects.

@@ -43,6 +43,8 @@ app:
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
   login-url: http://127.0.0.1:3000/login
+  cookie:
+    secure: false
   csrf-cookie-name: XSRF-TOKEN-LOCAL
   dev-access:
     enabled: false

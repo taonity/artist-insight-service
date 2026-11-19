@@ -56,7 +56,10 @@ class SpotifyConfig {
         return AuthorizedClientServiceOAuth2AuthorizedClientManager(
             clientRegistrationRepository,
             authorizedClientService
-        )
+        ).apply {
+            setAuthorizedClientProvider(org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder.builder()
+                .authorizationCode().refreshToken().clientCredentials().build())
+        }
     }
 
     @Bean
@@ -65,7 +68,9 @@ class SpotifyConfig {
         objectMapper: ObjectMapper
     ): RestClient {
         val requestInterceptor =
-            OAuth2ClientHttpRequestInterceptor(authorizedClientServiceOAuth2AuthorizedClientManager)
+            OAuth2ClientHttpRequestInterceptor(authorizedClientServiceOAuth2AuthorizedClientManager).apply {
+                setPrincipalResolver(org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver())
+            }
 
         return RestClient.builder()
             .requestInterceptor(requestInterceptor)

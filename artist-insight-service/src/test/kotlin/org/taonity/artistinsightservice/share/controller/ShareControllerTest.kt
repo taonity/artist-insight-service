@@ -29,7 +29,7 @@ class ShareControllerTest : ControllerTestsBaseClass() {
         val session = authorizeOAuth2()
 
         val createResult = mockMvc.perform(
-            post("/share").session(session).with(csrf())
+            post("/share").cookie(session).with(csrf())
         )
             .andExpect(status().isOk)
             .andReturn()
@@ -44,11 +44,11 @@ class ShareControllerTest : ControllerTestsBaseClass() {
         val session = authorizeOAuth2()
 
         // Create share link first
-        mockMvc.perform(post("/share").session(session).with(csrf()))
+        mockMvc.perform(post("/share").cookie(session).with(csrf()))
             .andExpect(status().isOk)
 
         // Get status
-        val statusResult = mockMvc.perform(get("/share").session(session))
+        val statusResult = mockMvc.perform(get("/share").cookie(session))
             .andExpect(status().isOk)
             .andReturn()
 
@@ -62,15 +62,15 @@ class ShareControllerTest : ControllerTestsBaseClass() {
         val session = authorizeOAuth2()
 
         // Create share link first
-        mockMvc.perform(post("/share").session(session).with(csrf()))
+        mockMvc.perform(post("/share").cookie(session).with(csrf()))
             .andExpect(status().isOk)
 
         // Delete
-        mockMvc.perform(delete("/share").session(session).with(csrf()))
+        mockMvc.perform(delete("/share").cookie(session).with(csrf()))
             .andExpect(status().isNoContent)
 
         // Verify it's gone
-        mockMvc.perform(get("/share").session(session))
+        mockMvc.perform(get("/share").cookie(session))
             .andExpect(status().isNotFound)
     }
 
@@ -79,7 +79,7 @@ class ShareControllerTest : ControllerTestsBaseClass() {
         val session = authorizeOAuth2()
 
         // Create share link (will use followings from Spotify stub — 5 artists)
-        val createResult = mockMvc.perform(post("/share").session(session).with(csrf()))
+        val createResult = mockMvc.perform(post("/share").cookie(session).with(csrf()))
             .andExpect(status().isOk)
             .andReturn()
 
@@ -106,10 +106,10 @@ class ShareControllerTest : ControllerTestsBaseClass() {
         val session = authorizeOAuth2()
 
         // Delete any pre-existing share link from test data
-        mockMvc.perform(delete("/share").session(session).with(csrf()))
+        mockMvc.perform(delete("/share").cookie(session).with(csrf()))
             .andExpect(status().isNoContent)
 
-        mockMvc.perform(get("/share").session(session))
+        mockMvc.perform(get("/share").cookie(session))
             .andExpect(status().isNotFound)
     }
 }

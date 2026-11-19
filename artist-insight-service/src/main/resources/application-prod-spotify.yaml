@@ -19,11 +19,11 @@ spring:
           spotify:
             issuer-uri: https://accounts.spotify.com
             user-info-uri: https://api.spotify.com/v1/me
-            userNameAttribute: display_name
+            user-name-attribute: id
 
 app:
   default-success-url: ${DEFAULT_SUCCESS_URL}
-  login-url: ${LOGIN_URL}
+  login-url: ${APP_LOGIN_URL:${LOGIN_URL:http://127.0.0.1:3000/login}}
 
 spotify:
   api-base-url: https://api.spotify.com/v1

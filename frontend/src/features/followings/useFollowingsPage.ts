@@ -24,34 +24,12 @@ export function useFollowingsPage() {
   const [shareLoading, setShareLoading] = useState(false)
   const [shareCopiedNotification, setShareCopiedNotification] = useState(false)
   const [hasExistingShareLink, setHasExistingShareLink] = useState(false)
-  const [csrfCookieName, setCsrfCookieName] = useState('XSRF-TOKEN')
+  const [csrfCookieName, setCsrfCookieName] = useState('')
   const shareNotificationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const user = useUser({ onError: setErrorMessage })
 
-  useEffect(() => {
-    void getRuntimeConfig().then((config) => setCsrfCookieName(config.csrfCookieName))
-  }, [])
-
-  useEffect(() => {
-    if (!user) {
-      return
-    }
-
-    setGptUsagesLeft(user.gptUsagesLeft)
-    void loadUserFollowings()
-    void loadExistingShareLinkState()
-  }, [user])
-
-  useEffect(() => {
-    return () => {
-      if (shareNotificationTimeoutRef.current) {
-        clearTimeout(shareNotificationTimeoutRef.current)
-      }
-    }
-  }, [])
-
-  const loadUserFollowings = async () => {
+  async function loadUserFollowings() {
     setLoading(true)
 
     try {
@@ -74,6 +52,34 @@ export function useFollowingsPage() {
       setLoading(false)
     }
   }
+
+  async function loadExistingShareLinkState() {
+    setHasExistingShareLink(await checkExistingShareLink())
+  }
+
+  useEffect(() => {
+    void getRuntimeConfig()
+      .then((config) => setCsrfCookieName(config.csrfCookieName))
+      .catch(() => setErrorMessage('Unable to load application configuration. Please refresh.'))
+  }, [])
+
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    setGptUsagesLeft(user.gptUsagesLeft)
+    void loadUserFollowings()
+    void loadExistingShareLinkState()
+  }, [user])
+
+  useEffect(() => {
+    return () => {
+      if (shareNotificationTimeoutRef.current) {
+        clearTimeout(shareNotificationTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const loadEnrichedFollowings = async () => {
     setEnriching(true)
@@ -98,10 +104,6 @@ export function useFollowingsPage() {
     } finally {
       setEnriching(false)
     }
-  }
-
-  const loadExistingShareLinkState = async () => {
-    setHasExistingShareLink(await checkExistingShareLink())
   }
 
   const handleShare = async () => {

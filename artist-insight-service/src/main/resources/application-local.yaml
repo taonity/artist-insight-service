@@ -29,14 +29,16 @@ spring:
       client:
         registration:
           spotify-artist-insight-service:
-            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/spotify-artist-insight-service
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
   jpa:
     properties:
       hibernate:
         format_sql: true
 
 app:
-  csrf-cookie-name: XSRF-TOKEN-LOCAL
+  console:
+    owner-spotify-ids: ${CONSOLE_OWNER_SPOTIFY_IDS:stub-owner}
+  csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-LOCAL}
   cookie:
     secure: false
     same-site: Lax

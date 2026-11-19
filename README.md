@@ -30,9 +30,9 @@ The project has all its resources stubbed for the most comfortable local develop
 
 | Profile      | Resource    | Description                                                        |
 |--------------|-------------|--------------------------------------------------------------------|
-| stub-spotify | Spotify     | Spring Boot Contract Stub with stubbed endpoints                   |
+| stub-spotify | Spotify     | WireMock stub with stubbed endpoints                   |
 | prod-spotify | Spotify     | Production configuration that requires Spotify project credentials |
-| stub-openai  | OpenAI      | Spring Boot Contract Stub with stubbed endpoints                   |
+| stub-openai  | OpenAI      | WireMock stub with stubbed endpoints                   |
 | prod-openai  | OpenAI      | Production configuration that requires OpenAI project api key      |
 | h2           | Postgres    | H2 in-memory database                                              |
 | postgres     | Postgres    | Regular Postgres configuration for a local or remote instance      |
@@ -57,32 +57,21 @@ mvn spring-boot:run '-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=h2
 I recommend opening /frontend directory in Visual Code. Run `npm install`, and then `npm run dev`.
 
 ### Docker Compose deployment
-Docker Compose runs the backend and frontend in fully stubbed mode, including Spotify and mail.
 
-Run this. These are some shared networks required for production deployment.
+Build local images:
+
 ```bash
-docker network create prodenv-shared-internal
-docker network create artist-insight-shared
-```
-Run this
-```bash
-# Prepares Docker Compose templates for running. Make sure you are on the last released tag in git.
-mvn clean -P build-automation-docker-compose-project compile -DskipTests=true
-# Runs Docker Compose template with images from Dockerhub. Make sure you placed all required env vars.
-docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
+mvn -P build-docker-image package -DskipTests
+docker build -t generaltao725/artist-insight-frontend frontend/
 ```
 
-Or you can build the images yourself by following the instructions. Run this
+Start the isolated stub stack (frontend on port 3002):
+
 ```bash
-# Builds backend Docker image and prepares Docker Compose templates for running
-mvn clean -P build-docker-image,build-automation-docker-compose-project -pl artist-insight-service install -DskipTests=true
-# Installs npm modules for Next.js frontend
-npm install --prefix frontend/
-# Builds the latest image of the frontend app using Dockerfile
-docker build -t generaltao725/artist-insight-frontend -t generaltao725/artist-insight-frontend frontend/
-# Runs Docker Compose template with images from Dockerhub. Make sure you placed all required env vars.
-docker compose -f artist-insight-service/target/docker/test/docker-compose.yml up -d
+docker compose --env-file templates/docker/.test-env -f templates/docker/docker-compose.yml -f templates/docker/docker-compose.ports-local.yml up -d
 ```
+
+Production additionally uses `docker-compose.prodenv.yml`. See [Operations](docs/OPERATIONS.md) for deployment variables, networks, backups, and migration requirements.
 
 ### Environment variable
 The project requires a set of environment variables to be configured for some services, depending on which profile set you use.
@@ -100,7 +89,7 @@ The project requires a set of environment variables to be configured for some se
 | SPOTIFY_CLIENT_ID                    | Backend  | Taken from Spotify developer dashboard                              |
 | SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard                              |
 | DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login                        |
-| LOGIN_URL                            | Backend  | Redirect for a user after a failed login                            |
+| APP_LOGIN_URL                            | Backend  | Redirect for a user after a failed login                            |
 | SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend                                |
 | SERVER_SERVLET_SESSION_COOKIE_NAME   | Backend  | Cookie name for frontend and backend, for ex. JSESSIONID-STAGE      |
 | CSRF_COOKIE_NAME                     | Backend  | CSRF cookie name for frontend and backend, for ex. XSRF-TOKEN-STAGE |
@@ -187,3 +176,15 @@ org.springframework.security.oauth2.core.OAuth2AuthenticationException: [authori
 
 
 
+
+### Operations and administration
+
+See [Operations](docs/OPERATIONS.md) for environment profiles, the admin console, runtime settings, persistent sessions, backup/restore checks, Docker overrides, and optional deployment notifications.
+
+Local developer fixtures and login shortcuts:
+
+```powershell
+mvn -pl artist-insight-service spring-boot:run '-Dspring-boot.run.profiles=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local,demo-data'
+```
+
+The Developer tools panel offers separate Owner, Admin and ordinary-user stub logins. Production console owners must be configured explicitly with `CONSOLE_OWNER_SPOTIFY_IDS`.

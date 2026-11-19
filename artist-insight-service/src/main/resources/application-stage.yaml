@@ -1,0 +1,10 @@
+server:
+  servlet:
+    session:
+      cookie:
+        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:taonity.org}
+        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME:JSESSIONID-ARTIST-INSIGHT-STAGE}
+app:
+  default-success-url: ${DEFAULT_SUCCESS_URL:https://artist-insight-stage.taonity.org}
+  login-url: ${APP_LOGIN_URL:https://artist-insight-stage.taonity.org/login}
+  csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-ARTIST-INSIGHT-STAGE}
