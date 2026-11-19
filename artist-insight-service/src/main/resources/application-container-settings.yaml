@@ -1,0 +1,12 @@
+server:
+  servlet:
+    session:
+      cookie:
+        domain: 127.0.0.1
+        name: JSESSIONID-LOCAL
+app:
+  default-success-url: http://127.0.0.1:3002
+  login-url: http://127.0.0.1:3002/login
+  csrf-cookie-name: XSRF-TOKEN-LOCAL
+  cookie:
+    secure: false

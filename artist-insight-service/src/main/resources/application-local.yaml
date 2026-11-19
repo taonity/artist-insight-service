@@ -37,8 +37,10 @@ spring:
 
 app:
   console:
-    owner-spotify-ids: ${CONSOLE_OWNER_SPOTIFY_IDS:stub-owner}
-  csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-LOCAL}
+    owner-spotify-ids: [stub-owner]
+  default-success-url: http://127.0.0.1:3000
+  login-url: http://127.0.0.1:3000/login
+  csrf-cookie-name: XSRF-TOKEN-LOCAL
   cookie:
     secure: false
     same-site: Lax

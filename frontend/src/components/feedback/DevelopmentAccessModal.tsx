@@ -88,9 +88,15 @@ export default function DevelopmentAccessModal({
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="access-request-title"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="modal-header">
-          <h2>Request Development Access</h2>
+          <h2 id="access-request-title">Request Development Access</h2>
           <button className="modal-close" onClick={handleClose} aria-label="Close modal">
             ×
           </button>

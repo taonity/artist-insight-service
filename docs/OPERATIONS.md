@@ -4,11 +4,11 @@
 
 Keep Maven, Java 17, the existing Spotify-generated client and Jackson 2 integration. The frontend uses Next.js 16 and React 19. All browser requests continue through Next.js API routes.
 
-Backend `stage` and `prod` profile groups select `postgres,prod-spotify,prod-openai,prod-kofi,prod-mail`. Local development uses `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local`. Add `demo-data` for deterministic examples; fixtures require both `local` and `stub-spotify`, and explicitly reject `stage`/`prod`.
+Backend `stage` and `prod` profile groups select `postgres,prod-spotify,prod-openai,prod-kofi,prod-mail`. Local development uses `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local`. The `container-local` group selects the PostgreSQL stub stack on port 3002; `demo` selects the same resources with fictional fixtures and port 3008. For an H2 demo, add `demo-data` to the local profile set. Fixtures require both `local` and `stub-spotify`, and explicitly reject `stage`/`prod`.
 
-Frontend `FRONTEND_PROFILE` is `local`, `stage`, or `prod`. It is required for a production server and defaults to `local` during development. Public topology may be overridden through `PUBLIC_BACKEND_URL`, `CSRF_COOKIE_NAME`, and `KOFI_URL`; the internal proxy uses `LOCAL_BACKEND_URL`. `/api/config` exposes only public configuration. Invalid configuration fails visibly instead of using blank values. `BACKEND_REQUEST_TIMEOUT_MS` defaults to 60000; browser operation timeouts remain independent.
+Frontend `FRONTEND_PROFILE` is `local`, `demo`, `stage`, or `prod`. It is required for a production server and defaults to `local` during development. Public topology may be overridden through `PUBLIC_BACKEND_URL`, `CSRF_COOKIE_NAME`, and `KOFI_URL`; the internal proxy uses `LOCAL_BACKEND_URL`. `/api/config` exposes only public configuration. Invalid configuration fails visibly instead of using blank values. `BACKEND_REQUEST_TIMEOUT_MS` defaults to 60000; browser operation timeouts remain independent.
 
-Backend shared application settings bind through validated `AppProperties`. Existing integration-specific environment variables remain supported. Use `APP_LOGIN_URL` for the login destination; `LOGIN_URL` remains a compatibility fallback in the Spotify production profile.
+Backend shared application settings bind through validated `AppProperties`. Stable URLs, cookie policies, database name/address, JVM limits and export schedule live in committed profile/Compose files. Select the environment and supply credentials plus owner Spotify IDs; individual topology variables are no longer required. For exceptional deployments, standard Spring properties such as `APP_DEFAULT_SUCCESS_URL`, `APP_LOGIN_URL`, `APP_CSRF_COOKIE_NAME` and `SPRING_DATASOURCE_URL` can override profile values. Add explicit Compose overrides when forwarding these into containers.
 
 ## Administration
 
@@ -22,7 +22,11 @@ Owners cannot change their own role through the console. Configured owner accoun
 
 Development-access records retain their existing **email delivery** statuses (`PENDING`, `SENT`, `FAILED`). Grant Spotify development access separately in Spotify's dashboard. The console does not automatically approve access, resend mail, delete users, edit artists or adjust balances.
 
-Admin tables support pagination, sorting, search, saved column widths/visibility, keyboard resizing, overflow inspection, silent refresh and mobile navigation. Audit history adds exact search, field selection and inclusive UTC calendar-day filtering. Revisiting admin tabs performs reads only; it never triggers genre enrichment.
+Admin tables support pagination, sorting, search, saved column widths, keyboard resizing, overflow inspection, silent refresh and mobile navigation. Below 1100px, rows become labeled records; phone records span the available width without horizontal scrolling. Audit history adds exact search, field selection and inclusive UTC calendar-day filtering. Revisiting admin tabs performs reads only; it never triggers genre enrichment.
+
+## Responsive application pages
+
+Below 1100px, the main and public shared artist lists use full-width records with local search, button sorting, fully visible genres and pagination. CSV exports still include the full list. Account navigation uses buttons; phone settings, donation, login, legal pages, notifications, cookie notices and access-request dialogs fit the available width. Loading uses the same record and owner-header components as loaded content. These presentation controls never call the enrichment endpoint.
 
 ## Runtime settings
 
@@ -57,9 +61,17 @@ Base Compose uses an isolated backend network and explicit service environment v
 docker compose --env-file templates/docker/.test-env -f templates/docker/docker-compose.yml -f templates/docker/docker-compose.ports-local.yml up -d
 ```
 
+Run the fictional demo (frontend 3008, backend 8088, Spotify stub 8100):
+
+```powershell
+docker compose --project-name artist-insight-demo --env-file templates/docker/.test-env -f templates/docker/docker-compose.yml -f templates/docker/docker-compose.demo.yml up -d --wait
+```
+
+Use **Developer tools** to sign in as Local owner, admin or user. The demo includes 120 invented listeners, 96 access requests, 240 audit events and 36 fictional artists, with bundled artwork avatars, a few synthetic portraits and some accounts without a picture. Artwork prompts are recorded in `docs/demo-avatar-prompts.json`. Seeding is idempotent and preserves edited records. No real Spotify or OpenAI calls are used. Loading previews retain the loaded content geometry.
+
 Local published ports are backend 8080, Spotify stub 8100, PostgreSQL 5432, frontend 3002. Add `docker-compose.debug.yml` explicitly for a localhost-only debugger on 5005. Normal containers do not enable JDWP.
 
-Production adds `docker-compose.prodenv.yml`. This preserves the external `prodenv-shared-internal` and `artist-insight-shared` network aliases and attaches the exporter to the external backup staging volume. Set deployment URLs, cookie domain/name, credentials, profile and owner IDs explicitly. Backend resource defaults are configurable; size them using representative enrichment traffic rather than assuming the starter's workload matches this app.
+Production adds `docker-compose.prodenv.yml`. This preserves the external `prodenv-shared-internal` and `artist-insight-shared` network aliases and attaches the exporter to the external backup staging volume. Set credentials, profile and owner IDs explicitly. Public URLs and cookies come from the selected profile. Resource limits are committed in Compose; adjust these files using representative enrichment traffic.
 
 Example selectors (supply credentials separately):
 
@@ -67,13 +79,6 @@ Example selectors (supply credentials separately):
 COMPOSE_PROJECT_NAME=artist-insight-prod
 SPRING_PROFILES_ACTIVE=prod
 FRONTEND_PROFILE=prod
-DEFAULT_SUCCESS_URL=https://artist-insight.taonity.org
-APP_LOGIN_URL=https://artist-insight.taonity.org/login
-PUBLIC_BACKEND_URL=https://artist-insight-api.taonity.org
-SERVER_SERVLET_SESSION_COOKIE_DOMAIN=taonity.org
-SERVER_SERVLET_SESSION_COOKIE_NAME=JSESSIONID-ARTIST-INSIGHT-PROD
-CSRF_COOKIE_NAME=XSRF-TOKEN-ARTIST-INSIGHT-PROD
-COOKIE_SECURE=true
 CONSOLE_OWNER_SPOTIFY_IDS=your-spotify-id
 ```
 
@@ -81,7 +86,7 @@ Production network aliases, existing database volume names and the `app` Compose
 
 ## PostgreSQL exports and restore checks
 
-The production override runs an export on startup and daily at 01:00 **UTC**. Change `BACKUP_SCHEDULE_TIME` with an explicit `HH:MM` value. Exports use PostgreSQL 16 tools, a custom-format database dump, globals, checksums and metadata. A lock prevents concurrent exports; completed exports replace the current export only after dumping succeeds. The health check detects exports older than 26 hours.
+The production override runs an export on startup and daily at 01:00 **UTC**. The schedule is committed in `templates/docker/backup/docker-compose.yml`. Exports use PostgreSQL 16 tools, a custom-format database dump, globals, checksums and metadata. A lock prevents concurrent exports; completed exports replace the current export only after dumping succeeds. The health check detects exports older than 26 hours.
 
 The external volume defaults to `prodenv-backup-staging`; override `BACKUP_STAGING_VOLUME` for another existing backup volume. Exports are separated by `COMPOSE_PROJECT_NAME`. Connect this staging volume to the deployment's backup system for historical/off-host snapshots; the exporter itself retains only the current export.
 

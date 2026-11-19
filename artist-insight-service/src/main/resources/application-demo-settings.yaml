@@ -1,0 +1,12 @@
+server:
+  servlet:
+    session:
+      cookie:
+        domain: 127.0.0.1
+        name: JSESSIONID-ARTIST-INSIGHT-DEMO
+app:
+  default-success-url: http://127.0.0.1:3008
+  login-url: http://127.0.0.1:3008/login
+  csrf-cookie-name: XSRF-TOKEN-ARTIST-INSIGHT-DEMO
+  cookie:
+    secure: false

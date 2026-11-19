@@ -1,14 +1,18 @@
 package org.taonity.artistinsightservice.share.service
 
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.artist.entity.ArtistEntity
 import org.taonity.artistinsightservice.artist.entity.ArtistGenreEntity
 import org.taonity.artistinsightservice.artist.repository.ArtistRepository
+import org.taonity.artistinsightservice.integration.spotify.dto.SafeArtistObject
 import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
+import org.taonity.artistinsightservice.settings.service.EffectiveSettings
+import org.taonity.artistinsightservice.settings.service.RuntimeSettings
 import org.taonity.artistinsightservice.share.entity.SharedLinkArtistEntity
 import org.taonity.artistinsightservice.share.entity.SharedLinkEntity
 import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredException
@@ -20,7 +24,6 @@ import org.taonity.artistinsightservice.user.service.SpotifyUserService
 import org.taonity.spotify.model.ExternalUrlObject
 import org.taonity.spotify.model.FollowersObject
 import org.taonity.spotify.model.PublicUserObject
-import java.time.OffsetDateTime
 
 class ShareServiceTest {
 
@@ -30,20 +33,35 @@ class ShareServiceTest {
     private val spotifyService: SpotifyService = mock()
     private val artistRepository: ArtistRepository = mock()
 
-    private val settings = mock<org.taonity.artistinsightservice.settings.service.RuntimeSettings>().also {
-        `when`(it.effective()).thenReturn(org.taonity.artistinsightservice.settings.service.EffectiveSettings(10, java.math.BigDecimal("0.1"), 30, 90, "0 30 3 * * *", 100))
-    }
-    private val service = ShareService(
-        sharedLinkRepository, sharedLinkArtistRepository, spotifyUserService, spotifyService, settings, artistRepository
-    )
+    private val settings =
+        mock<RuntimeSettings>().also {
+            `when`(it.effective())
+                .thenReturn(EffectiveSettings(10, BigDecimal("0.1"), 30, 90, "0 30 3 * * *", 100))
+        }
+    private val service =
+        ShareService(
+            sharedLinkRepository,
+            sharedLinkArtistRepository,
+            spotifyUserService,
+            spotifyService,
+            settings,
+            artistRepository,
+        )
 
     private val testUser = SpotifyUserEntity("spotify-123", "TestUser", 10)
 
-    private fun safeArtist(id: String, name: String, genres: List<String> = emptyList()) = SafeArtistObject(
-        id = id, name = name, genres = genres, href = "https://api.spotify.com/v1/artists/$id",
-        images = mutableListOf(), externalUrls = ExternalUrlObject().apply { spotify = "https://open.spotify.com/artist/$id" },
-        followers = FollowersObject().apply { total = 100 }, popularity = 50
-    )
+    private fun safeArtist(id: String, name: String, genres: List<String> = emptyList()) =
+        SafeArtistObject(
+            id = id,
+            name = name,
+            genres = genres,
+            href = "https://api.spotify.com/v1/artists/$id",
+            images = mutableListOf(),
+            externalUrls =
+                ExternalUrlObject().apply { spotify = "https://open.spotify.com/artist/$id" },
+            followers = FollowersObject().apply { total = 100 },
+            popularity = 50,
+        )
 
     // --- createOrUpdateShareLink ---
 
@@ -68,11 +86,12 @@ class ShareServiceTest {
         val artists = listOf(safeArtist("a1", "Artist1"))
         `when`(spotifyService.fetchFollowings()).thenReturn(artists)
 
-        val existingLink = SharedLinkEntity(
-            user = testUser,
-            shareCode = "oldCode1",
-            expiresAt = OffsetDateTime.now().plusDays(5)
-        )
+        val existingLink =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "oldCode1",
+                expiresAt = OffsetDateTime.now().plusDays(5),
+            )
         `when`(sharedLinkRepository.findByUserId("spotify-123")).thenReturn(existingLink)
         `when`(sharedLinkRepository.save(any())).thenAnswer { it.arguments[0] }
 
@@ -96,11 +115,12 @@ class ShareServiceTest {
 
     @Test
     fun `getShareLinkStatus returns null when link is expired`() {
-        val expiredLink = SharedLinkEntity(
-            user = testUser,
-            shareCode = "expired1",
-            expiresAt = OffsetDateTime.now().minusDays(1)
-        )
+        val expiredLink =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "expired1",
+                expiresAt = OffsetDateTime.now().minusDays(1),
+            )
         `when`(sharedLinkRepository.findByUserId("spotify-123")).thenReturn(expiredLink)
 
         val result = service.getShareLinkStatus("spotify-123")
@@ -110,11 +130,12 @@ class ShareServiceTest {
 
     @Test
     fun `getShareLinkStatus returns response when link is valid`() {
-        val validLink = SharedLinkEntity(
-            user = testUser,
-            shareCode = "validCd1",
-            expiresAt = OffsetDateTime.now().plusDays(10)
-        )
+        val validLink =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "validCd1",
+                expiresAt = OffsetDateTime.now().plusDays(10),
+            )
         `when`(sharedLinkRepository.findByUserId("spotify-123")).thenReturn(validLink)
 
         val result = service.getShareLinkStatus("spotify-123")
@@ -135,11 +156,12 @@ class ShareServiceTest {
 
     @Test
     fun `getSharedArtists throws ShareLinkExpiredException for expired link`() {
-        val expiredLink = SharedLinkEntity(
-            user = testUser,
-            shareCode = "expired1",
-            expiresAt = OffsetDateTime.now().minusDays(1)
-        )
+        val expiredLink =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "expired1",
+                expiresAt = OffsetDateTime.now().minusDays(1),
+            )
         `when`(sharedLinkRepository.findByShareCodeWithArtists("expired1")).thenReturn(expiredLink)
 
         assertThatThrownBy { service.getSharedArtists("expired1") }
@@ -148,11 +170,12 @@ class ShareServiceTest {
 
     @Test
     fun `getSharedArtists returns empty list when link has no artists`() {
-        val link = SharedLinkEntity(
-            user = testUser,
-            shareCode = "emptyArt",
-            expiresAt = OffsetDateTime.now().plusDays(10)
-        )
+        val link =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "emptyArt",
+                expiresAt = OffsetDateTime.now().plusDays(10),
+            )
         `when`(sharedLinkRepository.findByShareCodeWithArtists("emptyArt")).thenReturn(link)
 
         val userProfile = PublicUserObject()
@@ -168,11 +191,12 @@ class ShareServiceTest {
 
     @Test
     fun `getSharedArtists returns artists with enriched genres from DB`() {
-        val link = SharedLinkEntity(
-            user = testUser,
-            shareCode = "withArt1",
-            expiresAt = OffsetDateTime.now().plusDays(10)
-        )
+        val link =
+            SharedLinkEntity(
+                user = testUser,
+                shareCode = "withArt1",
+                expiresAt = OffsetDateTime.now().plusDays(10),
+            )
         val sharedArtistEntity = SharedLinkArtistEntity(sharedLink = link, artistId = "a1")
         link.artists.add(sharedArtistEntity)
         `when`(sharedLinkRepository.findByShareCodeWithArtists("withArt1")).thenReturn(link)

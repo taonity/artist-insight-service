@@ -1,0 +1,8 @@
+services:
+  app:
+    command: --spring.profiles.active=demo
+    ports: ["127.0.0.1:8088:8080", "127.0.0.1:8100:8100"]
+  frontend:
+    environment:
+      FRONTEND_PROFILE: demo
+    ports: ["127.0.0.1:3008:3000"]

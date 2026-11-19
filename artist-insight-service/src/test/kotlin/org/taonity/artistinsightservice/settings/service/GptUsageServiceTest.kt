@@ -1,5 +1,6 @@
 package org.taonity.artistinsightservice.settings.service
 
+import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -14,11 +15,19 @@ class GptUsageServiceTest {
 
     private val spotifyUserRepository: SpotifyUserRepository = mock()
     private val appSettingsRepository: AppSettingsRepository = mock()
-    private val runtimeSettings = mock<RuntimeSettings>().also {
-        `when`(it.effective()).thenReturn(EffectiveSettings(10, java.math.BigDecimal("0.1"), 30, 90, "0 30 3 * * *", 100))
-    }
+    private val runtimeSettings =
+        mock<RuntimeSettings>().also {
+            `when`(it.effective())
+                .thenReturn(EffectiveSettings(10, BigDecimal("0.1"), 30, 90, "0 30 3 * * *", 100))
+        }
     private val initialGlobalGptUsages = 50
-    private val service = GptUsageService(spotifyUserRepository, appSettingsRepository, runtimeSettings, initialGlobalGptUsages)
+    private val service =
+        GptUsageService(
+            spotifyUserRepository,
+            appSettingsRepository,
+            runtimeSettings,
+            initialGlobalGptUsages,
+        )
 
     // --- consumeUserUsage ---
 

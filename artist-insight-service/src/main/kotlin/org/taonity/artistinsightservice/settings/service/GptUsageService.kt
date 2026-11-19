@@ -1,6 +1,8 @@
 package org.taonity.artistinsightservice.settings.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.math.BigDecimal
+import java.math.RoundingMode
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -15,7 +17,7 @@ class GptUsageService(
     private val spotifyUserRepository: SpotifyUserRepository,
     private val appSettingsRepository: AppSettingsRepository,
     private val runtimeSettings: RuntimeSettings,
-    @Value("\${app.initial-global-gpt-usages}") private val initialGlobalGptUsages: Int
+    @Value("\${app.initial-global-gpt-usages}") private val initialGlobalGptUsages: Int,
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -23,8 +25,9 @@ class GptUsageService(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun consumeUserUsage(spotifyId: String): Boolean {
-        val user = spotifyUserRepository.findByIdForUpdate(spotifyId)
-            ?: throw IllegalArgumentException("User with id $spotifyId not found")
+        val user =
+            spotifyUserRepository.findByIdForUpdate(spotifyId)
+                ?: throw IllegalArgumentException("User with id $spotifyId not found")
         if (user.gptUsagesLeft <= 0) {
             return false
         }
@@ -34,17 +37,19 @@ class GptUsageService(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun refundUserUsage(spotifyId: String) {
-        val user = spotifyUserRepository.findByIdForUpdate(spotifyId)
-            ?: throw IllegalArgumentException("User with id $spotifyId not found")
+        val user =
+            spotifyUserRepository.findByIdForUpdate(spotifyId)
+                ?: throw IllegalArgumentException("User with id $spotifyId not found")
         user.gptUsagesLeft++
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun consumeGlobalUsage(): Boolean {
-        val settings = appSettingsRepository.findByIdForUpdate(0)
-            ?: return appSettingsRepository.save(
-                AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages - 1)
-            ).let { true }
+        val settings =
+            appSettingsRepository.findByIdForUpdate(0)
+                ?: return appSettingsRepository
+                    .save(AppSettingsEntity(globalGptUsagesLeft = initialGlobalGptUsages - 1))
+                    .let { true }
 
         if (settings.globalGptUsagesLeft <= 0) {
             return false
@@ -60,21 +65,28 @@ class GptUsageService(
     }
 
     @Transactional
-    fun topUpUserUsage(
-        amountDouble: Double,
-        spotifyId: String
-    ) {
-        val spotifyUserEntity: SpotifyUserEntity = spotifyUserRepository.findByIdForUpdate(spotifyId)
-            ?: throw IllegalArgumentException("Failed to find spotify user in db by spotifyId $spotifyId")
+    fun topUpUserUsage(amountDouble: Double, spotifyId: String) {
+        val spotifyUserEntity: SpotifyUserEntity =
+            spotifyUserRepository.findByIdForUpdate(spotifyId)
+                ?: throw IllegalArgumentException(
+                    "Failed to find spotify user in db by spotifyId $spotifyId"
+                )
 
-        require(amountDouble.isFinite() && amountDouble >= 0) { "Donation must be positive and finite" }
-        val gptUsagesToTopUp = java.math.BigDecimal.valueOf(amountDouble)
-            .divide(runtimeSettings.effective().donationCreditPrice, 0, java.math.RoundingMode.DOWN).intValueExact()
+        require(amountDouble.isFinite() && amountDouble >= 0) {
+            "Donation must be positive and finite"
+        }
+        val gptUsagesToTopUp =
+            BigDecimal.valueOf(amountDouble)
+                .divide(runtimeSettings.effective().donationCreditPrice, 0, RoundingMode.DOWN)
+                .intValueExact()
 
         val before = spotifyUserEntity.gptUsagesLeft
-        spotifyUserEntity.gptUsagesLeft = Math.addExact(spotifyUserEntity.gptUsagesLeft, gptUsagesToTopUp)
+        spotifyUserEntity.gptUsagesLeft =
+            Math.addExact(spotifyUserEntity.gptUsagesLeft, gptUsagesToTopUp)
         val after = spotifyUserEntity.gptUsagesLeft
 
-        LOGGER.info { "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)" }
+        LOGGER.info {
+            "User ${spotifyUserEntity.spotifyId} topped up gpt usages by $gptUsagesToTopUp ($before -> $after)"
+        }
     }
 }

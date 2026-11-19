@@ -1,0 +1,29 @@
+{
+  "tool": "Built-in image_gen",
+  "assets": [
+    {
+      "asset": "frontend/public/demo/avatars/art-abstract.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. An expressive abstract painting of overlapping cobalt blue, coral and golden ochre shapes, textured paint and paper, bold visual rhythm, modern album artwork. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/art-landscape.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. A cinematic painterly landscape of a still alpine lake, pine trees, layered misty mountains and peach sunrise, lush teal and soft gold, atmospheric fine art. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/art-fox.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. An elegant red fox curled among dark forest leaves under a crescent moon, sophisticated woodcut print illustration, burnt orange, midnight blue and cream, expressive animal art. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/art-vinyl.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. A close-up still life of a black vinyl record on a warm tangerine sleeve with an electric blue flower, playful analogue music photography, rich shadows, no writing. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/art-jazz.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. Jazz-inspired abstract album art: a brass saxophone silhouette, indigo night sky, warm amber circles and loose painterly brushwork, stylish vintage screen print. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/art-cosmos.webp",
+      "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. A dreamy cosmic artwork of lavender planetary rings and a small glowing turquoise moon above violet nebula clouds, grainy airbrush illustration, ambient electronic music mood. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    }
+  ]
+}

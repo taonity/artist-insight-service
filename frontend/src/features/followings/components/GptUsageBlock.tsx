@@ -8,9 +8,9 @@ interface Props {
 
 const GptUsageBlock: React.FC<Props> = ({ count }) => {
   return (
-    <div className="gpt-usage">
-      GPT Usages Left: <span>{count}</span>
-    </div>
+    <span className="gpt-usage">
+      GPT Usages Left: <span className="gpt-usage-count">{count}</span>
+    </span>
   )
 }
 

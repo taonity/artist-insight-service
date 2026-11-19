@@ -1,7 +1,11 @@
 package org.taonity.artistinsightservice.user.controller
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,19 +15,27 @@ import org.taonity.artistinsightservice.user.entity.SpotifyUserEntity
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
 
 @RestController
-class UserController(
-    private val spotifyUserService: SpotifyUserService
-) {
+class UserController(private val spotifyUserService: SpotifyUserService) {
     @GetMapping("/user")
-    fun user(@AuthenticationPrincipal principal: SpotifyUserPrincipal): ResponseEntity<SpotifyUserDto> {
-        val spotifyUserEntity: SpotifyUserEntity = spotifyUserService.findBySpotifyIdOrThrow(principal.getSpotifyId())
-        return ResponseEntity.ok(SpotifyUserDto(principal.privateUserObject, spotifyUserEntity.gptUsagesLeft))
+    fun user(
+        @AuthenticationPrincipal principal: SpotifyUserPrincipal
+    ): ResponseEntity<SpotifyUserDto> {
+        val spotifyUserEntity: SpotifyUserEntity =
+            spotifyUserService.findBySpotifyIdOrThrow(principal.getSpotifyId())
+        return ResponseEntity.ok(
+            SpotifyUserDto(principal.privateUserObject, spotifyUserEntity.gptUsagesLeft)
+        )
     }
 
     @DeleteMapping("/user")
-    fun deleteUser(@AuthenticationPrincipal principal: SpotifyUserPrincipal, request: jakarta.servlet.http.HttpServletRequest, response: jakarta.servlet.http.HttpServletResponse): ResponseEntity<Void> {
+    fun deleteUser(
+        @AuthenticationPrincipal principal: SpotifyUserPrincipal,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<Void> {
         spotifyUserService.deleteUserBySpotifyId(principal.getSpotifyId())
-        org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler().logout(request, response, org.springframework.security.core.context.SecurityContextHolder.getContext().authentication)
+        SecurityContextLogoutHandler()
+            .logout(request, response, SecurityContextHolder.getContext().authentication)
         return ResponseEntity.noContent().build()
     }
 }

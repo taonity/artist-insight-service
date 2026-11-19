@@ -7,8 +7,14 @@
     "status": 200,
     "jsonBody": {
       "id": "stub-admin",
-      "display_name": "Local Admin",
-      "images": []
+      "display_name": "Koa Marlow",
+      "images": [
+        {
+          "url": "/demo/avatars/art-landscape.webp",
+          "width": 96,
+          "height": 96
+        }
+      ]
     },
     "headers": {
       "Content-Type": "application/json"

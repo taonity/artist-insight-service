@@ -1,10 +1,13 @@
 package org.taonity.artistinsightservice.user.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.taonity.artistinsightservice.common.config.AppProperties
+import org.taonity.artistinsightservice.console.entity.ConsoleRole
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
+import org.taonity.artistinsightservice.security.service.SessionCleanup
+import org.taonity.artistinsightservice.settings.service.RuntimeSettings
 import org.taonity.artistinsightservice.user.entity.SpotifyUserEntity
 import org.taonity.artistinsightservice.user.exception.UserNotFoundException
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
@@ -14,36 +17,41 @@ import org.taonity.artistinsightservice.user.repository.UserArtistLinkRepository
 class SpotifyUserService(
     private val spotifyUserRepository: SpotifyUserRepository,
     private val userArtistLinkRepository: UserArtistLinkRepository,
-    private val runtimeSettings: org.taonity.artistinsightservice.settings.service.RuntimeSettings,
-    private val sessionCleanup: org.taonity.artistinsightservice.security.service.SessionCleanup,
-    private val properties: org.taonity.artistinsightservice.common.config.AppProperties
+    private val runtimeSettings: RuntimeSettings,
+    private val sessionCleanup: SessionCleanup,
+    private val properties: AppProperties,
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
     }
 
     fun findBySpotifyIdOrThrow(spotifyId: String): SpotifyUserEntity {
-        return spotifyUserRepository.findById(spotifyId)
-            .orElseThrow { UserNotFoundException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB") }
+        return spotifyUserRepository.findById(spotifyId).orElseThrow {
+            UserNotFoundException("SpotifyUserEntity with spotifyId $spotifyId was not found in DB")
+        }
     }
 
-    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? = spotifyUserRepository.findById(spotifyId).orElse(null)
+    fun findBySpotifyId(spotifyId: String): SpotifyUserEntity? =
+        spotifyUserRepository.findById(spotifyId).orElse(null)
 
     @Transactional
     fun createOrUpdateUser(spotifyUserPrincipal: SpotifyUserPrincipal) {
-        findBySpotifyId(spotifyUserPrincipal.getSpotifyId())
-            ?.also { foundSpotifyUser ->
-                foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName())
-            }
+        findBySpotifyId(spotifyUserPrincipal.getSpotifyId())?.also { foundSpotifyUser ->
+            foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName())
+            foundSpotifyUser.avatarUrl =
+                spotifyUserPrincipal.privateUserObject.images.firstOrNull()?.url
+        }
             ?: spotifyUserRepository.save(
                 SpotifyUserEntity(
                     spotifyUserPrincipal.getSpotifyId(),
                     spotifyUserPrincipal.getDisplayName(),
-                    runtimeSettings.effective().initialUserGptUsages
+                    runtimeSettings.effective().initialUserGptUsages,
+                    avatarUrl = spotifyUserPrincipal.privateUserObject.images.firstOrNull()?.url,
                 )
             )
         if (spotifyUserPrincipal.getSpotifyId() in properties.console.ownerSpotifyIds) {
-            findBySpotifyIdOrThrow(spotifyUserPrincipal.getSpotifyId()).consoleRole = org.taonity.artistinsightservice.console.entity.ConsoleRole.OWNER
+            findBySpotifyIdOrThrow(spotifyUserPrincipal.getSpotifyId()).consoleRole =
+                ConsoleRole.OWNER
         }
     }
 

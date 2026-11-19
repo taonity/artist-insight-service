@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import ContentSkeleton from '@/components/feedback/ContentSkeleton'
+import { useDevLoading } from '@/features/dev/DevTools'
 import type { User } from '@/types/user'
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ user, loading = false, visitorMode = false }) => {
+  const preview = useDevLoading()
   const [canAdmin, setCanAdmin] = useState(false)
   useEffect(() => {
     if (!user || visitorMode) return
@@ -30,39 +33,37 @@ const Header: React.FC<Props> = ({ user, loading = false, visitorMode = false })
   }, [user, visitorMode])
   const pathname = usePathname()
   const router = useRouter()
-  const isLoading = !visitorMode && (loading || !user)
+  const isLoading = preview || (!visitorMode && (loading || !user))
   const displayName = visitorMode ? 'Visitor' : (user?.privateUserObject.displayName ?? '')
   const avatarUrl = visitorMode
     ? '/default-user-pfp.png'
     : (user?.privateUserObject.images?.[0]?.url ?? '/default-user-pfp.png')
 
   return (
-    <div className="header">
+    <header className="header">
       <div className={`user-info${isLoading ? ' user-info--loading' : ''}`}>
-        <div className="header-avatar-slot">
-          {isLoading ? (
-            <div className="skeleton-circle header-avatar-skeleton" />
-          ) : (
-            <Image
-              src={avatarUrl}
-              alt={displayName || 'Spotify user'}
-              width={48}
-              height={48}
-              className="artist-image"
-            />
-          )}
-        </div>
+        <ContentSkeleton loading={isLoading} className="header-avatar-slot">
+          <Image
+            src={avatarUrl}
+            alt=""
+            width={48}
+            height={48}
+            className="artist-image"
+            unoptimized
+          />
+        </ContentSkeleton>
         <div className="header-display-slot">
-          {isLoading ? (
-            <div className="skeleton-line header-name-skeleton" />
-          ) : visitorMode ? (
-            <span>Viewing as Visitor</span>
-          ) : (
-            <span>Logged in as {displayName}</span>
-          )}
+          <ContentSkeleton loading={isLoading}>
+            <span className="header-identity">
+              <span className="header-identity-label">
+                {visitorMode ? 'Viewing as' : 'Logged in as'}
+              </span>
+              <span className="header-identity-name">{displayName || 'Listener'}</span>
+            </span>
+          </ContentSkeleton>
         </div>
       </div>
-      <div className="header-actions">
+      <nav className="header-actions" aria-label="Account navigation">
         {visitorMode ? (
           <button type="button" onClick={() => router.push('/login')}>
             Log in
@@ -88,8 +89,8 @@ const Header: React.FC<Props> = ({ user, loading = false, visitorMode = false })
             </button>
           </>
         )}
-      </div>
-    </div>
+      </nav>
+    </header>
   )
 }
 

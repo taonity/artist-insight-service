@@ -1,4 +1,4 @@
-export const FRONTEND_PROFILES = ['local', 'stage', 'prod'] as const
+export const FRONTEND_PROFILES = ['local', 'demo', 'stage', 'prod'] as const
 export type FrontendProfile = (typeof FRONTEND_PROFILES)[number]
 export const FRONTEND_PROFILE_CONFIG = {
   local: {
@@ -6,6 +6,12 @@ export const FRONTEND_PROFILE_CONFIG = {
     publicBackendUrl: 'http://127.0.0.1:8080',
     csrfCookieName: 'XSRF-TOKEN-LOCAL',
     kofiUrl: 'http://127.0.0.1:8080',
+  },
+  demo: {
+    localBackendUrl: 'http://127.0.0.1:8088',
+    publicBackendUrl: 'http://127.0.0.1:8088',
+    csrfCookieName: 'XSRF-TOKEN-ARTIST-INSIGHT-DEMO',
+    kofiUrl: 'http://127.0.0.1:8088',
   },
   stage: {
     localBackendUrl: 'http://app:8080',

@@ -6,10 +6,12 @@ server:
     session:
       timeout: 12h
       cookie:
-        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN}
-        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME}
+        domain: taonity.org
+        name: JSESSIONID-ARTIST-INSIGHT-PROD
 
 app:
+  default-success-url: https://artist-insight.taonity.org
+  login-url: https://artist-insight.taonity.org/login
   minimised-http-servlet-logging: true
   initial-user-gpt-usages: 10
   donation-credit-price: 0.1
@@ -21,10 +23,10 @@ app:
     audit-days: 90
     audit-cron: "0 30 3 * * *"
   initial-global-gpt-usages: 50
-  csrf-cookie-name: ${CSRF_COOKIE_NAME}
+  csrf-cookie-name: XSRF-TOKEN-ARTIST-INSIGHT-PROD
   cookie:
-    secure: ${COOKIE_SECURE:true}
-    same-site: ${COOKIE_SAME_SITE:Lax}
+    secure: true
+    same-site: Lax
   dev-access:
     enabled: true
     admin-email: ${ADMIN_EMAIL}
@@ -68,6 +70,8 @@ spring:
   profiles:
     group:
       local: plain-log
+      container-local: postgres,stub-spotify,stub-openai,stub-kofi,stub-mail,local,container-settings
+      demo: postgres,stub-spotify,stub-openai,stub-kofi,stub-mail,local,demo-data,demo-settings
       stage: postgres,prod-spotify,prod-openai,prod-kofi,prod-mail
       prod: postgres,prod-spotify,prod-openai,prod-kofi,prod-mail
   session:

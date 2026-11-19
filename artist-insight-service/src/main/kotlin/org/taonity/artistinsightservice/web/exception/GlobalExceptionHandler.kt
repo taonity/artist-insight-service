@@ -10,9 +10,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import org.taonity.artistinsightservice.advisory.Advisory
 import org.taonity.artistinsightservice.advisory.AdvisoryResponse
+import org.taonity.artistinsightservice.console.exception.ConsoleForbiddenException
+import org.taonity.artistinsightservice.console.exception.ConsoleNotFoundException
+import org.taonity.artistinsightservice.console.exception.ConsoleValidationException
 import org.taonity.artistinsightservice.integration.openai.exception.OpenAITimeoutException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyClientException
 import org.taonity.artistinsightservice.integration.spotify.exception.SpotifyTimeoutException
@@ -34,14 +38,26 @@ class GlobalExceptionHandler {
             .body(ServerErrorResponse(ServerErrorCode.UNKNOWN))
     }
 
-    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleForbiddenException::class)
-    fun consoleForbidden(e: RuntimeException) = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ClientErrorResponse(ClientErrorCode.FORBIDDEN, e.message ?: "Forbidden"))
+    @ExceptionHandler(ConsoleForbiddenException::class)
+    fun consoleForbidden(e: RuntimeException) =
+        ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(ClientErrorResponse(ClientErrorCode.FORBIDDEN, e.message ?: "Forbidden"))
 
-    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleNotFoundException::class)
-    fun consoleNotFound(e: RuntimeException) = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ClientErrorResponse(ClientErrorCode.NOT_FOUND, e.message ?: "Not found"))
+    @ExceptionHandler(ConsoleNotFoundException::class)
+    fun consoleNotFound(e: RuntimeException) =
+        ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ClientErrorResponse(ClientErrorCode.NOT_FOUND, e.message ?: "Not found"))
 
-    @ExceptionHandler(org.taonity.artistinsightservice.console.exception.ConsoleValidationException::class, org.springframework.web.method.annotation.MethodArgumentTypeMismatchException::class)
-    fun consoleValidation(e: Exception) = ResponseEntity.badRequest().body(ClientErrorResponse(ClientErrorCode.VALIDATION_ERROR, if (e is org.taonity.artistinsightservice.console.exception.ConsoleValidationException) e.message ?: "Invalid value" else "Invalid query parameter"))
+    @ExceptionHandler(ConsoleValidationException::class, MethodArgumentTypeMismatchException::class)
+    fun consoleValidation(e: Exception) =
+        ResponseEntity.badRequest()
+            .body(
+                ClientErrorResponse(
+                    ClientErrorCode.VALIDATION_ERROR,
+                    if (e is ConsoleValidationException) e.message ?: "Invalid value"
+                    else "Invalid query parameter",
+                )
+            )
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException::class)
@@ -64,17 +80,22 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SpotifyTimeoutException::class)
-    fun handleSpotifyTimeoutException(e: SpotifyTimeoutException): ResponseEntity<AdvisoryResponse> {
+    fun handleSpotifyTimeoutException(
+        e: SpotifyTimeoutException
+    ): ResponseEntity<AdvisoryResponse> {
         val advisoryResponse = AdvisoryResponse(setOf(Advisory.SPOTIFY_TIMEOUT.toDto()))
         LOGGER.warn(e) { "Spotify request timed out" }
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(advisoryResponse)
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleMissingFieldExceptions(e: HttpMessageNotReadableException) : ResponseEntity<ClientErrorResponse> {
+    fun handleMissingFieldExceptions(
+        e: HttpMessageNotReadableException
+    ): ResponseEntity<ClientErrorResponse> {
         val cause = e.cause
         return when (cause) {
-            is KotlinInvalidNullException, is MismatchedInputException -> {
+            is KotlinInvalidNullException,
+            is MismatchedInputException -> {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ClientErrorResponse(ClientErrorCode.MISSING_FIELD, cause.message ?: ""))
             }
@@ -86,29 +107,45 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(e: Exception) : ResponseEntity<ClientErrorResponse> {
+    fun handleValidationExceptions(e: Exception): ResponseEntity<ClientErrorResponse> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ClientErrorResponse(ClientErrorCode.VALIDATION_ERROR, e.message ?: ""))
     }
 
     @ExceptionHandler(ShareLinkNotFoundException::class)
-    fun handleShareLinkNotFoundException(e: ShareLinkNotFoundException): ResponseEntity<ClientErrorResponse> {
+    fun handleShareLinkNotFoundException(
+        e: ShareLinkNotFoundException
+    ): ResponseEntity<ClientErrorResponse> {
         LOGGER.debug(e) {}
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ClientErrorResponse(ClientErrorCode.SHARE_LINK_NOT_FOUND, e.message ?: "Share link not found"))
+            .body(
+                ClientErrorResponse(
+                    ClientErrorCode.SHARE_LINK_NOT_FOUND,
+                    e.message ?: "Share link not found",
+                )
+            )
     }
 
     @ExceptionHandler(ShareLinkExpiredException::class)
-    fun handleShareLinkExpiredException(e: ShareLinkExpiredException): ResponseEntity<ClientErrorResponse> {
+    fun handleShareLinkExpiredException(
+        e: ShareLinkExpiredException
+    ): ResponseEntity<ClientErrorResponse> {
         LOGGER.debug(e) {}
         return ResponseEntity.status(HttpStatus.GONE)
-            .body(ClientErrorResponse(ClientErrorCode.SHARE_LINK_EXPIRED, e.message ?: "Share link has expired"))
+            .body(
+                ClientErrorResponse(
+                    ClientErrorCode.SHARE_LINK_EXPIRED,
+                    e.message ?: "Share link has expired",
+                )
+            )
     }
 
     @ExceptionHandler(UserNotFoundException::class)
     fun handleUserNotFoundException(e: UserNotFoundException): ResponseEntity<ClientErrorResponse> {
         LOGGER.debug(e) {}
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ClientErrorResponse(ClientErrorCode.USER_NOT_FOUND, e.message ?: "User not found"))
+            .body(
+                ClientErrorResponse(ClientErrorCode.USER_NOT_FOUND, e.message ?: "User not found")
+            )
     }
 }

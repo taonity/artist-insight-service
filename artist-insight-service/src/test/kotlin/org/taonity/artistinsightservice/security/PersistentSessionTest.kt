@@ -1,19 +1,26 @@
 package org.taonity.artistinsightservice.security
 
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.support.JdbcTransactionManager
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.core.OAuth2AccessToken
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
+import org.springframework.session.SessionRepository
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.transaction.support.TransactionTemplate
 import org.taonity.artistinsightservice.other.ControllerTestsBaseClass
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 
@@ -36,13 +43,11 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
         val fresh =
             JdbcIndexedSessionRepository(
                 jdbc,
-                org.springframework.transaction.support.TransactionTemplate(
-                    org.springframework.jdbc.support.JdbcTransactionManager(jdbc.dataSource!!)
-                ),
+                TransactionTemplate(JdbcTransactionManager(jdbc.dataSource!!)),
             )
         try {
             val context =
-                (fresh as org.springframework.session.SessionRepository<*>)
+                (fresh as SessionRepository<*>)
                     .findById(id)!!
                     .getAttribute<SecurityContext>(
                         HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
@@ -59,10 +64,10 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
             assertThat(client.refreshToken).isNotNull()
             assertThat(client.accessToken.tokenValue).isNotBlank()
             val service = JdbcOAuth2AuthorizedClientService(jdbc, registrations)
-            val now = java.time.Instant.now()
+            val now = Instant.now()
             val expired =
-                org.springframework.security.oauth2.core.OAuth2AccessToken(
-                    org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER,
+                OAuth2AccessToken(
+                    OAuth2AccessToken.TokenType.BEARER,
                     "expired-test-token",
                     now.minusSeconds(7200),
                     now.minusSeconds(3600),
@@ -81,15 +86,13 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
                 org.springframework.security.oauth2.client
                     .AuthorizedClientServiceOAuth2AuthorizedClientManager(registrations, service)
             manager.setAuthorizedClientProvider(
-                org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
-                    .builder()
-                    .refreshToken()
-                    .build()
+                OAuth2AuthorizedClientProviderBuilder.builder().refreshToken().build()
             )
             val refreshed =
                 manager.authorize(
-                    org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
-                        .withClientRegistrationId("spotify-artist-insight-service")
+                    OAuth2AuthorizeRequest.withClientRegistrationId(
+                            "spotify-artist-insight-service"
+                        )
                         .principal(context.authentication)
                         .build()
                 )!!
@@ -109,8 +112,7 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
         }
         mockMvc.perform(get("/followings").cookie(cookie)).andExpect(status().isOk)
         mockMvc.perform(post("/logout").cookie(cookie).with(csrf())).andExpect(status().isOk)
-        assertThat((sessions as org.springframework.session.SessionRepository<*>).findById(id))
-            .isNull()
+        assertThat((sessions as SessionRepository<*>).findById(id)).isNull()
         assertThat(
                 jdbc.queryForObject(
                     "select count(*) from oauth2_authorized_client where principal_name = ?",

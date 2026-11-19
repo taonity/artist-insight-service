@@ -27,6 +27,15 @@ describe('deployment environment', () => {
     vi.stubEnv('LOCAL_BACKEND_URL', 'http://app:8080/')
     expect(getServerEnv().localBackendUrl).toBe('http://app:8080')
   })
+  it('selects the demo topology without individual URL or cookie variables', () => {
+    vi.stubEnv('FRONTEND_PROFILE', 'demo')
+    expect(getServerEnv()).toMatchObject({
+      profile: 'demo',
+      publicBackendUrl: 'http://127.0.0.1:8088',
+      csrfCookieName: 'XSRF-TOKEN-ARTIST-INSIGHT-DEMO',
+      kofiUrl: 'http://127.0.0.1:8088',
+    })
+  })
   it('requires an explicit production profile', () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('FRONTEND_PROFILE', '')

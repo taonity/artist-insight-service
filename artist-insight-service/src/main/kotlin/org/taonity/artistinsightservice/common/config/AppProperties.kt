@@ -12,26 +12,23 @@ data class AppProperties(
     @field:NotBlank val defaultSuccessUrl: String,
     @field:NotBlank val loginUrl: String,
     @field:Pattern(regexp = "[A-Za-z0-9_-]+") val csrfCookieName: String,
-    @field:Valid val cookie: Cookie = Cookie(),
-    @field:Min(0) val initialUserGptUsages: Int = 10,
-    @field:Min(1) val initialGlobalGptUsages: Int = 50,
-    @field:DecimalMin("0.000001") val donationCreditPrice: BigDecimal = BigDecimal("0.1"),
-    @field:Min(1) @field:Max(3650) val shareLifetimeDays: Int = 30,
-    @field:Valid val console: Console = Console(),
-    @field:Valid val retention: Retention = Retention(),
+    @field:Valid val cookie: Cookie,
+    @field:Min(0) val initialUserGptUsages: Int,
+    @field:Min(1) val initialGlobalGptUsages: Int,
+    @field:DecimalMin("0.000001") val donationCreditPrice: BigDecimal,
+    @field:Min(1) @field:Max(3650) val shareLifetimeDays: Int,
+    @field:Valid val console: Console,
+    @field:Valid val retention: Retention,
 ) {
     data class Cookie(
-        val secure: Boolean = true,
-        @field:Pattern(regexp = "Lax|Strict|None") val sameSite: String = "Lax",
+        val secure: Boolean,
+        @field:Pattern(regexp = "Lax|Strict|None") val sameSite: String,
     )
 
     data class Console(
-        val ownerSpotifyIds: List<String> = emptyList(),
-        @field:Min(10) @field:Max(1000) val maxPageSize: Int = 100,
+        val ownerSpotifyIds: List<String>,
+        @field:Min(10) @field:Max(1000) val maxPageSize: Int,
     )
 
-    data class Retention(
-        @field:Min(1) @field:Max(3650) val auditDays: Int = 90,
-        val auditCron: String = "0 30 3 * * *",
-    )
+    data class Retention(@field:Min(1) @field:Max(3650) val auditDays: Int, val auditCron: String)
 }

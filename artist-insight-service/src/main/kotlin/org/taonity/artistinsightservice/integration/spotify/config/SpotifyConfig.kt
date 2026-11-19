@@ -1,6 +1,8 @@
 package org.taonity.artistinsightservice.integration.spotify.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.nio.charset.Charset
+import java.time.Duration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
@@ -9,14 +11,13 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor
+import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver
 import org.springframework.web.client.RestClient
 import org.taonity.artistinsightservice.security.exception.RestClientErrorException
-import java.nio.charset.Charset
-import java.time.Duration
-
 
 @Configuration
 class SpotifyConfig {
@@ -24,7 +25,7 @@ class SpotifyConfig {
     @Bean
     fun spotifyAuthorisationCodeRestClient(
         authorizedClientManager: OAuth2AuthorizedClientManager,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
     ): RestClient {
         val requestInterceptor = OAuth2ClientHttpRequestInterceptor(authorizedClientManager)
 
@@ -43,34 +44,41 @@ class SpotifyConfig {
                     req.method,
                     req.uri.toString(),
                     headersJson,
-                    responseBody
+                    responseBody,
                 )
             }
             .build()
     }
 
     @Bean
-    fun authorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository: ClientRegistrationRepository,
-                                                             authorizedClientService: OAuth2AuthorizedClientService
-    ) : AuthorizedClientServiceOAuth2AuthorizedClientManager {
+    fun authorizedClientServiceOAuth2AuthorizedClientManager(
+        clientRegistrationRepository: ClientRegistrationRepository,
+        authorizedClientService: OAuth2AuthorizedClientService,
+    ): AuthorizedClientServiceOAuth2AuthorizedClientManager {
         return AuthorizedClientServiceOAuth2AuthorizedClientManager(
-            clientRegistrationRepository,
-            authorizedClientService
-        ).apply {
-            setAuthorizedClientProvider(org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder.builder()
-                .authorizationCode().refreshToken().clientCredentials().build())
-        }
+                clientRegistrationRepository,
+                authorizedClientService,
+            )
+            .apply {
+                setAuthorizedClientProvider(
+                    OAuth2AuthorizedClientProviderBuilder.builder()
+                        .authorizationCode()
+                        .refreshToken()
+                        .clientCredentials()
+                        .build()
+                )
+            }
     }
 
     @Bean
     fun spotifyClientCredentialsRestClient(
-        authorizedClientServiceOAuth2AuthorizedClientManager: AuthorizedClientServiceOAuth2AuthorizedClientManager,
-        objectMapper: ObjectMapper
+        authorizedClientServiceOAuth2AuthorizedClientManager:
+            AuthorizedClientServiceOAuth2AuthorizedClientManager,
+        objectMapper: ObjectMapper,
     ): RestClient {
         val requestInterceptor =
-            OAuth2ClientHttpRequestInterceptor(authorizedClientServiceOAuth2AuthorizedClientManager).apply {
-                setPrincipalResolver(org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver())
-            }
+            OAuth2ClientHttpRequestInterceptor(authorizedClientServiceOAuth2AuthorizedClientManager)
+                .apply { setPrincipalResolver(RequestAttributePrincipalResolver()) }
 
         return RestClient.builder()
             .requestInterceptor(requestInterceptor)
@@ -81,7 +89,6 @@ class SpotifyConfig {
             }
             .build()
     }
-
 
     // TODO: Find best values for timeouts
     private fun buildClientHttpRequestFactory(): ClientHttpRequestFactory {

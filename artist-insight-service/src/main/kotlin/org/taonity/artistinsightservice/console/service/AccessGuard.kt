@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.console.service
 
 import org.springframework.stereotype.Service
+import org.taonity.artistinsightservice.console.entity.ConsoleRole
 import org.taonity.artistinsightservice.console.exception.ConsoleForbiddenException
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
@@ -20,7 +21,7 @@ class AccessGuard(private val users: SpotifyUserRepository) {
 
     fun requireOwner(principal: SpotifyUserPrincipal) =
         requireAdmin(principal).also {
-            if (it.consoleRole != org.taonity.artistinsightservice.console.entity.ConsoleRole.OWNER)
+            if (it.consoleRole != ConsoleRole.OWNER)
                 throw ConsoleForbiddenException("Owner access required")
         }
 }

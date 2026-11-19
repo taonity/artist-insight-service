@@ -5,12 +5,14 @@ import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Header from '@/components/layout/Header'
 import KoFiButton from '@/features/donate/components/KoFiButton'
 import { useUser } from '@/hooks/useUser'
+import { useDevLoading } from '@/features/dev/DevTools'
 
 export default function Donate() {
+  const preview = useDevLoading()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const user = useUser({ onError: setErrorMessage })
-  const isLoadingUser = !user
+  const isLoadingUser = !user || preview
 
   useEffect(() => {
     if (!copied) {
@@ -45,12 +47,12 @@ export default function Donate() {
           <div className="user-id-header">
             <h2>Your supporter ID</h2>
             <p>
-              Put this ID in &quot;Your message&quot; field in Ko-fi and the service will be able to top up your GPT usages
-              account
+              Put this ID in &quot;Your message&quot; field in Ko-fi and the service will be able to
+              top up your GPT usages account
             </p>
             <p>
-              If you have not received GPT usages after donation, please reach the developer in email
-              artiom.diulgher@gmail.com with your supporter ID
+              If you have not received GPT usages after donation, please reach the developer in
+              email artiom.diulgher@gmail.com with your supporter ID
             </p>
           </div>
           <div

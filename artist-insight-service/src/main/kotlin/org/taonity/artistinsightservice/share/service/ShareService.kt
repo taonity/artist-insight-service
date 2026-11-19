@@ -1,8 +1,13 @@
 package org.taonity.artistinsightservice.share.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.security.SecureRandom
+import java.time.OffsetDateTime
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.taonity.artistinsightservice.artist.repository.ArtistRepository
+import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
+import org.taonity.artistinsightservice.settings.service.RuntimeSettings
 import org.taonity.artistinsightservice.share.dto.ShareLinkResponse
 import org.taonity.artistinsightservice.share.dto.ShareOwnerInfo
 import org.taonity.artistinsightservice.share.dto.SharedArtist
@@ -12,11 +17,7 @@ import org.taonity.artistinsightservice.share.exception.ShareLinkExpiredExceptio
 import org.taonity.artistinsightservice.share.exception.ShareLinkNotFoundException
 import org.taonity.artistinsightservice.share.repository.SharedLinkArtistRepository
 import org.taonity.artistinsightservice.share.repository.SharedLinkRepository
-import org.taonity.artistinsightservice.integration.spotify.service.SpotifyService
-import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.user.service.SpotifyUserService
-import java.security.SecureRandom
-import java.time.OffsetDateTime
 
 @Service
 class ShareService(
@@ -24,45 +25,50 @@ class ShareService(
     private val sharedLinkArtistRepository: SharedLinkArtistRepository,
     private val spotifyUserService: SpotifyUserService,
     private val spotifyService: SpotifyService,
-    private val settings: org.taonity.artistinsightservice.settings.service.RuntimeSettings,
-    private val artistRepository: ArtistRepository
+    private val settings: RuntimeSettings,
+    private val artistRepository: ArtistRepository,
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
         private const val SHARE_CODE_LENGTH = 8
-        private const val SHARE_CODE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        private const val SHARE_CODE_CHARS =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     }
 
     @Transactional
     fun createOrUpdateShareLink(spotifyId: String): ShareLinkResponse {
         val followings = spotifyService.fetchFollowings()
         val artistIds = followings.map { it.id }
-        
+
         val existingLink = sharedLinkRepository.findByUserId(spotifyId)
-        
-        val sharedLink = if (existingLink != null) {
-            existingLink.expiresAt = OffsetDateTime.now().plusDays(settings.effective().shareLifetimeDays.toLong())
-            sharedLinkArtistRepository.deleteAllBySharedLinkId(existingLink.id)
-            existingLink.artists.clear()
-            existingLink.addArtists(artistIds)
-            sharedLinkRepository.save(existingLink)
-        } else {
-            val user = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
-            val shareCode = generateUniqueShareCode()
-            val newLink = SharedLinkEntity(
-                user = user,
-                shareCode = shareCode,
-                expiresAt = OffsetDateTime.now().plusDays(settings.effective().shareLifetimeDays.toLong())
-            )
-            newLink.addArtists(artistIds)
-            sharedLinkRepository.save(newLink)
+
+        val sharedLink =
+            if (existingLink != null) {
+                existingLink.expiresAt =
+                    OffsetDateTime.now().plusDays(settings.effective().shareLifetimeDays.toLong())
+                sharedLinkArtistRepository.deleteAllBySharedLinkId(existingLink.id)
+                existingLink.artists.clear()
+                existingLink.addArtists(artistIds)
+                sharedLinkRepository.save(existingLink)
+            } else {
+                val user = spotifyUserService.findBySpotifyIdOrThrow(spotifyId)
+                val shareCode = generateUniqueShareCode()
+                val newLink =
+                    SharedLinkEntity(
+                        user = user,
+                        shareCode = shareCode,
+                        expiresAt =
+                            OffsetDateTime.now()
+                                .plusDays(settings.effective().shareLifetimeDays.toLong()),
+                    )
+                newLink.addArtists(artistIds)
+                sharedLinkRepository.save(newLink)
+            }
+
+        LOGGER.info {
+            "Share link created/updated with code: ${sharedLink.shareCode}, expires at: ${sharedLink.expiresAt}"
         }
-        
-        LOGGER.info { "Share link created/updated with code: ${sharedLink.shareCode}, expires at: ${sharedLink.expiresAt}" }
-        return ShareLinkResponse(
-            shareCode = sharedLink.shareCode,
-            expiresAt = sharedLink.expiresAt
-        )
+        return ShareLinkResponse(shareCode = sharedLink.shareCode, expiresAt = sharedLink.expiresAt)
     }
 
     @Transactional
@@ -73,52 +79,50 @@ class ShareService(
     @Transactional(readOnly = true)
     fun getShareLinkStatus(spotifyId: String): ShareLinkResponse? {
         val sharedLink = sharedLinkRepository.findByUserId(spotifyId) ?: return null
-        
+
         if (sharedLink.isExpired()) {
             return null
         }
-        
-        return ShareLinkResponse(
-            shareCode = sharedLink.shareCode,
-            expiresAt = sharedLink.expiresAt
-        )
+
+        return ShareLinkResponse(shareCode = sharedLink.shareCode, expiresAt = sharedLink.expiresAt)
     }
 
-    @Transactional(readOnly = true)
+    // Public Spotify lookups can refresh and persist JDBC OAuth credentials in this transaction.
+    @Transactional
     fun getSharedArtists(shareCode: String): SharedArtistsResponse {
-        val sharedLink = sharedLinkRepository.findByShareCodeWithArtists(shareCode)
-            ?: throw ShareLinkNotFoundException("Share link not found: $shareCode")
-        
+        val sharedLink =
+            sharedLinkRepository.findByShareCodeWithArtists(shareCode)
+                ?: throw ShareLinkNotFoundException("Share link not found: $shareCode")
+
         if (sharedLink.isExpired()) {
             throw ShareLinkExpiredException("Share link has expired: $shareCode")
         }
 
         val ownerInfo = fetchOwnerInfo(sharedLink.user.spotifyId)
-        
+
         val artistIds = sharedLink.artists.map { it.artistId }
-        
+
         if (artistIds.isEmpty()) {
             return SharedArtistsResponse(owner = ownerInfo, artists = emptyList())
         }
-        
+
         val artists = spotifyService.fetchArtistsByIds(artistIds)
 
         // Fetch enriched genres from DB for artists the owner has enriched
-        val enrichedGenresByArtistId = artistRepository
-            .findByUserIdAndArtistIdsWithGenres(sharedLink.user.spotifyId, artistIds)
-            .associate { it.artistId to it.genres.map { g -> g.genre } }
+        val enrichedGenresByArtistId =
+            artistRepository
+                .findByUserIdAndArtistIdsWithGenres(sharedLink.user.spotifyId, artistIds)
+                .associate { it.artistId to it.genres.map { g -> g.genre } }
 
-        val sharedArtists = artists.map { artist ->
-            SharedArtist(
-                artistObject = artist,
-                enrichedGenres = enrichedGenresByArtistId[artist.id] ?: emptyList()
-            )
-        }
+        val sharedArtists =
+            artists.map { artist ->
+                SharedArtist(
+                    artistObject = artist,
+                    enrichedGenres = enrichedGenresByArtistId[artist.id] ?: emptyList(),
+                )
+            }
 
-        return SharedArtistsResponse(
-            owner = ownerInfo,
-            artists = sharedArtists
-        )
+        return SharedArtistsResponse(owner = ownerInfo, artists = sharedArtists)
     }
 
     private fun fetchOwnerInfo(spotifyId: String): ShareOwnerInfo {
@@ -126,7 +130,7 @@ class ShareService(
         val avatarUrl = userProfile.images?.firstOrNull()?.url
         return ShareOwnerInfo(
             displayName = userProfile.displayName ?: "Unknown User",
-            avatarUrl = avatarUrl
+            avatarUrl = avatarUrl,
         )
     }
 

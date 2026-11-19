@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
+import ShareOwnerInfo from '@/features/share/components/ShareOwnerInfo'
+import { useDevLoading } from '@/features/dev/DevTools'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Loading from '@/components/feedback/Loading'
 import Header from '@/components/layout/Header'
@@ -13,6 +14,7 @@ import type { SharedArtistsData } from '@/types/share'
 import { logError } from '@/lib/logger'
 
 export default function SharePage() {
+  const preview = useDevLoading()
   const params = useParams()
   const shareCode = params.shareCode as string
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -106,24 +108,24 @@ export default function SharePage() {
       <div className="share-page">
         {loading ? (
           <Loading items={10} sharePage />
-        ) : shareData && (
+        ) : shareData ? (
           <>
-            <div className="share-owner-info">
-              <Image
-                src={shareData.owner.avatarUrl || '/default-user-pfp.png'}
-                alt={shareData.owner.displayName}
-                width={64}
-                height={64}
-                className="share-owner-avatar"
-              />
-              <div className="share-owner-details">
-                <h1>{shareData.owner.displayName}&apos;s Followed Artists</h1>
-                <p>{shareData.artists.length} artists</p>
-              </div>
-            </div>
+            <ShareOwnerInfo
+              owner={shareData.owner}
+              count={shareData.artists.length}
+              loading={preview}
+            />
 
             <SharedArtistList artists={shareData.artists} />
           </>
+        ) : (
+          <div className="share-error-card" role="alert">
+            <h1>Unable to load shared artists</h1>
+            <p>Please try again in a moment.</p>
+            <button type="button" onClick={() => window.location.reload()}>
+              Try again
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -1,6 +1,8 @@
 'use client'
 
 import React from 'react'
+import ShareOwnerInfo from '@/features/share/components/ShareOwnerInfo'
+import ArtistRecords from '@/features/artists/components/ArtistRecords'
 
 interface Props {
   items?: number
@@ -23,15 +25,10 @@ const Loading: React.FC<Props> = ({ items = 10, tableOnly = false, sharePage = f
           </div>
         </>
       )}
-      {sharePage && (
-        <div className="share-owner-info share-owner-info--loading">
-          <div className="skeleton-circle" style={{ width: 64, height: 64, marginRight: 0 }} />
-          <div className="share-owner-details">
-            <div className="skeleton-line" style={{ width: 250, height: 24 }} />
-            <div className="skeleton-line" style={{ width: 80, height: 16, marginTop: 8 }} />
-          </div>
-        </div>
-      )}
+      {sharePage && <ShareOwnerInfo loading />}
+      <div className="artist-record-loading">
+        <ArtistRecords loading />
+      </div>
       <div className="loading-table">
         <div className="loading-table-header">
           <div className="loading-table-cell" style={{ width: 90 }}>

@@ -48,6 +48,8 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto
 
 ## Conventions & Patterns
 
+- **Imports**: use imports for types in handwritten Kotlin/Java code; do not use fully qualified type names inline.
+
 - **Package-per-feature**: each feature has `controller/`, `service/`, `dto/`, `entity/`, `repository/`, `exception/` sub-packages. Follow this layout when adding features.
 - **Logging**: use `io.github.oshai.kotlinlogging.KotlinLogging` (`private val LOGGER = KotlinLogging.logger {}`), placed in a `companion object`.
 - **Controller pattern**: `@RestController`, inject services, use `@AuthenticationPrincipal principal: SpotifyUserPrincipal` for auth. **Do NOT add manual entry-point logging** — `ControllerLoggingInterceptor` automatically logs every `@RestController` method invocation with HTTP method, path, class, method name, and execution time.

@@ -1,6 +1,7 @@
 package org.taonity.artistinsightservice.observability.logging
 
 import org.hibernate.boot.Metadata
+import org.hibernate.boot.spi.BootstrapContext
 import org.hibernate.engine.spi.SessionFactoryImplementor
 import org.hibernate.event.service.spi.EventListenerRegistry
 import org.hibernate.event.spi.EventType
@@ -11,11 +12,11 @@ class EntityChangeLoggingIntegrator : Integrator {
 
     override fun integrate(
         metadata: Metadata,
-        bootstrapContext: org.hibernate.boot.spi.BootstrapContext,
-        sessionFactory: SessionFactoryImplementor
+        bootstrapContext: BootstrapContext,
+        sessionFactory: SessionFactoryImplementor,
     ) {
-        val registry = sessionFactory.serviceRegistry.getService(EventListenerRegistry::class.java)
-            ?: return
+        val registry =
+            sessionFactory.serviceRegistry.getService(EventListenerRegistry::class.java) ?: return
 
         val listener = EntityChangeLoggingListener()
 
@@ -24,8 +25,10 @@ class EntityChangeLoggingIntegrator : Integrator {
         registry.appendListeners(EventType.POST_DELETE, listener)
     }
 
-    override fun disintegrate(sessionFactory: SessionFactoryImplementor, serviceRegistry: SessionFactoryServiceRegistry) {
+    override fun disintegrate(
+        sessionFactory: SessionFactoryImplementor,
+        serviceRegistry: SessionFactoryServiceRegistry,
+    ) {
         // nothing to clean up
     }
 }
-

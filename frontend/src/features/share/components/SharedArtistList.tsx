@@ -3,14 +3,12 @@
 import React from 'react'
 import Image from 'next/image'
 import { AgGridReact } from 'ag-grid-react'
-import {
-  AllCommunityModule,
-  ColDef,
-  ICellRendererParams,
-  ModuleRegistry,
-} from 'ag-grid-community'
+import { AllCommunityModule, ColDef, ICellRendererParams, ModuleRegistry } from 'ag-grid-community'
 import Genres from '@/features/artists/components/Genres'
 import type { SharedArtist } from '@/types/share'
+import { useCompactLayout } from '@/hooks/useCompactLayout'
+import { useDevLoading } from '@/features/dev/DevTools'
+import ArtistRecords from '@/features/artists/components/ArtistRecords'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -108,6 +106,9 @@ const columnDefs: ColDef<SharedArtist>[] = [
 ]
 
 const SharedArtistList: React.FC<Props> = ({ artists }) => {
+  const compact = useCompactLayout()
+  const preview = useDevLoading()
+  if (compact) return <ArtistRecords artists={artists} loading={preview} />
   return (
     <div style={{ width: '100%' }} className="ag-theme-quartz-dark">
       <AgGridReact

@@ -2,9 +2,9 @@ server:
   servlet:
     session:
       cookie:
-        domain: ${SERVER_SERVLET_SESSION_COOKIE_DOMAIN:taonity.org}
-        name: ${SERVER_SERVLET_SESSION_COOKIE_NAME:JSESSIONID-ARTIST-INSIGHT-PROD}
+        domain: taonity.org
+        name: JSESSIONID-ARTIST-INSIGHT-PROD
 app:
-  default-success-url: ${DEFAULT_SUCCESS_URL:https://artist-insight.taonity.org}
-  login-url: ${APP_LOGIN_URL:https://artist-insight.taonity.org/login}
-  csrf-cookie-name: ${CSRF_COOKIE_NAME:XSRF-TOKEN-ARTIST-INSIGHT-PROD}
+  default-success-url: https://artist-insight.taonity.org
+  login-url: https://artist-insight.taonity.org/login
+  csrf-cookie-name: XSRF-TOKEN-ARTIST-INSIGHT-PROD

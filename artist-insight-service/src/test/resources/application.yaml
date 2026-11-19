@@ -42,9 +42,18 @@ app:
   minimised-http-servlet-logging: false
   initial-user-gpt-usages: 10
   initial-global-gpt-usages: 50
+  donation-credit-price: 0.1
+  share-lifetime-days: 30
+  console:
+    owner-spotify-ids: []
+    max-page-size: 100
+  retention:
+    audit-days: 90
+    audit-cron: "0 30 3 * * *"
   login-url: http://127.0.0.1:3000/login
   cookie:
     secure: false
+    same-site: Lax
   csrf-cookie-name: XSRF-TOKEN-LOCAL
   dev-access:
     enabled: false

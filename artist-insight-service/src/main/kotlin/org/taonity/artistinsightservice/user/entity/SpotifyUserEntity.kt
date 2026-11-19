@@ -1,26 +1,34 @@
 package org.taonity.artistinsightservice.user.entity
 
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.taonity.artistinsightservice.artist.entity.ArtistEntity
+import org.taonity.artistinsightservice.console.entity.ConsoleRole
 
 @Entity
 @Table(name = "spotify_user")
 class SpotifyUserEntity(
-    @Id
-    val spotifyId: String,
+    @Id val spotifyId: String,
     var displayName: String,
     var gptUsagesLeft: Int,
-    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
-    @jakarta.persistence.Column(nullable = false)
-    var consoleRole: org.taonity.artistinsightservice.console.entity.ConsoleRole = org.taonity.artistinsightservice.console.entity.ConsoleRole.NONE,
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf()
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var consoleRole: ConsoleRole = ConsoleRole.NONE,
+    @Column(name = "avatar_url") var avatarUrl: String? = null,
+    @OneToMany(
+        mappedBy = "user",
+        fetch = FetchType.LAZY,
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+    )
+    val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf(),
 ) {
     fun addEnrichedArtist(artist: ArtistEntity) {
         val link = UserArtistLinkEntity(this, artist)

@@ -14,9 +14,10 @@ class JacksonConfig {
     /**
      * Re-publishes Spring Boot's default Jackson configuration as the primary [ObjectMapper].
      *
-     * Declaring [snakeCaseObjectMapper] below satisfies [org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration]'s
-     * `@ConditionalOnMissingBean(ObjectMapper.class)` check, which would otherwise prevent the default mapper from being created.
-     * Without this primary bean, Spring MVC message converters would fall back to the snake-case mapper for all responses.
+     * Declaring [snakeCaseObjectMapper] below satisfies auto-configuration's
+     * `@ConditionalOnMissingBean(ObjectMapper.class)` check, which would otherwise prevent the
+     * default mapper from being created. Without this primary bean, Spring MVC message converters
+     * would fall back to the snake-case mapper for all responses.
      */
     @Bean
     @Primary

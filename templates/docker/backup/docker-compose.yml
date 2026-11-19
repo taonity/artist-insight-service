@@ -4,13 +4,13 @@ services:
     restart: unless-stopped
     environment:
       BACKUP_PROJECT: ${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME must be set}
-      BACKUP_SCHEDULE_TIME: ${BACKUP_SCHEDULE_TIME:-01:00}
+      BACKUP_SCHEDULE_TIME: "01:00"
       TZ: UTC
       PGHOST: db
       PGPORT: 5432
       PGUSER: ${POSTGRES_USER:?POSTGRES_USER must be set}
       PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
-      PGDATABASE: ${POSTGRES_DB:-artist_insight_service}
+      PGDATABASE: artist_insight_service
     volumes:
       - ./export-postgres.sh:/opt/backup/export-postgres.sh:ro
       - ./run-scheduled.sh:/opt/backup/run-scheduled.sh:ro

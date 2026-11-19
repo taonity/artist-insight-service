@@ -3,14 +3,12 @@
 import React from 'react'
 import Image from 'next/image'
 import { AgGridReact } from 'ag-grid-react'
-import {
-  AllCommunityModule,
-  ColDef,
-  ICellRendererParams,
-  ModuleRegistry,
-} from 'ag-grid-community'
+import { AllCommunityModule, ColDef, ICellRendererParams, ModuleRegistry } from 'ag-grid-community'
 import Genres from '@/features/artists/components/Genres'
 import type { EnrichableArtistObject } from '@/types/followings'
+import { useCompactLayout } from '@/hooks/useCompactLayout'
+import { useDevLoading } from '@/features/dev/DevTools'
+import ArtistRecords from '@/features/artists/components/ArtistRecords'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -102,6 +100,9 @@ const columnDefs: ColDef<EnrichableArtistObject>[] = [
 ]
 
 const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
+  const compact = useCompactLayout()
+  const preview = useDevLoading()
+  if (compact) return <ArtistRecords artists={enrichableArtistObjects} loading={preview} />
   return (
     <div style={{ width: '100%' }} className="ag-theme-quartz-dark">
       <AgGridReact

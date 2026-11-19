@@ -17,10 +17,11 @@ data class UserSummary(
     val displayName: String,
     val gptUsagesLeft: Int,
     val role: ConsoleRole,
+    val avatarUrl: String?,
 ) {
     companion object {
         fun from(u: SpotifyUserEntity) =
-            UserSummary(u.spotifyId, u.displayName, u.gptUsagesLeft, u.consoleRole)
+            UserSummary(u.spotifyId, u.displayName, u.gptUsagesLeft, u.consoleRole, u.avatarUrl)
     }
 }
 

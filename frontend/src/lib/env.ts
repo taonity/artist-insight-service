@@ -17,7 +17,8 @@ export function httpUrl(value: unknown, label: string): string {
 export function getServerEnv() {
   const profile =
     process.env.FRONTEND_PROFILE?.trim() || (process.env.NODE_ENV === 'production' ? '' : 'local')
-  if (!isFrontendProfile(profile)) throw new Error('FRONTEND_PROFILE must be local, stage, or prod')
+  if (!isFrontendProfile(profile))
+    throw new Error('FRONTEND_PROFILE must be local, demo, stage, or prod')
   const defaults = FRONTEND_PROFILE_CONFIG[profile]
   const timeout = Number(process.env.BACKEND_REQUEST_TIMEOUT_MS?.trim() || 60000)
   if (!Number.isSafeInteger(timeout) || timeout <= 0 || timeout > 2147483647)

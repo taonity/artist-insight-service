@@ -1,5 +1,7 @@
 package org.taonity.artistinsightservice.local
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.WireMockServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -20,7 +22,13 @@ class DemoProfileGuardTest {
             )) {
             ApplicationContextRunner()
                 .withInitializer { it.environment.setActiveProfiles(*profiles.toTypedArray()) }
-                .withUserConfiguration(DemoDataSeeder::class.java, DevLoginController::class.java)
+                .withUserConfiguration(
+                    DemoDataSeeder::class.java,
+                    DemoSpotifyData::class.java,
+                    DevLoginController::class.java,
+                )
+                .withBean(WireMockServer::class.java, { mock(WireMockServer::class.java) })
+                .withBean(ObjectMapper::class.java, { ObjectMapper() })
                 .withBean(
                     SpotifyUserRepository::class.java,
                     { mock(SpotifyUserRepository::class.java) },
@@ -32,6 +40,7 @@ class DemoProfileGuardTest {
                 .withBean(AuditLogRepository::class.java, { mock(AuditLogRepository::class.java) })
                 .run { context ->
                     assertThat(context.containsBean("demoDataSeeder")).isEqualTo(enabled)
+                    assertThat(context.containsBean("demoSpotifyData")).isEqualTo(enabled)
                     assertThat(context.containsBean("devLoginController")).isEqualTo(enabled)
                 }
         }

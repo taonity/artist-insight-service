@@ -25,15 +25,16 @@ const AdvisoryCards: React.FC<Props> = ({ advisories }) => {
   return (
     <ul className="advisories">
       {visibleAdvisories.map((advisory) => (
-        <li
-          key={advisory.code}
-          className={`advisory-card ${advisory.severity.toLowerCase()}`}
-        >
+        <li key={advisory.code} className={`advisory-card ${advisory.severity.toLowerCase()}`}>
           <div className="advisory-content">
             <strong>{advisory.title}</strong>
             <p>{advisory.detail}</p>
           </div>
-          <button className="advisory-close" onClick={() => dismiss(advisory.code)}>
+          <button
+            className="advisory-close"
+            aria-label={`Dismiss ${advisory.title}`}
+            onClick={() => dismiss(advisory.code)}
+          >
             ×
           </button>
         </li>

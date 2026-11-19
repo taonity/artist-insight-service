@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '../styles/responsive.css'
 import type { Metadata } from 'next'
 import { Righteous } from 'next/font/google'
 import CookieBanner from '@/components/layout/CookieBanner'

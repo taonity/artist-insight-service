@@ -56,9 +56,6 @@ spring:
             token-uri: http://127.0.0.1:8100/api/token
             user-info-uri: http://127.0.0.1:8100/v1/me-user
             user-name-attribute: id
-app:
-  default-success-url: http://127.0.0.1:3000
-  login-url: http://127.0.0.1:3000/login
 spotify:
   api-base-url: http://127.0.0.1:8100/v1
 logging:

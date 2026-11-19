@@ -20,6 +20,7 @@ export interface UserRow {
   displayName: string
   gptUsagesLeft: number
   role: Role
+  avatarUrl: string | null
 }
 export interface Setting {
   key: string

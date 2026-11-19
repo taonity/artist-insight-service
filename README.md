@@ -11,7 +11,6 @@ A service that allows you to fetch your Spotify followings and share them with o
 <img src="images/site-user-page-v2.png" width="600" />
 
 ### Roadmap
-- Add user roles and admin panel
 - Add more ways to donate to the service
 - Add selectors for grouping artists by details like genre
 - Review site design
@@ -74,33 +73,25 @@ docker compose --env-file templates/docker/.test-env -f templates/docker/docker-
 Production additionally uses `docker-compose.prodenv.yml`. See [Operations](docs/OPERATIONS.md) for deployment variables, networks, backups, and migration requirements.
 
 ### Environment variable
-The project requires a set of environment variables to be configured for some services, depending on which profile set you use.
+Environment profiles own stable URLs, cookies, database topology and limits. Supply service credentials and select `SPRING_PROFILES_ACTIVE` / `FRONTEND_PROFILE`; see [Operations](docs/OPERATIONS.md) for the fictional demo command and profile overrides.
 
 | Env var                              | Service  | Description                                                         |
 |--------------------------------------|----------|---------------------------------------------------------------------|
 | COMPOSE_PROJECT_NAME                 | Postgres | Name for Docker Compose project                                     |
 | POSTGRES_USER                        | Postgres | Used by Flyway                                                      |
 | POSTGRES_PASSWORD                    | Postgres | Used by Flyway                                                      |
-| POSTGRES_DB                          | Postgres | DB name                                                             |
 | POSTGRES_APP_USER                    | Postgres | Used by backend                                                     |
 | POSTGRES_APP_PASSWORD                | Postgres | Used by backend                                                     |
-| POSTGRES_PORT                        | Postgres |                                                                     |
-| POSTGRES_ADDRESS                     | Postgres |                                                                     |
 | SPOTIFY_CLIENT_ID                    | Backend  | Taken from Spotify developer dashboard                              |
 | SPOTIFY_CLIENT_SECRET                | Backend  | Taken from Spotify developer dashboard                              |
-| DEFAULT_SUCCESS_URL                  | Backend  | Redirect for a user after a successful login                        |
-| APP_LOGIN_URL                            | Backend  | Redirect for a user after a failed login                            |
-| SERVER_SERVLET_SESSION_COOKIE_DOMAIN | Backend  | Base domain for frontend and backend                                |
-| SERVER_SERVLET_SESSION_COOKIE_NAME   | Backend  | Cookie name for frontend and backend, for ex. JSESSIONID-STAGE      |
-| CSRF_COOKIE_NAME                     | Backend  | CSRF cookie name for frontend and backend, for ex. XSRF-TOKEN-STAGE |
 | ADMIN_EMAIL                          | Backend  | Admin email address for receiving development access requests       |
 | ORGANISATION_EMAIL                   | Backend  | Gmail account used for sending emails via SMTP                      |
 | ORGANISATION_EMAIL_PASSWORD          | Backend  | Password/app password for the organisation Gmail account            |
 | OPENAI_API_KEY                       | Backend  | Taken from OpenAI platform organisation                             |
 | KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings                               |
 | SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                                |
-| PUBLIC_BACKEND_URL                   | Frontend | Redirect to backend for OAuth initiation                            |
-| LOCAL_BACKEND_URL                    | Frontend | Internal backend URL used by frontend server-side requests          |
+| FRONTEND_PROFILE                     | Frontend | Select local, demo, stage or prod topology                          |
+| CONSOLE_OWNER_SPOTIFY_IDS             | Backend  | Comma-separated Spotify IDs for owner bootstrapping                 |
 
 ### PostgreSQL database ERD diagram
 

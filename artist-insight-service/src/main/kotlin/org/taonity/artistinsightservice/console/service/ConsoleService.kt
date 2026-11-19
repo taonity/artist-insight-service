@@ -1,7 +1,9 @@
 package org.taonity.artistinsightservice.console.service
 
+import jakarta.persistence.criteria.Predicate
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.util.Locale
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
@@ -12,6 +14,7 @@ import org.taonity.artistinsightservice.console.dto.*
 import org.taonity.artistinsightservice.console.entity.*
 import org.taonity.artistinsightservice.console.exception.*
 import org.taonity.artistinsightservice.console.repository.AuditLogRepository
+import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity
 import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.settings.service.RuntimeSettings
@@ -71,7 +74,7 @@ class ConsoleService(
         direction: String,
         page: Int,
         size: Int,
-    ): PageResponse<org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity> {
+    ): PageResponse<DevAccessRequestEntity> {
         guard.requireAdmin(p)
         return PageResponse.of(
             requests.findAll(
@@ -114,7 +117,7 @@ class ConsoleService(
             search<AuditLogEntity>(q, if (field in fields) listOf(field!!) else fields, exact)
                 .and(
                     Specification { root, _, cb ->
-                        val conditions = mutableListOf<jakarta.persistence.criteria.Predicate>()
+                        val conditions = mutableListOf<Predicate>()
                         start?.let {
                             conditions +=
                                 cb.greaterThanOrEqualTo(
@@ -191,7 +194,7 @@ class ConsoleService(
         return Specification { root, _, cb ->
             if (q.isNullOrBlank()) cb.conjunction()
             else {
-                val term = q.trim().lowercase(java.util.Locale.ROOT)
+                val term = q.trim().lowercase(Locale.ROOT)
                 val escaped = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
                 cb.or(
                     *fields
