@@ -43,7 +43,7 @@ jobs:
       raw_tag: ${{ steps.version.outputs.new_tag }}
       version: ${{ steps.number.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: version
@@ -60,12 +60,12 @@ jobs:
     needs: release-prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: temurin
           cache: maven
       - name: Build release image
@@ -89,7 +89,7 @@ jobs:
     needs: release-prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build frontend image
         env:
           REGISTRY: ${{ secrets.DOCKER_USERNAME }}
@@ -113,7 +113,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.TAGGING_GITHUB_TOKEN }}
       - name: Publish completed release tag
