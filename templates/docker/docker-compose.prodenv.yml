@@ -1,15 +1,22 @@
 services:
   db:
     restart: unless-stopped
-    cpus: "0.50"
-    mem_limit: 512m
-    pids_limit: 256
+    cpus: "${DB_CPU_LIMIT:-0.50}"
+    mem_limit: ${DB_MEMORY_LIMIT:-512m}
+    memswap_limit: ${DB_MEMORY_SWAP_LIMIT:-768m}
+    pids_limit: ${DB_PIDS_LIMIT:-256}
   flyway:
-    mem_limit: 384m
+    restart: "no"
+    cpus: "${FLYWAY_CPU_LIMIT:-0.50}"
+    mem_limit: ${FLYWAY_MEMORY_LIMIT:-384m}
+    memswap_limit: ${FLYWAY_MEMORY_SWAP_LIMIT:-512m}
+    pids_limit: ${FLYWAY_PIDS_LIMIT:-256}
   app:
+    extends:
+      file: app/docker-compose.prodenv.yml
+      service: ${COMPOSE_PROJECT_NAME}
     restart: unless-stopped
-    cpus: "1.00"
-    pids_limit: 512
+    pids_limit: ${BACKEND_PIDS_LIMIT:-512}
     networks:
       prodenv-shared-internal:
         aliases: ["${COMPOSE_PROJECT_NAME}-app"]
@@ -17,9 +24,10 @@ services:
         aliases: ["${COMPOSE_PROJECT_NAME}-app"]
   frontend:
     restart: unless-stopped
-    mem_limit: 256m
-    cpus: "0.50"
-    pids_limit: 128
+    mem_limit: ${FRONTEND_MEMORY_LIMIT:-256m}
+    memswap_limit: ${FRONTEND_MEMORY_SWAP_LIMIT:-384m}
+    cpus: "${FRONTEND_CPU_LIMIT:-0.50}"
+    pids_limit: ${FRONTEND_PIDS_LIMIT:-128}
     networks:
       prodenv-shared-internal:
         aliases: ["${COMPOSE_PROJECT_NAME}-frontend"]
@@ -27,7 +35,10 @@ services:
     extends:
       file: backup/docker-compose.yml
       service: postgres-export
-    mem_limit: 256m
+    cpus: "${EXPORT_CPU_LIMIT:-0.50}"
+    mem_limit: ${EXPORT_MEMORY_LIMIT:-256m}
+    memswap_limit: ${EXPORT_MEMORY_SWAP_LIMIT:-384m}
+    pids_limit: ${EXPORT_PIDS_LIMIT:-128}
     networks: [backend]
     depends_on:
       db:
