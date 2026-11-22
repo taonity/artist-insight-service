@@ -14,7 +14,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-local-admin@example.com}
       ORGANISATION_EMAIL: ${ORGANISATION_EMAIL:-}
       ORGANISATION_EMAIL_PASSWORD: ${ORGANISATION_EMAIL_PASSWORD:-}
-      CONSOLE_OWNER_SPOTIFY_IDS: ${CONSOLE_OWNER_SPOTIFY_IDS:-}
+      CONSOLE_OWNER_EMAILS: ${CONSOLE_OWNER_EMAILS:-}
     command: --spring.profiles.active=${SPRING_PROFILES_ACTIVE:?SPRING_PROFILES_ACTIVE must be set}
     volumes:
       - ./config:/artist-insight-service/config:ro

@@ -8,6 +8,7 @@
     "jsonBody": {
       "id": "stub-owner",
       "display_name": "Mira Vell",
+      "email": "mira.vell@listeners.example",
       "images": []
     },
     "headers": {

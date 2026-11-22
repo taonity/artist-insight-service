@@ -8,7 +8,7 @@ spring:
             client-id: ${SPOTIFY_CLIENT_ID}
             client-secret: ${SPOTIFY_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            scope: user-follow-read, user-read-private
+            scope: user-follow-read, user-read-private, user-read-email
           spotify-client-credentials:
             provider: spotify
             client-id: ${SPOTIFY_CLIENT_ID}

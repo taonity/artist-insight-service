@@ -14,6 +14,7 @@ private constructor(
     private val spotifyId: String,
     private val displayName: String,
     private val images: List<SessionImage>,
+    val email: String?,
 ) : OAuth2User, Serializable {
     private data class SessionImage(val url: String, val height: Int?, val width: Int?) :
         Serializable {
@@ -58,6 +59,7 @@ private constructor(
                 user.id,
                 user.displayName,
                 user.images.map { SessionImage(requireNotNull(it.url), it.height, it.width) },
+                (oauthUser.attributes["email"] as? String)?.trim()?.takeIf { it.isNotEmpty() },
             )
     }
 }

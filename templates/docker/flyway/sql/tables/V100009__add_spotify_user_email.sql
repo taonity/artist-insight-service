@@ -1,0 +1,1 @@
+ALTER TABLE spotify_user ADD COLUMN email VARCHAR(320);

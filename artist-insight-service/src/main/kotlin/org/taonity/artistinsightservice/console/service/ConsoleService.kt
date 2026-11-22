@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.common.config.AppProperties
 import org.taonity.artistinsightservice.console.dto.*
 import org.taonity.artistinsightservice.console.entity.*
 import org.taonity.artistinsightservice.console.exception.*
@@ -29,7 +28,6 @@ class ConsoleService(
     private val guard: AccessGuard,
     private val audit: AuditService,
     private val settings: RuntimeSettings,
-    private val properties: AppProperties,
 ) {
     fun access(p: SpotifyUserPrincipal) =
         guard.currentUser(p).let {
@@ -152,7 +150,7 @@ class ConsoleService(
             users.findByIdForUpdate(targetId) ?: throw ConsoleNotFoundException("User not found")
         if (actor.consoleRole != ConsoleRole.OWNER)
             throw ConsoleForbiddenException("Only owners can manage administrator roles")
-        if (targetId in properties.console.ownerSpotifyIds)
+        if (guard.isConfiguredOwner(target.email))
             throw ConsoleForbiddenException(
                 "Configured owners must be managed through deployment configuration"
             )

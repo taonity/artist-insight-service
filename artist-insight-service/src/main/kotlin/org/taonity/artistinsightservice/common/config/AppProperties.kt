@@ -26,7 +26,7 @@ data class AppProperties(
     )
 
     data class Console(
-        val ownerSpotifyIds: List<String>,
+        val ownerEmails: List<String>,
         @field:Min(10) @field:Max(1000) val maxPageSize: Int,
     )
 

@@ -10,7 +10,7 @@
         "equalTo": "1234e12345678fafbd90fdce7540e12e"
       },
       "scope": {
-        "equalTo": "user-follow-read user-read-private"
+        "equalTo": "user-follow-read user-read-private user-read-email"
       },
       "redirect_uri": {
         "matches": "http://127\\.0\\.0\\.1:[0-9]+/login/oauth2/code/(spotify-artist-insight-service|stub-owner|stub-admin|stub-user)"

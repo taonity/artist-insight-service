@@ -1,16 +1,14 @@
+.app-wrapper:has(.app-main :is(.content-skeleton-active, .admin-slot-loading, .loading-table))
+  > .site-footer {
+  display: none;
+}
+
 .footer-mobile-description,
 .footer-email-label {
   display: none;
 }
-.actions .action-enrich {
-  min-width: 0;
-  padding-inline: 12px;
-  border: 1px solid rgba(29, 185, 84, 0.25);
-  background: rgba(25, 20, 20, 0.6);
-  color: #b7c9bc;
-  box-shadow: none;
-  font-size: 13px;
-  font-weight: 500;
+.action-enrich-compact-label {
+  display: none;
 }
 .artist-record-loading {
   display: none;
@@ -18,6 +16,15 @@
 .header-identity {
   display: inline-flex;
   gap: 4px;
+}
+.header-donate-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.header-donate-button svg {
+  flex-shrink: 0;
 }
 .header .artist-image {
   margin: 0;
@@ -104,6 +111,12 @@
 
 /* Like the starter, compact layouts use records instead of squeezed grid columns. */
 @media (max-width: 1099px) {
+  .action-enrich-desktop-label {
+    display: none;
+  }
+  .action-enrich-compact-label {
+    display: inline;
+  }
   .header .header-actions {
     display: flex;
     align-items: center;
@@ -115,13 +128,7 @@
     min-width: 0;
     min-height: 44px;
     padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid rgba(29, 185, 84, 0.25);
-    background: rgba(25, 20, 20, 0.6);
-    color: #d8eadc;
     font-size: 13px;
-    font-weight: 500;
-    box-shadow: none;
   }
   .artist-records .artist-record-sort button {
     min-width: 0;
@@ -458,12 +465,6 @@
     height: 44px;
     padding: 0 6px;
     font-size: 12px;
-    border-radius: 6px;
-    background: rgba(25, 20, 20, 0.6);
-    color: #d8eadc;
-    border: 1px solid rgba(29, 185, 84, 0.25);
-    box-shadow: none;
-    font-weight: 500;
   }
   .main-content .actions [aria-disabled='true'] {
     opacity: 0.6;
@@ -537,7 +538,6 @@
     min-width: 0;
     padding-inline: 8px;
     font-size: 14px;
-    border-radius: 6px;
   }
   .settings-page-warning {
     padding-inline: 8px;
@@ -566,9 +566,6 @@
   }
   .user-id-value--loading {
     height: 24px;
-  }
-  .copy-button {
-    border-radius: 6px;
   }
   .support-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -799,7 +796,6 @@
   }
   .cookie-button {
     align-self: stretch;
-    border-radius: 6px;
   }
   .app-main .error-notification,
   .app-main .dev-access-notification,

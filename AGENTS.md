@@ -76,6 +76,6 @@ Local set: `h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local` (`local` auto
 
 ## Operations and admin conventions
 
-See `docs/OPERATIONS.md`. Console roles are NONE/ADMIN/OWNER and are separate from ordinary Spotify application access. Bootstrap owners by Spotify ID. Backend service guards enforce every admin permission; changing runtime policy must never reset credit balances. Runtime settings are explicitly registered and read from committed database state. Preserve the primary Jackson 2 mapper and existing advisory exception responses.
+See `docs/OPERATIONS.md`. Console roles are NONE/ADMIN/OWNER and are separate from ordinary Spotify application access. Bootstrap owners by matching the Spotify account email against `CONSOLE_OWNER_EMAILS` (case-insensitive); principal identity remains the Spotify ID. Backend service guards enforce every admin permission; changing runtime policy must never reset credit balances. Runtime settings are explicitly registered and read from committed database state. Preserve the primary Jackson 2 mapper and existing advisory exception responses.
 
 Sessions and Spotify authorized clients use JDBC; principal identity is the stable Spotify ID. Changes must preserve credential refresh after repository reload, CSRF/logout and account-deletion cleanup. Local developer logins and demo data must be unavailable in stage/prod. Do not trigger paid enrichment from refresh or navigation effects.

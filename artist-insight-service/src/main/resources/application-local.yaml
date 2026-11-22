@@ -37,7 +37,7 @@ spring:
 
 app:
   console:
-    owner-spotify-ids: [stub-owner]
+    owner-emails: [mira.vell@listeners.example]
   default-success-url: http://127.0.0.1:3000
   login-url: http://127.0.0.1:3000/login
   csrf-cookie-name: XSRF-TOKEN-LOCAL

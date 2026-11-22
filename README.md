@@ -91,7 +91,7 @@ Environment profiles own stable URLs, cookies, database topology and limits. Sup
 | KOFI_VERIFICATION_TOKEN              | Backend  | Taken from Ko-Fi API webhook settings                               |
 | SPRING_PROFILES_ACTIVE               | Backend  | See the table in [backend](#backend)                                |
 | FRONTEND_PROFILE                     | Frontend | Select local, demo, stage or prod topology                          |
-| CONSOLE_OWNER_SPOTIFY_IDS             | Backend  | Comma-separated Spotify IDs for owner bootstrapping                 |
+| CONSOLE_OWNER_EMAILS                  | Backend  | Comma-separated Spotify account emails for owner bootstrapping       |
 
 ### PostgreSQL database ERD diagram
 
@@ -178,4 +178,4 @@ Local developer fixtures and login shortcuts:
 mvn -pl artist-insight-service spring-boot:run '-Dspring-boot.run.profiles=h2,stub-spotify,stub-openai,stub-kofi,stub-mail,local,demo-data'
 ```
 
-The Developer tools panel offers separate Owner, Admin and ordinary-user stub logins. Production console owners must be configured explicitly with `CONSOLE_OWNER_SPOTIFY_IDS`.
+The Developer tools panel offers separate Owner, Admin and ordinary-user stub logins. Production console owners must be configured explicitly with `CONSOLE_OWNER_EMAILS`.

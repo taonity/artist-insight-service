@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.support.JdbcTransactionManager
 import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
@@ -54,6 +55,7 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
                     )
             val principal = context.authentication!!.principal as SpotifyUserPrincipal
             assertThat(principal.name).isEqualTo(principal.getSpotifyId())
+            assertThat(principal.email).isEqualTo("test.user@listeners.example")
             assertThat(principal.privateUserObject.images.first().url).startsWith("https://")
             val client =
                 JdbcOAuth2AuthorizedClientService(jdbc, registrations)
@@ -83,8 +85,7 @@ class PersistentSessionTest : ControllerTestsBaseClass() {
                 context.authentication,
             )
             val manager =
-                org.springframework.security.oauth2.client
-                    .AuthorizedClientServiceOAuth2AuthorizedClientManager(registrations, service)
+                AuthorizedClientServiceOAuth2AuthorizedClientManager(registrations, service)
             manager.setAuthorizedClientProvider(
                 OAuth2AuthorizedClientProviderBuilder.builder().refreshToken().build()
             )

@@ -17,7 +17,7 @@ app:
   donation-credit-price: 0.1
   share-lifetime-days: 30
   console:
-    owner-spotify-ids: ${CONSOLE_OWNER_SPOTIFY_IDS:}
+    owner-emails: ${CONSOLE_OWNER_EMAILS:}
     max-page-size: 100
   retention:
     audit-days: 90

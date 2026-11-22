@@ -69,6 +69,7 @@ class DemoSpotifyData(
             mapOf(
                 "id" to "stub-user",
                 "display_name" to DemoCatalog.people[2].name,
+                "email" to "rumi.cade@listeners.example",
                 "images" to images(DemoCatalog.people[2].avatar),
             ),
         )

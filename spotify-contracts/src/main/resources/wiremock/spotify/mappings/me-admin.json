@@ -8,6 +8,7 @@
     "jsonBody": {
       "id": "stub-admin",
       "display_name": "Koa Marlow",
+      "email": "koa.marlow@listeners.example",
       "images": [
         {
           "url": "/demo/avatars/art-landscape.webp",

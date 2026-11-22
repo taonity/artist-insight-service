@@ -29,6 +29,7 @@ class SpotifyUserEntity(
         orphanRemoval = true,
     )
     val enrichedArtists: MutableSet<UserArtistLinkEntity> = mutableSetOf(),
+    @Column(length = 320) var email: String? = null,
 ) {
     fun addEnrichedArtist(artist: ArtistEntity) {
         val link = UserArtistLinkEntity(this, artist)

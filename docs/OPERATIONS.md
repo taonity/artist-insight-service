@@ -12,13 +12,13 @@ Backend shared application settings bind through validated `AppProperties`. Stab
 
 ## Administration
 
-`/admin` is separate from the ordinary Spotify application. Production users start with no console access. Configure comma-separated **Spotify IDs** in `CONSOLE_OWNER_SPOTIFY_IDS` to bootstrap owners at login. Never use display names or emails for this identity.
+`/admin` is separate from the ordinary Spotify application. Production users start with no console access. Configure comma-separated **Spotify account emails** in `CONSOLE_OWNER_EMAILS` to bootstrap owners at login. Matching trims whitespace and ignores case; missing emails never grant owner access. The application requests `user-read-email`, so existing users need to sign in again to provide it. [Spotify documents this email as unverified](https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile); bootstrap deliberately matches it directly, without email confirmation. Sessions and OAuth credentials remain keyed by Spotify ID.
 
 - `NONE`: no console access; ordinary application features still work.
 - `ADMIN`: inspect users/GPT balances, development-access submissions, runtime settings and audit history.
 - `OWNER`: administrator access plus role and runtime-setting changes.
 
-Owners cannot change their own role through the console. Configured owner accounts are managed through deployment configuration. Removing an ID stops future bootstrapping; another owner must revoke its already persisted role. Role checks query the database on every administrative request, so demotion is effective for existing sessions. There is no console-access application/approval workflow.
+Owners cannot change their own role through the console. Configured owner accounts are managed through deployment configuration, based on their email from the latest Spotify login. Removing an email stops future bootstrapping; another owner must revoke its already persisted role. Role checks query the database on every administrative request, so demotion is effective for existing sessions. There is no console-access application/approval workflow.
 
 Development-access records retain their existing **email delivery** statuses (`PENDING`, `SENT`, `FAILED`). Grant Spotify development access separately in Spotify's dashboard. The console does not automatically approve access, resend mail, delete users, edit artists or adjust balances.
 
@@ -51,7 +51,7 @@ Flyway migrations add `spring_session`, `spring_session_attributes`, and `oauth2
 
 Application-owned principal fields are serializable; generated Spotify models are reconstructed for responses. The principal name is the stable Spotify ID. Spotify access and refresh tokens are stored through JDBC authorized-client services, and expired tokens can refresh after a restart. Logout removes the current session and its stored authorized client; account deletion removes that user's sessions and credentials. Database storage and backups now include OAuth credentials and should retain the same restricted access as other application secrets.
 
-Existing in-memory sessions require a fresh login when this change is first deployed. Apply migrations before starting the new application. Keep existing applied migration files unchanged.
+Existing in-memory sessions require a fresh login when this change is first deployed. Apply migrations before starting the new application. `V100009__add_spotify_user_email.sql` adds a nullable email column; existing users populate it at their next login. Replace `CONSOLE_OWNER_SPOTIFY_IDS` with `CONSOLE_OWNER_EMAILS` in deployment environments. Keep existing applied migration files unchanged.
 
 ## Docker Compose
 
@@ -71,7 +71,7 @@ Use **Developer tools** to sign in as Local owner, admin or user. The demo inclu
 
 Local published ports are backend 8080, Spotify stub 8100, PostgreSQL 5432, frontend 3002. Add `docker-compose.debug.yml` explicitly for a localhost-only debugger on 5005. Normal containers do not enable JDWP.
 
-Production adds `docker-compose.prodenv.yml`. This preserves the external `prodenv-shared-internal` and `artist-insight-shared` network aliases and attaches the exporter to the external backup staging volume. Set credentials, profile and owner IDs explicitly. Public URLs and cookies come from the selected profile. Resource limits are committed in Compose; adjust these files using representative enrichment traffic.
+Production adds `docker-compose.prodenv.yml`. This preserves the external `prodenv-shared-internal` and `artist-insight-shared` network aliases and attaches the exporter to the external backup staging volume. Set credentials, profile and owner emails explicitly. Public URLs and cookies come from the selected profile. Resource limits are committed in Compose; adjust these files using representative enrichment traffic.
 
 Example selectors (supply credentials separately):
 
@@ -79,7 +79,7 @@ Example selectors (supply credentials separately):
 COMPOSE_PROJECT_NAME=artist-insight-prod
 SPRING_PROFILES_ACTIVE=prod
 FRONTEND_PROFILE=prod
-CONSOLE_OWNER_SPOTIFY_IDS=your-spotify-id
+CONSOLE_OWNER_EMAILS=owner@example.com
 ```
 
 Production network aliases, existing database volume names and the `app` Compose service name are preserved. Include the production override in deployment webhook configuration before updating an existing deployment. Pin `IMAGE_TAG` to a completed release when a fixed version is required.

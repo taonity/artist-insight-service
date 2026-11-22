@@ -1,13 +1,18 @@
 package org.taonity.artistinsightservice.console.service
 
 import org.springframework.stereotype.Service
+import org.taonity.artistinsightservice.common.config.AppProperties
 import org.taonity.artistinsightservice.console.entity.ConsoleRole
 import org.taonity.artistinsightservice.console.exception.ConsoleForbiddenException
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
 
 @Service
-class AccessGuard(private val users: SpotifyUserRepository) {
+class AccessGuard(private val users: SpotifyUserRepository, private val properties: AppProperties) {
+    fun isConfiguredOwner(email: String?): Boolean =
+        !email.isNullOrBlank() &&
+            properties.console.ownerEmails.any { it.trim().equals(email.trim(), ignoreCase = true) }
+
     fun currentUser(principal: SpotifyUserPrincipal) =
         users.findById(principal.getSpotifyId()).orElseThrow {
             ConsoleForbiddenException("Unknown user")

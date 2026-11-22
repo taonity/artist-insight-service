@@ -3,8 +3,8 @@ package org.taonity.artistinsightservice.user.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.taonity.artistinsightservice.common.config.AppProperties
 import org.taonity.artistinsightservice.console.entity.ConsoleRole
+import org.taonity.artistinsightservice.console.service.AccessGuard
 import org.taonity.artistinsightservice.security.principal.SpotifyUserPrincipal
 import org.taonity.artistinsightservice.security.service.SessionCleanup
 import org.taonity.artistinsightservice.settings.service.RuntimeSettings
@@ -19,7 +19,7 @@ class SpotifyUserService(
     private val userArtistLinkRepository: UserArtistLinkRepository,
     private val runtimeSettings: RuntimeSettings,
     private val sessionCleanup: SessionCleanup,
-    private val properties: AppProperties,
+    private val guard: AccessGuard,
 ) {
     companion object {
         private val LOGGER = KotlinLogging.logger {}
@@ -40,6 +40,7 @@ class SpotifyUserService(
             foundSpotifyUser.updateDetails(spotifyUserPrincipal.getDisplayName())
             foundSpotifyUser.avatarUrl =
                 spotifyUserPrincipal.privateUserObject.images.firstOrNull()?.url
+            foundSpotifyUser.email = spotifyUserPrincipal.email
         }
             ?: spotifyUserRepository.save(
                 SpotifyUserEntity(
@@ -47,9 +48,10 @@ class SpotifyUserService(
                     spotifyUserPrincipal.getDisplayName(),
                     runtimeSettings.effective().initialUserGptUsages,
                     avatarUrl = spotifyUserPrincipal.privateUserObject.images.firstOrNull()?.url,
+                    email = spotifyUserPrincipal.email,
                 )
             )
-        if (spotifyUserPrincipal.getSpotifyId() in properties.console.ownerSpotifyIds) {
+        if (guard.isConfiguredOwner(spotifyUserPrincipal.email)) {
             findBySpotifyIdOrThrow(spotifyUserPrincipal.getSpotifyId()).consoleRole =
                 ConsoleRole.OWNER
         }

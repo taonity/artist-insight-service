@@ -64,7 +64,12 @@ export default function Home() {
               onClick={loadEnrichedFollowings}
               disabled={loading || enriching || preview}
             >
-              {enriching ? 'Enriching...' : 'Enrich'}
+              <span className="action-enrich-desktop-label">
+                {enriching ? 'Enriching...' : 'Enrich followings'}
+              </span>
+              <span className="action-enrich-compact-label" aria-hidden="true">
+                {enriching ? 'Enriching...' : 'Enrich'}
+              </span>
             </button>
           </div>
         )}
