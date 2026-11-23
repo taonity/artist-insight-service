@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import DevelopmentAccessModal from '@/components/feedback/DevelopmentAccessModal'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
+import NotificationDismissButton from './NotificationDismissButton'
 import './DevelopmentAccessNotification.css'
 
 interface DevelopmentAccessNotificationProps {
@@ -37,11 +38,7 @@ export default function DevelopmentAccessNotification({
         <div className="notification-content">
           <span>{successMessage}</span>
         </div>
-        {onClose && (
-          <button onClick={onClose} className="notification-close-btn" aria-label="Close notification">
-            ×
-          </button>
-        )}
+        {onClose && <NotificationDismissButton onClick={onClose} />}
       </div>
     )
   }
@@ -60,11 +57,7 @@ export default function DevelopmentAccessNotification({
           <button onClick={handleContactClick} className="notification-request-btn">
             Request Access
           </button>
-          {onClose && (
-            <button onClick={onClose} className="notification-close-btn" aria-label="Close notification">
-              ×
-            </button>
-          )}
+          {onClose && <NotificationDismissButton onClick={onClose} />}
         </div>
       </div>
 

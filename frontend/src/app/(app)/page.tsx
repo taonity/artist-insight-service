@@ -3,7 +3,6 @@
 import { CSVLink } from 'react-csv'
 import { AdvisoryCards, ArtistList, GptUsageBlock } from '@/features/followings/components'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
-import Loading from '@/components/feedback/Loading'
 import Header from '@/components/layout/Header'
 import { useDevLoading } from '@/features/dev/DevTools'
 import ContentSkeleton from '@/components/feedback/ContentSkeleton'
@@ -16,6 +15,7 @@ export default function Home() {
     enrichableArtistObjects,
     advisories,
     loading,
+    refreshing,
     enriching,
     gptUsagesLeft,
     errorMessage,
@@ -24,12 +24,13 @@ export default function Home() {
     hasExistingShareLink,
     csvData,
     clearErrorMessage,
+    refreshFollowings,
     loadEnrichedFollowings,
     handleShare,
   } = useFollowingsPage()
 
   return (
-    <div>
+    <div className="followings-page">
       {errorMessage && <ErrorNotification message={errorMessage} onClose={clearErrorMessage} />}
       <Header user={user} />
       <div className="main-content">
@@ -62,7 +63,7 @@ export default function Home() {
               title="Fill missing genres with AI using your GPT credits"
               type="button"
               onClick={loadEnrichedFollowings}
-              disabled={loading || enriching || preview}
+              disabled={loading || enriching || refreshing || preview}
             >
               <span className="action-enrich-desktop-label">
                 {enriching ? 'Enriching...' : 'Enrich followings'}
@@ -75,11 +76,12 @@ export default function Home() {
         )}
         {shareCopiedNotification && <div className="share-copied-notification">Link copied!</div>}
         <AdvisoryCards advisories={advisories} />
-        {loading || enriching ? (
-          <Loading items={enrichableArtistObjects.length || 10} tableOnly />
-        ) : (
-          <ArtistList enrichableArtistObjects={enrichableArtistObjects} />
-        )}
+        <ArtistList
+          enrichableArtistObjects={enrichableArtistObjects}
+          loading={loading || enriching}
+          refreshing={refreshing}
+          onRefresh={refreshFollowings}
+        />
       </div>
     </div>
   )

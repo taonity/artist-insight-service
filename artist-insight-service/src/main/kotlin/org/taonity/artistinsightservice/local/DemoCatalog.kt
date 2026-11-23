@@ -67,10 +67,12 @@ object DemoCatalog {
             DemoPerson(
                 id,
                 name,
-                credits[index % credits.size],
+                if (index == 0) 10 else credits[index % credits.size],
                 role,
                 when {
-                    index == 2 || index % 5 == 0 -> null
+                    index == 0 -> "/demo/avatars/portrait-mira-vell.webp"
+                    index == 2 -> "/demo/avatars/portrait-rumi-cade.webp"
+                    index % 5 == 0 -> null
                     index in setOf(7, 28, 61, 91, 117) ->
                         "/demo/avatars/portrait-${(index % 16 + 1).toString().padStart(2, '0')}.svg"
                     else -> artworkAvatar(index / 5 + index % 5)
@@ -83,7 +85,7 @@ object DemoCatalog {
             "Velvet Circuit",
             "Moss Atlas",
             "Lunar Sidewalk",
-            "Amber Transit",
+            "Amber Transit and the Last Train Through the Northern Lights",
             "Paper Tides",
             "Quiet Comet",
             "Cobalt Orchard",
@@ -95,10 +97,10 @@ object DemoCatalog {
             "Soft Meridian",
             "Copper Echo",
             "Violet Causeway",
-            "Cloud Postal",
+            "Cloud Postal Service for Letters That Never Reached the Moon",
             "Linen Satellites",
-            "Fable District",
-            "Golden Undertow",
+            "Fable District and the Midnight Parade at the Edge of Town",
+            "Golden Undertow and the Silent Choir Beneath the Boardwalk",
             "Cedar Frequency",
             "Echo Loom",
             "Drift Almanac",
@@ -109,11 +111,40 @@ object DemoCatalog {
             "Mellow Compass",
             "Marble Seasons",
             "Parallel Clover",
-            "Afterglow Index",
+            "Afterglow Index and the Orchestras of the Sleeping Coast",
             "Bloom Operator",
             "Distant Meadow",
             "Honeycomb Avenue",
             "Northbound Velvet",
             "Daybreak Theory",
         )
+
+    val enrichedGenresByArtistIndex =
+        mapOf(
+            1 to listOf("downtempo", "ambient techno"),
+            4 to listOf(
+                "post-rock", "instrumental rock", "ambient rock", "cinematic drone",
+                "chamber rock", "experimental guitar", "progressive rock",
+            ),
+            11 to listOf("indie folk", "acoustic folk"),
+            22 to listOf("ambient", "minimalism"),
+        )
+    val spotifyGenreOverrides =
+        mapOf(
+            18 to listOf(
+                "indie folk", "orchestral folk", "chamber pop", "americana",
+                "acoustic ballads", "baroque pop", "singer-songwriter",
+            ),
+            25 to listOf(
+                "modern jazz", "jazz fusion", "broken beat", "spiritual jazz",
+                "experimental soul", "instrumental hip hop", "nu jazz",
+            ),
+            31 to listOf(
+                "ambient pop", "dream pop", "leftfield electronic", "downtempo",
+                "synth-pop", "balearic beat", "experimental ambient", "shoegaze",
+            ),
+        )
+    val artistIndexesWithoutGenres = setOf(2, 5, 9, 14, 20)
+
+    fun artistId(index: Int): String = "fictional-artist-$index"
 }

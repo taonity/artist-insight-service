@@ -130,16 +130,6 @@
     padding: 8px 12px;
     font-size: 13px;
   }
-  .artist-records .artist-record-sort button {
-    min-width: 0;
-    padding-inline: 6px;
-    white-space: nowrap;
-  }
-  .artist-record-sort button[aria-pressed='true'] {
-    color: #87e2a3;
-    border-color: rgba(29, 185, 84, 0.6);
-    background: rgba(29, 185, 84, 0.12);
-  }
   .artist-sort-direction {
     display: flex;
     justify-content: center;
@@ -205,9 +195,9 @@
   }
   .artist-record-controls {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) max-content;
     align-items: center;
-    gap: 8px 16px;
+    gap: 6px;
     padding: 0 16px;
   }
   .artist-records input,
@@ -215,66 +205,62 @@
     width: 100%;
     min-width: 0;
     height: 44px;
-    border: 1px solid rgba(29, 185, 84, 0.25);
+    border: 1px solid var(--outline);
     border-radius: 6px;
-    background: rgba(25, 20, 20, 0.8);
-    color: #fff;
+    background: var(--surface);
+    color: var(--text);
     padding: 8px 10px;
     font: inherit;
     font-size: 16px;
-    color-scheme: dark;
+    color-scheme: inherit;
   }
   .artist-records input::placeholder {
-    color: #95ad9c;
+    color: var(--placeholder);
   }
   .artist-record-sort {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.35fr) 44px;
+    grid-template-columns: 114px 44px;
     align-items: center;
     gap: 6px;
     min-width: 0;
+  }
+  .artist-record-sort select {
+    padding-inline: 6px;
   }
   .artist-records button {
     height: 44px;
     min-width: 44px;
     padding: 8px 12px;
-    border: 1px solid rgba(29, 185, 84, 0.25);
+    border: 1px solid var(--outline);
     border-radius: 6px;
-    background: rgba(25, 20, 20, 0.8);
-    color: #d8eadc;
+    background: var(--surface);
+    color: var(--text-soft);
     box-shadow: none;
     font-size: 12px;
     font-weight: 500;
   }
   .artist-records button:hover:not(:disabled) {
-    background: rgba(29, 185, 84, 0.15);
+    background: var(--row-hover);
   }
   .artist-records :is(button, input, select, a):focus-visible {
-    outline: 2px solid #1db954;
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
-  }
-  .artist-record-count {
-    min-height: 36px;
-    padding: 8px 16px;
-    color: #a9b7ab;
-    font-size: 12px;
-    line-height: 20px;
   }
   .artist-record-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    border-block: 1px solid rgba(29, 185, 84, 0.2);
+    border-block: 1px solid var(--line);
   }
   .artist-record {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(29, 185, 84, 0.1);
+    border-bottom: 1px solid var(--line-subtle);
   }
   .artist-record:nth-child(odd) {
-    background: rgba(25, 20, 20, 0.4);
+    background: var(--surface-tint);
   }
   .artist-record:last-child {
     border-bottom: 0;
@@ -305,7 +291,7 @@
   }
   .artist-record-name a {
     display: block;
-    color: #fff;
+    color: var(--text);
     font-size: 15px;
     font-weight: 600;
     line-height: 20px;
@@ -314,13 +300,12 @@
   .artist-record-label,
   .artist-record-stats dt {
     display: block;
-    color: #a9b7ab;
+    color: var(--muted-green);
     font-size: 11px;
     line-height: 16px;
   }
   .artist-record-genres {
     min-width: 0;
-    min-height: 44px;
     margin: 0;
   }
   .artist-record-genres .content-skeleton {
@@ -328,13 +313,12 @@
   }
   .artist-record-genre-text {
     display: block;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    color: #c9e8d2;
+    color: var(--text-soft);
     line-height: 20px;
+    overflow-wrap: anywhere;
   }
-  .artist-record-ai-genres {
-    color: #d9b3ee;
+  .artist-record-genres .genres-unavailable {
+    line-height: 23px;
   }
   .artist-record-stats {
     display: grid;
@@ -344,30 +328,67 @@
   }
   .artist-record-stats dd {
     margin: 0;
-    color: #fff;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
     line-height: 20px;
   }
   .artist-record-stat-unit {
     font-size: 11px;
-    color: #a9b7ab;
+    color: var(--muted-green);
   }
   .artist-record-empty {
     padding: 48px 16px;
     text-align: center;
-    color: #a9b7ab;
+    color: var(--muted-green);
   }
   .artist-record-pagination {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 60px 44px auto 44px;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 16px 6px;
+    scroll-margin-top: 8px;
+    color: var(--muted-green);
+    font-size: 12px;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .artist-record-pagination:last-child {
+    padding-block: 8px 0;
+  }
+  .artist-record-pagination > .followings-page-range {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .artist-record-pagination form {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 16px 0;
+    gap: 4px;
+    white-space: nowrap;
   }
-  .artist-record-pagination > span {
-    flex: 1;
-    min-width: 80px;
-    color: #a9b7ab;
-    font-size: 12px;
+  .artist-record-pagination select {
+    padding-inline: 5px 0;
+  }
+  .artist-record-pagination input[type='number'] {
+    width: 44px;
+    padding-inline: 3px;
+    text-align: center;
+    appearance: textfield;
+  }
+  .artist-record-pagination input::-webkit-inner-spin-button {
+    appearance: none;
+  }
+  .artist-record-pagination button {
+    display: grid;
+    place-items: center;
+    padding: 0;
+  }
+  .artist-record-pagination :is(button, input, select):disabled {
+    opacity: 0.5;
+  }
+  .artist-pagination-chevron {
+    font-size: 23px;
+    line-height: 1;
   }
 }
 
@@ -402,6 +423,10 @@
     padding: 12px 8px;
     font-size: 14px;
   }
+  .followings-page .header {
+    gap: 6px;
+    padding-block: 8px;
+  }
   .header .user-info {
     width: 100%;
     min-width: 0;
@@ -423,7 +448,7 @@
     line-height: 22px;
   }
   .header-identity-label {
-    color: #a9b7ab;
+    color: var(--muted-green);
     font-size: 11px;
     line-height: 16px;
   }
@@ -439,6 +464,10 @@
     padding: 12px 0 24px;
     gap: 12px;
   }
+  .followings-page .main-content {
+    padding-block-start: 8px;
+    gap: 8px;
+  }
   .main-content > .usage-skeleton,
   .main-content > .actions,
   .main-content > .advisories {
@@ -450,6 +479,13 @@
   .usage-skeleton .gpt-usage {
     padding: 12px;
     border-radius: 6px;
+  }
+  .followings-page .usage-skeleton .gpt-usage {
+    min-height: 36px;
+    padding-block: 8px;
+  }
+  .followings-page .advisory-card:last-child {
+    margin-bottom: 0;
   }
   .main-content .actions {
     display: grid;
@@ -471,10 +507,8 @@
     cursor: default;
   }
   .artist-record-controls {
-    grid-template-columns: minmax(0, 1fr);
     padding-inline: 8px;
   }
-  .artist-record-count,
   .artist-record,
   .artist-record-pagination {
     padding-inline: 8px;
@@ -521,7 +555,7 @@
   }
   .settings-page-card p > strong {
     display: block;
-    color: #a9b7ab;
+    color: var(--muted-green);
     font-size: 12px;
     line-height: 20px;
   }
@@ -816,16 +850,14 @@
   .notification-content {
     min-width: 0;
   }
-  .error-notification button,
-  .notification-close-btn,
-  .notification-request-btn,
-  .advisory-close {
+  .notification-request-btn {
     flex: 0 0 auto;
     min-width: 44px;
     min-height: 44px;
   }
-  .advisory-card {
-    padding-right: 52px;
+  .notification-dismiss {
+    inline-size: 44px;
+    block-size: 44px;
   }
   .app-main .modal-overlay {
     padding: 0;

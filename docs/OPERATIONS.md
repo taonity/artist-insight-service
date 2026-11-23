@@ -67,7 +67,9 @@ Run the fictional demo (frontend 3008, backend 8088, Spotify stub 8100):
 docker compose --project-name artist-insight-demo --env-file templates/docker/.test-env -f templates/docker/docker-compose.yml -f templates/docker/docker-compose.demo.yml up -d --wait
 ```
 
-Use **Developer tools** to sign in as Local owner, admin or user. The demo includes 120 invented listeners, 96 access requests, 240 audit events and 36 fictional artists, with bundled artwork avatars, a few synthetic portraits and some accounts without a picture. Artwork prompts are recorded in `docs/demo-avatar-prompts.json`. Seeding is idempotent and preserves edited records. No real Spotify or OpenAI calls are used. Loading previews retain the loaded content geometry.
+Use **Developer tools** to sign in as Local owner, admin or user. The demo includes 120 fictional users, 96 access requests, 240 audit events and 36 fictional artists. Seven artists have long names, longer genre lists, or both. The demo includes bundled artwork avatars, a few synthetic portraits and some accounts without a picture. Artwork prompts are recorded in `docs/demo-avatar-prompts.json`. Seeding is idempotent and preserves edited records. No real Spotify or OpenAI calls are used. Loading previews retain the loaded content geometry.
+
+The [demo screenshot workflow](DEMO_SCREENSHOTS.md) captures the app as Mira Vell, the demo owner.
 
 Local published ports are backend 8080, Spotify stub 8100, PostgreSQL 5432, frontend 3002. Add `docker-compose.debug.yml` explicitly for a localhost-only debugger on 5005. Normal containers do not enable JDWP.
 

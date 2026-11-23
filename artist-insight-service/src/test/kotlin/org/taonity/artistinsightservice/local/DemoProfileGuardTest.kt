@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
+import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.console.repository.AuditLogRepository
 import org.taonity.artistinsightservice.devaccess.repository.DevAccessRepository
 import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
@@ -33,6 +34,7 @@ class DemoProfileGuardTest {
                     SpotifyUserRepository::class.java,
                     { mock(SpotifyUserRepository::class.java) },
                 )
+                .withBean(ArtistRepository::class.java, { mock(ArtistRepository::class.java) })
                 .withBean(
                     DevAccessRepository::class.java,
                     { mock(DevAccessRepository::class.java) },

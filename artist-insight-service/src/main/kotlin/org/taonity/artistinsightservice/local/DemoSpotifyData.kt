@@ -33,13 +33,20 @@ class DemoSpotifyData(
             )
         val artists =
             DemoCatalog.artistNames.mapIndexed { index, name ->
+                val id = DemoCatalog.artistId(index)
+                val artistUrl = "https://music.example/artists/$id"
+                val spotifyGenres =
+                    if (
+                        index in DemoCatalog.artistIndexesWithoutGenres ||
+                        index in DemoCatalog.enrichedGenresByArtistIndex
+                    ) emptyList()
+                    else DemoCatalog.spotifyGenreOverrides[index] ?: genres[index % genres.size]
                 mapOf(
-                    "id" to "fictional-artist-$index",
+                    "id" to id,
                     "name" to name,
-                    "genres" to genres[index % genres.size],
-                    "href" to "https://music.example/artists/fictional-artist-$index",
-                    "external_urls" to
-                        mapOf("spotify" to "https://music.example/artists/fictional-artist-$index"),
+                    "genres" to spotifyGenres,
+                    "href" to artistUrl,
+                    "external_urls" to mapOf("spotify" to artistUrl),
                     "images" to
                         listOf(
                             mapOf(
@@ -64,15 +71,11 @@ class DemoSpotifyData(
                     )
             ),
         )
-        register(
-            "/v1/me",
-            mapOf(
-                "id" to "stub-user",
-                "display_name" to DemoCatalog.people[2].name,
-                "email" to "rumi.cade@listeners.example",
-                "images" to images(DemoCatalog.people[2].avatar),
-            ),
-        )
+        val owner = DemoCatalog.people[0]
+        val userProfile = privateProfile(DemoCatalog.people[2], "rumi.cade@listeners.example")
+        register("/v1/me", userProfile)
+        register("/v1/me-owner", privateProfile(owner, "mira.vell@listeners.example"))
+        register("/v1/me-user", userProfile)
         register("/v1/artists", mapOf("artists" to artists))
         DemoCatalog.people.take(3).forEach { person ->
             register(
@@ -85,6 +88,14 @@ class DemoSpotifyData(
             )
         }
     }
+
+    private fun privateProfile(person: DemoPerson, email: String) =
+        mapOf(
+            "id" to person.id,
+            "display_name" to person.name,
+            "email" to email,
+            "images" to images(person.avatar),
+        )
 
     private fun images(url: String?): List<Map<String, Any>> =
         url?.let { listOf(mapOf("url" to it, "width" to 96, "height" to 96)) } ?: emptyList()

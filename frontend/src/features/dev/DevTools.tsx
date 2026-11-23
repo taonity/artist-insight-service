@@ -47,11 +47,11 @@ export default function DevTools() {
         bottom: 12,
         right: 12,
         zIndex: 1000,
-        background: open ? '#18251d' : 'transparent',
+        background: open ? 'var(--surface-solid)' : 'transparent',
         padding: open ? 12 : 0,
-        border: open ? '1px solid #31523b' : 'none',
+        border: open ? '1px solid var(--outline)' : 'none',
         borderRadius: 8,
-        color: 'white',
+        color: 'var(--text)',
         maxWidth: 300,
         width: open ? 'min(300px, calc(100vw - 24px))' : 44,
         boxSizing: 'border-box',
@@ -74,9 +74,9 @@ export default function DevTools() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#18251d',
-          border: '1px solid #31523b',
-          color: '#91d9a7',
+          background: 'var(--surface-solid)',
+          border: '1px solid var(--outline)',
+          color: 'var(--accent-soft)',
         }}
       >
         <svg

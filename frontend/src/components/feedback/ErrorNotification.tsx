@@ -1,5 +1,7 @@
 'use client'
 
+import NotificationDismissButton from './NotificationDismissButton'
+
 type ErrorNotificationProps = {
   message: string
   onClose?: () => void
@@ -9,11 +11,7 @@ export default function ErrorNotification({ message, onClose }: ErrorNotificatio
   return (
     <div className="error-notification" role="alert" aria-live="assertive" aria-atomic="true">
       <span>{message}</span>
-      {onClose && (
-        <button onClick={onClose} aria-label="Close notification">
-          ×
-        </button>
-      )}
+      {onClose && <NotificationDismissButton onClick={onClose} />}
     </div>
   )
 }

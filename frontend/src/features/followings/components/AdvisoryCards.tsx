@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import NotificationDismissButton from '@/components/feedback/NotificationDismissButton'
 import type { Advisory } from '@/types/advisory'
 
 interface Props {
@@ -30,13 +31,10 @@ const AdvisoryCards: React.FC<Props> = ({ advisories }) => {
             <strong>{advisory.title}</strong>
             <p>{advisory.detail}</p>
           </div>
-          <button
-            className="advisory-close"
-            aria-label={`Dismiss ${advisory.title}`}
+          <NotificationDismissButton
+            label={`Dismiss ${advisory.title}`}
             onClick={() => dismiss(advisory.code)}
-          >
-            ×
-          </button>
+          />
         </li>
       ))}
     </ul>

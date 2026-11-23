@@ -153,6 +153,12 @@ jobs:
     secrets:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+  demo-screenshots:
+    needs: deploy-prod
+    if: ${{ !cancelled() && needs.deploy-prod.result == 'success' }}
+    uses: ./.github/workflows/demo-screenshots.yml
+    permissions:
+      contents: write
   notify-stage:
     needs: deploy-stage
     if: ${{ always() && vars.ENABLE_DEPLOY_NOTIFICATIONS == 'true' && (needs.deploy-stage.result == 'success' || needs.deploy-stage.result == 'failure') }}

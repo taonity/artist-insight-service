@@ -18,6 +18,7 @@ export function useFollowingsPage() {
   const [enrichableArtistObjects, setArtists] = useState<EnrichableArtistObject[]>([])
   const [advisories, setAdvisories] = useState<Advisory[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [enriching, setEnriching] = useState(false)
   const [gptUsagesLeft, setGptUsagesLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -29,8 +30,9 @@ export function useFollowingsPage() {
 
   const user = useUser({ onError: setErrorMessage })
 
-  async function loadUserFollowings() {
-    setLoading(true)
+  async function loadUserFollowings(silent = false) {
+    const setBusy = silent ? setRefreshing : setLoading
+    setBusy(true)
 
     try {
       const result = await fetchFollowings('/api/followings', 30000)
@@ -49,7 +51,7 @@ export function useFollowingsPage() {
     } catch {
       setErrorMessage(DEFAULT_NETWORK_ERROR_MESSAGE)
     } finally {
-      setLoading(false)
+      setBusy(false)
     }
   }
 
@@ -147,6 +149,7 @@ export function useFollowingsPage() {
     enrichableArtistObjects,
     advisories,
     loading,
+    refreshing,
     enriching,
     gptUsagesLeft,
     errorMessage,
@@ -155,6 +158,7 @@ export function useFollowingsPage() {
     hasExistingShareLink,
     csvData: buildFollowingsCsvData(enrichableArtistObjects),
     clearErrorMessage: () => setErrorMessage(null),
+    refreshFollowings: () => loadUserFollowings(true),
     loadEnrichedFollowings,
     handleShare,
   }

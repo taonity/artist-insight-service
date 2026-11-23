@@ -24,6 +24,14 @@
     {
       "asset": "frontend/public/demo/avatars/art-cosmos.webp",
       "prompt": "Use case: stylized-concept. Asset type: square art profile picture for a fictional music listener. A dreamy cosmic artwork of lavender planetary rings and a small glowing turquoise moon above violet nebula clouds, grainy airbrush illustration, ambient electronic music mood. One single square composition filling the entire image, clear focal point readable at 32 pixels, safe for circular cropping. No people, no face, no text, letters, logos, watermark, frame, mockup or UI."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/portrait-rumi-cade.webp",
+      "prompt": "Create a square editorial avatar illustration for fictional music listener Rumi Cade. Show a warm tan face with a joyful crooked grin, lively eyebrows, short tousled dark-brown hair and retro coral over-ear headphones against a deep teal backdrop. Use bold, readable shapes and subtle screen-print texture. Frame the head and shoulders centrally so the expression and headphones read in a 44-pixel circular crop. Avoid lettering, logos, watermarks and borders."
+    },
+    {
+      "asset": "frontend/public/demo/avatars/portrait-mira-vell.webp",
+      "prompt": "Create a square editorial avatar illustration for fictional record collector Mira Vell. Show a warmly expressive woman with a lively, confident grin, soft brown skin, and dark wavy hair with one copper streak. Give her simple sage-green over-ear headphones and a deep aubergine backdrop. Use bold shapes and a subtle screen-print texture like illustrated album art. Frame the face and headphones centrally for a 44-pixel circular profile picture. Avoid lettering, logos, watermarks and borders."
     }
   ]
 }

@@ -1,119 +1,35 @@
 'use client'
 
-import React from 'react'
-import Image from 'next/image'
-import { AgGridReact } from 'ag-grid-react'
-import { AllCommunityModule, ColDef, ICellRendererParams, ModuleRegistry } from 'ag-grid-community'
-import Genres from '@/features/artists/components/Genres'
-import type { EnrichableArtistObject } from '@/types/followings'
-import { useCompactLayout } from '@/hooks/useCompactLayout'
-import { useDevLoading } from '@/features/dev/DevTools'
 import ArtistRecords from '@/features/artists/components/ArtistRecords'
-
-ModuleRegistry.registerModules([AllCommunityModule])
+import { useDevLoading } from '@/features/dev/DevTools'
+import { useCompactLayout } from '@/hooks/useCompactLayout'
+import type { EnrichableArtistObject } from '@/types/followings'
+import FollowingsDesktopTable from './FollowingsDesktopTable'
 
 interface Props {
   enrichableArtistObjects: EnrichableArtistObject[]
+  loading: boolean
+  refreshing: boolean
+  onRefresh: () => void
 }
 
-function AvatarCell({ data }: ICellRendererParams<EnrichableArtistObject>) {
-  if (!data) {
-    return null
-  }
-
-  const artist = data.artistObject
-  const imageUrl = artist.images?.[0]?.url ?? '/default-artist-pfp.jpeg'
-
-  return (
-    <a
-      href={artist.externalUrls.spotify}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ display: 'flex', alignItems: 'center', height: '100%' }}
-    >
-      <Image
-        src={imageUrl}
-        alt={artist.name}
-        width={40}
-        height={40}
-        style={{ borderRadius: '50%', objectFit: 'cover' }}
-      />
-    </a>
-  )
-}
-
-function GenresCell({ data, value }: ICellRendererParams<EnrichableArtistObject, string[]>) {
-  if (!data || !value || value.length === 0) {
-    return null
-  }
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-      <Genres genres={value} enriched={data.genreEnriched} />
-    </div>
-  )
-}
-
-const columnDefs: ColDef<EnrichableArtistObject>[] = [
-  {
-    headerName: 'Avatar',
-    field: 'artistObject.images',
-    cellRenderer: AvatarCell,
-    valueFormatter: () => '',
-    width: 90,
-    sortable: false,
-    filter: false,
-  },
-  {
-    headerName: 'Name',
-    field: 'artistObject.name',
-    sortable: true,
-    filter: true,
-    flex: 1,
-    cellStyle: { display: 'flex', alignItems: 'center' },
-  },
-  {
-    headerName: 'Genres',
-    field: 'artistObject.genres',
-    cellRenderer: GenresCell,
-    valueFormatter: () => '',
-    flex: 2,
-    sortable: false,
-  },
-  {
-    headerName: 'Followers',
-    field: 'artistObject.followers.total',
-    sortable: true,
-    filter: 'agNumberColumnFilter',
-    width: 120,
-    valueFormatter: (params) => (params.value ? params.value.toLocaleString() : '0'),
-    cellStyle: { display: 'flex', alignItems: 'center' },
-  },
-  {
-    headerName: 'Popularity',
-    field: 'artistObject.popularity',
-    sortable: true,
-    filter: 'agNumberColumnFilter',
-    width: 120,
-    cellStyle: { display: 'flex', alignItems: 'center' },
-  },
-]
-
-const ArtistList: React.FC<Props> = ({ enrichableArtistObjects }) => {
+export default function ArtistList({
+  enrichableArtistObjects,
+  loading,
+  refreshing,
+  onRefresh,
+}: Props) {
   const compact = useCompactLayout()
-  const preview = useDevLoading()
-  if (compact) return <ArtistRecords artists={enrichableArtistObjects} loading={preview} />
+  const showLoading = useDevLoading() || loading
+
+  if (compact) return <ArtistRecords artists={enrichableArtistObjects} loading={showLoading} />
+
   return (
-    <div style={{ width: '100%' }} className="ag-theme-quartz-dark">
-      <AgGridReact
-        rowData={enrichableArtistObjects}
-        columnDefs={columnDefs}
-        domLayout="autoHeight"
-        rowHeight={60}
-        suppressHorizontalScroll={true}
-      />
-    </div>
+    <FollowingsDesktopTable
+      artists={enrichableArtistObjects}
+      loading={showLoading}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    />
   )
 }
-
-export default ArtistList

@@ -4,10 +4,13 @@ import ErrorNotification from '@/components/feedback/ErrorNotification'
 import ContentSkeleton from '@/components/feedback/ContentSkeleton'
 import { useDevLoading } from '@/features/dev/DevTools'
 import Header from '@/components/layout/Header'
+import { useTheme } from '@/components/theme/ThemeProvider'
+import { readTheme } from '@/components/theme/theme'
 import { useSettingsPage } from '@/features/settings/useSettingsPage'
 
 export default function SettingsPage() {
   const preview = useDevLoading()
+  const { preference, setPreference } = useTheme()
   const {
     user,
     errorMessage,
@@ -45,6 +48,23 @@ export default function SettingsPage() {
             <ContentSkeleton loading={isLoadingUser || preview}>{gptUsagesLeft}</ContentSkeleton>
           </p>
         </div>
+        <section
+          className="settings-page-card settings-appearance"
+          aria-labelledby="appearance-heading"
+        >
+          <h2 id="appearance-heading">Appearance</h2>
+          <label className="settings-theme">
+            Theme
+            <select
+              value={preference}
+              onChange={(event) => setPreference(readTheme(event.currentTarget.value))}
+            >
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
+        </section>
         <div className="settings-page-card">
           <h2>Share link</h2>
           <p className="settings-share-status">

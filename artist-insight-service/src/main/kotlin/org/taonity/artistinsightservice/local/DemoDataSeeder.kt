@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import org.taonity.artistinsightservice.artist.entity.ArtistEntity
+import org.taonity.artistinsightservice.artist.repository.ArtistRepository
 import org.taonity.artistinsightservice.console.entity.AuditLogEntity
 import org.taonity.artistinsightservice.console.repository.AuditLogRepository
 import org.taonity.artistinsightservice.devaccess.entity.DevAccessRequestEntity
@@ -22,6 +24,7 @@ import org.taonity.artistinsightservice.user.repository.SpotifyUserRepository
 @Profile("demo-data & local & stub-spotify & !prod & !stage")
 class DemoDataSeeder(
     private val users: SpotifyUserRepository,
+    private val artists: ArtistRepository,
     private val requests: DevAccessRepository,
     private val audits: AuditLogRepository,
 ) {
@@ -54,6 +57,7 @@ class DemoDataSeeder(
                 }
             }
         }
+        seedEnrichedArtists()
         val anchor = Instant.now().truncatedTo(ChronoUnit.DAYS)
         val messages =
             listOf(
@@ -118,6 +122,17 @@ class DemoDataSeeder(
                     )
                 )
             }
+        }
+    }
+
+    private fun seedEnrichedArtists() {
+        val loginUsers = users.findAllById(DemoCatalog.people.take(3).map { it.id })
+        DemoCatalog.enrichedGenresByArtistIndex.forEach { (index, genres) ->
+            val id = DemoCatalog.artistId(index)
+            val artist = artists.findById(id).orElseGet {
+                artists.save(ArtistEntity(id, DemoCatalog.artistNames[index]).apply { addGenres(genres) })
+            }
+            loginUsers.forEach { it.addEnrichedArtist(artist) }
         }
     }
 

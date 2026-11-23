@@ -15,8 +15,8 @@ const tabs = ['users', 'requests', 'settings', 'audit', 'about'] as const
 type Tab = (typeof tabs)[number]
 const sections: Record<Tab, { label: string; title: string; description: string }> = {
   users: {
-    label: 'Listeners',
-    title: 'Listeners',
+    label: 'Users',
+    title: 'Users',
     description: 'Account details, enrichment credits and console access.',
   },
   requests: {
@@ -89,7 +89,7 @@ const requestColumns: Column<RecordRow>[] = [
     sortKey: 'email',
     defaultWidth: 300,
     render: (row) => <Profile name={row.email || ''} />,
-    placeholder: <Profile name="Listener Example" />,
+    placeholder: <Profile name="Requester Example" />,
   },
   {
     key: 'message',
@@ -212,13 +212,13 @@ export default function AdminConsole() {
       {
         key: 'displayName',
         mobilePrimary: true,
-        label: 'Listener',
+        label: 'User',
         sortKey: 'displayName',
         defaultWidth: 330,
         render: (user) => (
           <Profile name={user.displayName} avatar={user.avatarUrl} detail={user.spotifyId} />
         ),
-        placeholder: <Profile name="Listener Example" detail="demo-listener-000" />,
+        placeholder: <Profile name="User Example" detail="demo-listener-000" />,
       },
       {
         key: 'spotifyId',
@@ -259,13 +259,13 @@ export default function AdminConsole() {
             >
               {(['NONE', 'ADMIN', 'OWNER'] as const).map((role) => (
                 <option key={role} value={role}>
-                  {role === 'NONE' ? 'Listener' : role === 'ADMIN' ? 'Admin' : 'Owner'}
+                  {role === 'NONE' ? 'User' : role === 'ADMIN' ? 'Admin' : 'Owner'}
                 </option>
               ))}
             </select>
           ) : (
             <span className={`admin-role-pill admin-role-${user.role.toLowerCase()}`}>
-              {user.role === 'NONE' ? 'Listener' : user.role === 'ADMIN' ? 'Admin' : 'Owner'}
+              {user.role === 'NONE' ? 'User' : user.role === 'ADMIN' ? 'Admin' : 'Owner'}
             </span>
           ),
         placeholder: <span className="admin-role-pill">Admin</span>,
@@ -361,7 +361,7 @@ export default function AdminConsole() {
                 defaultSort="displayName"
                 refreshKey={refresh.users}
                 enabled={allowed && tab === 'users'}
-                searchLabel="Search listeners..."
+                searchLabel="Search users..."
               />
             )}
           </div>
