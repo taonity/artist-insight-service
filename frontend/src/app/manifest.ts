@@ -1,7 +1,11 @@
 import type { MetadataRoute } from 'next'
 import { THEME_COLORS } from '@/components/theme/theme'
+import { getAppIcons } from '@/lib/appIcons'
+
+export const dynamic = 'force-dynamic'
 
 export default function manifest(): MetadataRoute.Manifest {
+  const { manifestIconPrefix } = getAppIcons()
   return {
     id: '/',
     name: 'Artist Insight',
@@ -13,9 +17,9 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: THEME_COLORS.light,
     theme_color: THEME_COLORS.light,
     icons: [
-      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: `${manifestIconPrefix}-192.png`, sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: `${manifestIconPrefix}-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: `${manifestIconPrefix}-maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   }
 }
