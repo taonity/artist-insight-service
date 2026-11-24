@@ -15,3 +15,5 @@ The launcher uses Maven's recorded artifact version, rather than file timestamps
 Run `npm run demo:capture` to capture again from the existing build. To capture an already running demo on ports 3008 and 8088, set `ARTIST_INSIGHT_DEMO_RUNNING=1` before running that command.
 
 Run **Demo Screenshots** manually in GitHub Actions or let **Release** call it after production deployment succeeds. The workflow uploads the gallery and browser report. Successful captures on `main` publish `screenshots.zip` in a `portfolio-screenshots-<commit-SHA>` prerelease, which the portfolio imports separately.
+
+Maven CI jobs load `.mvn/ci-settings.xml` through `MAVEN_ARGS` before resolving build extensions. This routes Central's default ID and the aliases declared by this project and its dependencies (`central`, `mavenCentral`, `maven-central`, and `maven_central`) through Google's [Maven Central mirror](https://docs.cloud.google.com/docs/buildpacks/java#google_cloud_hosted_maven_central_mirror), avoiding the direct Central endpoint's HTTP 429 responses. Dependency cache keys include the Maven extension and mirror settings. Local Maven settings remain unchanged.

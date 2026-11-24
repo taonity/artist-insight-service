@@ -59,6 +59,8 @@ jobs:
   release-backend:
     needs: release-prepare
     runs-on: ubuntu-latest
+    env:
+      MAVEN_ARGS: --settings "${{ github.workspace }}/.mvn/ci-settings.xml"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -68,6 +70,9 @@ jobs:
           java-version: '17'
           distribution: temurin
           cache: maven
+          cache-dependency-path: |
+            **/pom.xml
+            .mvn/*.xml
       - name: Build release image
         env:
           RAW_TAG: ${{ needs.release-prepare.outputs.raw_tag }}

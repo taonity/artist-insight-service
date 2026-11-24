@@ -3,6 +3,9 @@ name: Backend Validation
 on:
   workflow_call:
 
+env:
+  MAVEN_ARGS: --settings "${{ github.workspace }}/.mvn/ci-settings.xml"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,6 +18,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: |
+          **/pom.xml
+          .mvn/*.xml
 
     - name: Build back-end
       run: mvn -B -pl artist-insight-service -am package -DskipTests
@@ -31,6 +37,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: |
+          **/pom.xml
+          .mvn/*.xml
 
     - name: Run unit and integration tests
       run: mvn -B verify
