@@ -12,7 +12,7 @@ permissions:
   contents: read
 concurrency:
   group: release-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -159,7 +159,7 @@ jobs:
       contents: write
   notify-stage:
     needs: deploy-stage
-    if: ${{ always() && vars.ENABLE_DEPLOY_NOTIFICATIONS == 'true' && (needs.deploy-stage.result == 'success' || needs.deploy-stage.result == 'failure') }}
+    if: ${{ !cancelled() && (needs.deploy-stage.result == 'success' || needs.deploy-stage.result == 'failure') }}
     uses: ./.github/workflows/notify.yml
     with:
       environment: stage
@@ -170,7 +170,7 @@ jobs:
       NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
   notify-prod:
     needs: deploy-prod
-    if: ${{ always() && vars.ENABLE_DEPLOY_NOTIFICATIONS == 'true' && (needs.deploy-prod.result == 'success' || needs.deploy-prod.result == 'failure') }}
+    if: ${{ !cancelled() && (needs.deploy-prod.result == 'success' || needs.deploy-prod.result == 'failure') }}
     uses: ./.github/workflows/notify.yml
     with:
       environment: prod

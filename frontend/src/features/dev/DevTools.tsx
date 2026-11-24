@@ -44,8 +44,8 @@ export default function DevTools() {
     <aside
       style={{
         position: 'fixed',
-        bottom: 12,
-        right: 12,
+        bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+        right: 'calc(12px + env(safe-area-inset-right, 0px))',
         zIndex: 1000,
         background: open ? 'var(--surface-solid)' : 'transparent',
         padding: open ? 12 : 0,

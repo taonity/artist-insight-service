@@ -184,7 +184,7 @@ org.springframework.security.oauth2.core.OAuth2AuthenticationException: [authori
 
 ### Operations and administration
 
-See [Operations](docs/OPERATIONS.md) for environment profiles, the admin console, runtime settings, persistent sessions, backup/restore checks, Docker overrides, and optional deployment notifications.
+See [Operations](docs/OPERATIONS.md) for environment profiles, the admin console, runtime settings, persistent sessions, backup/restore checks, Docker overrides, and deployment notifications.
 
 Local developer fixtures and login shortcuts:
 

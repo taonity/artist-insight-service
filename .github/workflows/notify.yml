@@ -35,6 +35,10 @@ jobs:
           STATUS: ${{ inputs.status }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          : "${NTFY_URL:?NTFY_URL repository secret is required}"
+          : "${NTFY_TOPIC:?NTFY_TOPIC repository secret is required}"
+          : "${NTFY_TOKEN:?NTFY_TOKEN repository secret is required}"
+
           if [[ "$STATUS" == "success" ]]; then
             title="${ENVIRONMENT} deploy succeeded"
             priority="default"

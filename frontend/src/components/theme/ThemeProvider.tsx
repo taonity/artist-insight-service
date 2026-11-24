@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { DARK_MODE_QUERY, readTheme, THEME_COLORS, THEME_STORAGE_KEY, type Theme } from './theme'
+import { applyDocumentTheme, DARK_MODE_QUERY, readTheme, THEME_COLORS, THEME_STORAGE_KEY, type Theme } from './theme'
 
 const ThemeContext = createContext<{ preference: Theme; setPreference: (theme: Theme) => void }>({
   preference: 'system',
@@ -12,8 +12,7 @@ function applyTheme(preference: Theme) {
   const theme = preference === 'system'
     ? (matchMedia(DARK_MODE_QUERY).matches ? 'dark' : 'light')
     : preference
-  document.documentElement.dataset.theme = theme
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
+  applyDocumentTheme(theme, THEME_COLORS[theme])
 }
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
