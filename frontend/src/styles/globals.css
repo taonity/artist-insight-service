@@ -14,7 +14,7 @@ html {
 body {
   margin: 0;
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
-    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    0 env(safe-area-inset-left, 0px);
   box-sizing: border-box;
   font-family: 'Circular Std', Arial, Helvetica, sans-serif;
   color: var(--text);
@@ -953,7 +953,7 @@ button:disabled {
   margin-top: auto;
   background: var(--header-bg);
   border-top: 1px solid var(--divider);
-  padding: 32px 24px 24px;
+  padding: 32px 24px calc(24px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -10px 30px var(--shadow-color);
 }
 

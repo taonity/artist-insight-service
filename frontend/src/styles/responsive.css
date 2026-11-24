@@ -742,7 +742,7 @@
     line-height: 23px;
   }
   .site-footer {
-    padding: 16px 8px;
+    padding: 16px 8px calc(16px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
   }
   .footer-inner {
