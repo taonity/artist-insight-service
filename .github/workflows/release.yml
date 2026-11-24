@@ -114,8 +114,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.TAGGING_GITHUB_TOKEN }}
       - name: Publish completed release tag
         env:
           RAW_TAG: ${{ needs.release-prepare.outputs.raw_tag }}
