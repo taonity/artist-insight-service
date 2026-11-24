@@ -1,7 +1,8 @@
 import { spawn, spawnSync } from 'node:child_process'
-import { cpSync, mkdtempSync, readdirSync, rmSync, statSync } from 'node:fs'
+import { cpSync, mkdtempSync, rmSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { getDemoArchive } from './demo-artifact.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const frontend = fileURLToPath(new URL('../', import.meta.url))
@@ -36,15 +37,12 @@ if (command === 'build') {
   let runtime
   let args
   if (backend) {
-    const [archive] = readdirSync(backendTarget)
-      .filter((name) => /^artist-insight-service-.+\.jar$/.test(name))
-      .map((name) => path.join(backendTarget, name))
-      .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)
-    if (!archive) throw new Error('Build the demo backend with npm run demo:build first')
+    const archive = getDemoArchive(backendTarget)
     runtime = mkdtempSync(path.join(backendTarget, 'screenshot-runtime-'))
     // WireMock resolves its fixtures from regular classpath jars.
-    run('jar', ['xf', archive, 'BOOT-INF/classes', 'BOOT-INF/lib'], runtime)
+    run('jar', ['xf', archive, 'META-INF', 'BOOT-INF/classes', 'BOOT-INF/lib'], runtime)
     const classpath = [
+      runtime,
       path.join(runtime, 'BOOT-INF/classes'),
       path.join(runtime, 'BOOT-INF/lib/*'),
     ].join(path.delimiter)

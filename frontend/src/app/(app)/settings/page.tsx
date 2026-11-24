@@ -34,7 +34,7 @@ export default function SettingsPage() {
       <Header user={user} loading={isLoadingUser} />
       <div className="settings-page">
         <div className="settings-page-card">
-          <h1>Your account</h1>
+          <h1>Settings</h1>
           <p>
             <strong>Display name:</strong>{' '}
             <ContentSkeleton loading={isLoadingUser || preview}>{displayName}</ContentSkeleton>

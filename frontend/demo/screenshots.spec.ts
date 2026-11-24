@@ -1,22 +1,14 @@
 import { expect, test } from '@playwright/test'
 import { createScreenshotCapture } from '@taonity/demo-screenshots'
+import { readFile } from 'node:fs/promises'
 
 const capture = createScreenshotCapture(expect)
 const portrait = 'header img[src="/demo/avatars/portrait-mira-vell.webp"]'
 
 const scenes = [
-  { name: 'followings', path: '/' },
-  { name: 'users', path: '/admin', tab: 'users', heading: 'Users', count: 120 },
-  {
-    name: 'access-requests',
-    path: '/admin',
-    tab: 'requests',
-    heading: 'Spotify access requests',
-    count: 96,
-  },
-  { name: 'runtime-settings', path: '/admin', tab: 'settings', heading: 'Runtime settings' },
-  { name: 'audit-log', path: '/admin', tab: 'audit', heading: 'Audit log', count: 240 },
-  { name: 'account', path: '/settings' },
+  { name: 'main', path: '/' },
+  { name: 'settings', path: '/settings' },
+  { name: 'share', path: '' },
 ] as const
 
 for (const scene of scenes) {
@@ -30,36 +22,35 @@ for (const scene of scenes) {
       if (url.pathname === '/api/share' && response.status() === 404) return
       failures.push(`${response.status()} ${url.pathname}`)
     })
-    if ('tab' in scene) {
-      await page.addInitScript(
-        (tab) => localStorage.setItem('artist-insight.admin.tab', tab),
-        scene.tab,
-      )
-    }
-    await page.goto(scene.path)
+    const shared: { path: string; ownerName: string; artistCount: number } | null = scene.name === 'share'
+      ? JSON.parse(await readFile('test-results/demo-share.json', 'utf8'))
+      : null
+    await page.goto(shared?.path ?? scene.path)
     const theme = testInfo.project.name.endsWith('-dark') ? 'dark' : 'light'
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
 
-    if ('tab' in scene) {
-      await expect(page.locator('.admin-owner-badge')).toHaveText('Owner')
-      await expect(page.getByRole('heading', { name: scene.heading, exact: true })).toBeVisible()
-      if ('count' in scene) {
-        await expect(page.getByText(`${scene.count} records`, { exact: true })).toBeVisible()
+    await expect(page.locator('header').getByText('Mira Vell', { exact: true })).toBeVisible()
+    await expect(page.locator(portrait)).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Admin', exact: true })).toBeVisible()
+    if (shared) {
+      await expect(page.getByRole('heading', { name: `${shared.ownerName}'s Followed Artists`, exact: true })).toBeVisible()
+      await expect(page.locator('.share-owner-info')).toContainText(`${shared.artistCount} artists`)
+      await expect(page.locator('.share-owner-avatar img')).toHaveAttribute('src', '/demo/avatars/portrait-rumi-cade.webp')
+      await expect(page.getByRole('button', { name: 'Enrich followings', exact: true })).toHaveCount(0)
+      if (phone) {
+        await expect(page.getByRole('navigation', { name: 'Pagination above artists' })).toContainText('1–10 of 36')
       } else {
-        await expect(page.getByRole('button', { name: 'Save', exact: true }).first()).toBeEnabled()
+        await expect(page.locator('.ag-row')).toHaveCount(shared.artistCount)
       }
     } else {
-      await expect(page.locator('header').getByText('Mira Vell', { exact: true })).toBeVisible()
-      await expect(page.locator(portrait)).toBeVisible()
-      await expect(page.getByRole('button', { name: 'Admin', exact: true })).toBeVisible()
-      if (scene.name === 'followings') {
+      if (scene.name === 'main') {
         await expect(page.getByText('GPT enrichment available', { exact: true })).toBeVisible()
         const perPage = phone ? 10 : 20
         await expect(
           page.getByRole('navigation', { name: 'Pagination above artists' }),
         ).toContainText(`1–${perPage} of 36`)
       } else {
-        await expect(page.getByRole('heading', { name: 'Your account' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible()
         await expect(page.getByRole('combobox', { name: 'Theme', exact: true })).toHaveValue('system')
         await expect(page.getByText('stub-owner', { exact: true })).toBeVisible()
       }
@@ -79,8 +70,7 @@ for (const scene of scenes) {
       content: `
         html { scrollbar-gutter: auto !important; scrollbar-width: none !important; }
         html::-webkit-scrollbar { display: none !important; }
-        body { position: relative; }
-        body::before { position: absolute; }
+        body { background-attachment: scroll; }
         aside[aria-label="Local developer tools"] { display: none !important; }
         @media (min-width: 1100px) {
           .app-main .header {
@@ -96,13 +86,15 @@ for (const scene of scenes) {
     await expect(page.locator('aside[aria-label="Local developer tools"]')).toBeHidden()
     const layout = await page.evaluate(() => ({
       gutter: innerWidth - document.documentElement.clientWidth,
-      backdrop: parseFloat(getComputedStyle(document.body, '::before').height),
+      backdropBottom: document.body.getBoundingClientRect().bottom + scrollY,
+      backdrop: getComputedStyle(document.body).backgroundImage,
       page: document.documentElement.scrollHeight,
     }))
     expect(layout.gutter).toBe(0)
-    expect(layout.backdrop).toBeGreaterThanOrEqual(layout.page - 1)
+    expect(layout.backdropBottom).toBeGreaterThanOrEqual(layout.page - 1)
+    expect(layout.backdrop).toContain('linear-gradient(')
 
-    if (scene.name === 'followings') {
+    if (scene.name === 'main') {
       const enriched = page.locator('.genre.enriched').first()
       await expect(enriched).toBeVisible()
       await expect(enriched).toHaveText(/✦$/)
@@ -133,8 +125,7 @@ for (const scene of scenes) {
       }
     }
 
-    const content =
-      'tab' in scene ? '.admin-page' : scene.name === 'followings' ? '.main-content' : '.header'
+    const content = scene.name === 'main' ? '.main-content' : '.header'
     const clip = phone
       ? undefined
       : await page.locator(content).evaluate((element) => {

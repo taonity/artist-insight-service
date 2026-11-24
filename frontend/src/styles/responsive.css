@@ -423,13 +423,9 @@
   .header {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 8px;
-    font-size: 14px;
-  }
-  .followings-page .header {
     gap: 6px;
-    padding-block: 8px;
+    padding: 8px;
+    font-size: 14px;
   }
   .header .user-info {
     width: 100%;
