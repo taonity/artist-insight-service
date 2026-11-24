@@ -393,6 +393,10 @@
 }
 
 @media (max-width: 767px) {
+  .app-main {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
   .header .header-actions {
     width: 100%;
   }
@@ -670,7 +674,8 @@
     line-height: 24px;
   }
   .login-container {
-    min-height: 65svh;
+    min-height: 100vh;
+    min-height: 100dvh;
     padding: 64px 8px 32px;
     gap: 20px;
     box-sizing: border-box;

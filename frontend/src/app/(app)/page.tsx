@@ -1,12 +1,21 @@
 'use client'
 
-import { CSVLink } from 'react-csv'
+import dynamic from 'next/dynamic'
 import { AdvisoryCards, ArtistList, GptUsageBlock } from '@/features/followings/components'
 import ErrorNotification from '@/components/feedback/ErrorNotification'
 import Header from '@/components/layout/Header'
 import { useDevLoading } from '@/features/dev/DevTools'
 import ContentSkeleton from '@/components/feedback/ContentSkeleton'
 import { useFollowingsPage } from '@/features/followings/useFollowingsPage'
+
+const CSVLink = dynamic(() => import('react-csv').then((module) => module.CSVLink), {
+  ssr: false,
+  loading: () => (
+    <button type="button" className="button" aria-label="Download CSV" disabled>
+      Export CSV
+    </button>
+  ),
+})
 
 export default function Home() {
   const preview = useDevLoading()
