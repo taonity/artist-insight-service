@@ -13,18 +13,18 @@ concurrency:
 
 jobs:
   capture:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 25
     env:
       MAVEN_ARGS: --settings "${{ github.workspace }}/app/.mvn/ci-settings.xml"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: app
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: maven
           cache-dependency-path: |
             app/**/pom.xml

@@ -37,11 +37,11 @@ jobs:
     env:
       MAVEN_ARGS: --settings "${{ github.workspace }}/.mvn/ci-settings.xml"
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
-        java-version: '17'
+        java-version: '25'
         distribution: 'temurin'
         cache: maven
         cache-dependency-path: |
